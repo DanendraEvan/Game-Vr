@@ -398,7 +398,7 @@ AFRAME.registerComponent('vr-detector', {
   }
 });
 
-// 3D Dialog Component dengan struktur hierarkis
+// 3D Dialog Component dengan update konten instead of recreating panel
 AFRAME.registerComponent('npc-dialog-3d', {
   schema: { 
     npcId: { type: 'string' }, 
@@ -406,6 +406,7 @@ AFRAME.registerComponent('npc-dialog-3d', {
   },
   init: function () {
     this.dialogStack = []; // Stack untuk tracking menu navigasi
+    this.currentPanel = null; // Reference ke panel yang sedang aktif
     this.el.addEventListener('click', (evt) => {
       evt.stopPropagation();
       evt.preventDefault();
@@ -416,14 +417,27 @@ AFRAME.registerComponent('npc-dialog-3d', {
   
   showDialog: function (dialogId) {
     const scene = this.el.sceneEl;
-    const existing = scene.querySelector('#dialog-panel');
-    if (existing) existing.parentNode.removeChild(existing);
-
     const dialog = NPC_DIALOGS[dialogId];
     if (!dialog) {
       console.error('Dialog not found:', dialogId);
       return;
     }
+
+    // Jika panel belum ada, buat panel baru
+    if (!this.currentPanel || !this.currentPanel.parentNode) {
+      this.createDialogPanel();
+    }
+
+    // Update konten panel yang sudah ada
+    this.updateDialogContent(dialog, dialogId);
+  },
+
+  createDialogPanel: function() {
+    const scene = this.el.sceneEl;
+    
+    // Hapus panel lama jika ada
+    const existing = scene.querySelector('#dialog-panel');
+    if (existing) existing.parentNode.removeChild(existing);
 
     const panel = document.createElement('a-entity');
     panel.setAttribute('id', 'dialog-panel');
@@ -447,6 +461,7 @@ AFRAME.registerComponent('npc-dialog-3d', {
 
     // Border panel
     const border = document.createElement('a-plane');
+    border.setAttribute('id', 'dialog-border');
     border.setAttribute('geometry', { primitive: 'plane', width: 4.1, height: 3.1 });
     border.setAttribute('material', { color: '#4CAF50', opacity: 0.8 });
     border.setAttribute('position', '0 0 -0.01');
@@ -454,12 +469,13 @@ AFRAME.registerComponent('npc-dialog-3d', {
 
     // Header dengan nama NPC dan tag
     const header = document.createElement('a-plane');
+    header.setAttribute('id', 'dialog-header');
     header.setAttribute('geometry', { primitive: 'plane', width: 3.8, height: 0.4 });
     header.setAttribute('material', { color: '#2196F3' });
     header.setAttribute('position', '0 1.25 0.02');
     
     const title = document.createElement('a-text');
-    title.setAttribute('value', dialog.speaker);
+    title.setAttribute('id', 'dialog-title');
     title.setAttribute('align', 'center');
     title.setAttribute('width', 3);
     title.setAttribute('position', '0 0 0.02');
@@ -468,33 +484,33 @@ AFRAME.registerComponent('npc-dialog-3d', {
     header.appendChild(title);
 
     // Tag dialog
-    if (dialog.tag) {
-      const tag = document.createElement('a-plane');
-      tag.setAttribute('geometry', { primitive: 'plane', width: 1, height: 0.2 });
-      tag.setAttribute('material', { color: '#FFD700', opacity: 0.9 });
-      tag.setAttribute('position', '1.4 1.25 0.03');
-      
-      const tagText = document.createElement('a-text');
-      tagText.setAttribute('value', dialog.tag);
-      tagText.setAttribute('align', 'center');
-      tagText.setAttribute('width', 2.5);
-      tagText.setAttribute('position', '0 0 0.02');
-      tagText.setAttribute('color', '#1a1a1a');
-      tagText.setAttribute('font', 'dejavu');
-      tag.appendChild(tagText);
-      panel.appendChild(tag);
-    }
+    const tag = document.createElement('a-plane');
+    tag.setAttribute('id', 'dialog-tag');
+    tag.setAttribute('geometry', { primitive: 'plane', width: 1, height: 0.2 });
+    tag.setAttribute('material', { color: '#FFD700', opacity: 0.9 });
+    tag.setAttribute('position', '1.4 1.25 0.03');
+    
+    const tagText = document.createElement('a-text');
+    tagText.setAttribute('id', 'dialog-tag-text');
+    tagText.setAttribute('align', 'center');
+    tagText.setAttribute('width', 2.5);
+    tagText.setAttribute('position', '0 0 0.02');
+    tagText.setAttribute('color', '#1a1a1a');
+    tagText.setAttribute('font', 'dejavu');
+    tag.appendChild(tagText);
+    panel.appendChild(tag);
     
     panel.appendChild(header);
 
     // Dialog text area
     const dialogArea = document.createElement('a-plane');
+    dialogArea.setAttribute('id', 'dialog-text-area');
     dialogArea.setAttribute('geometry', { primitive: 'plane', width: 3.8, height: 1 });
     dialogArea.setAttribute('material', { color: '#f8fafc', opacity: 0.95 });
     dialogArea.setAttribute('position', '0 0.5 0.02');
     
     const dialogText = document.createElement('a-text');
-    dialogText.setAttribute('value', dialog.text);
+    dialogText.setAttribute('id', 'dialog-main-text');
     dialogText.setAttribute('align', 'center');
     dialogText.setAttribute('color', '#1a1a1a');
     dialogText.setAttribute('width', 3.2);
@@ -504,9 +520,43 @@ AFRAME.registerComponent('npc-dialog-3d', {
     dialogArea.appendChild(dialogText);
     panel.appendChild(dialogArea);
 
-    // Choices area
+    // Choices container
     const choicesContainer = document.createElement('a-entity');
+    choicesContainer.setAttribute('id', 'dialog-choices-container');
     choicesContainer.setAttribute('position', '0 -0.3 0.02');
+    panel.appendChild(choicesContainer);
+
+    // Navigation buttons container
+    const navContainer = document.createElement('a-entity');
+    navContainer.setAttribute('id', 'dialog-nav-container');
+    navContainer.setAttribute('position', '0 -1.2 0.02');
+    panel.appendChild(navContainer);
+
+    scene.appendChild(panel);
+    this.currentPanel = panel;
+  },
+
+  updateDialogContent: function(dialog, dialogId) {
+    // Update title
+    const title = this.currentPanel.querySelector('#dialog-title');
+    title.setAttribute('value', dialog.speaker);
+
+    // Update tag
+    const tagText = this.currentPanel.querySelector('#dialog-tag-text');
+    if (dialog.tag) {
+      tagText.setAttribute('value', dialog.tag);
+      this.currentPanel.querySelector('#dialog-tag').setAttribute('visible', true);
+    } else {
+      this.currentPanel.querySelector('#dialog-tag').setAttribute('visible', false);
+    }
+
+    // Update main text
+    const mainText = this.currentPanel.querySelector('#dialog-main-text');
+    mainText.setAttribute('value', dialog.text);
+
+    // Clear and update choices
+    const choicesContainer = this.currentPanel.querySelector('#dialog-choices-container');
+    this.clearContainer(choicesContainer);
 
     if (dialog.choices && dialog.choices.length > 0) {
       dialog.choices.forEach((choice, index) => {
@@ -544,11 +594,11 @@ AFRAME.registerComponent('npc-dialog-3d', {
           evt.preventDefault();
           
           if (choice.submenu) {
-            // Navigate to submenu
+            // Navigate to submenu - update stack and content
             self.dialogStack.push(dialogId);
             self.showDialog(choice.submenu);
           } else if (choice.response) {
-            // Show response
+            // Show response - update content to response mode
             self.showResponse(choice.response);
           }
         });
@@ -557,14 +607,20 @@ AFRAME.registerComponent('npc-dialog-3d', {
       });
     }
 
-    panel.appendChild(choicesContainer);
+    // Update navigation buttons
+    this.updateNavigationButtons(dialogId);
+  },
+
+  updateNavigationButtons: function(dialogId) {
+    const navContainer = this.currentPanel.querySelector('#dialog-nav-container');
+    this.clearContainer(navContainer);
 
     // Back button for submenus
     if (this.dialogStack.length > 0) {
       const backBtn = document.createElement('a-plane');
       backBtn.setAttribute('geometry', { primitive: 'plane', width: 1.5, height: 0.25 });
       backBtn.setAttribute('material', { color: '#6b7280' });
-      backBtn.setAttribute('position', '-1 -1.2 0.02');
+      backBtn.setAttribute('position', '-1 0 0');
       backBtn.classList.add('clickable');
       
       const backLabel = document.createElement('a-text');
@@ -585,14 +641,14 @@ AFRAME.registerComponent('npc-dialog-3d', {
         }
       });
 
-      panel.appendChild(backBtn);
+      navContainer.appendChild(backBtn);
     }
 
     // Close button
     const closeBtn = document.createElement('a-plane');
     closeBtn.setAttribute('geometry', { primitive: 'plane', width: 1, height: 0.25 });
     closeBtn.setAttribute('material', { color: '#f44336' });
-    closeBtn.setAttribute('position', '1 -1.2 0.02');
+    closeBtn.setAttribute('position', '1 0 0');
     closeBtn.classList.add('clickable');
     
     const closeLabel = document.createElement('a-text');
@@ -603,60 +659,37 @@ AFRAME.registerComponent('npc-dialog-3d', {
     closeLabel.setAttribute('position', '0 0 0.02');
     closeBtn.appendChild(closeLabel);
     
+    const self = this;
     closeBtn.addEventListener('click', function (evt) {
       evt.stopPropagation();
       evt.preventDefault();
-      const panel = scene.querySelector('#dialog-panel');
-      if (panel) panel.parentNode.removeChild(panel);
+      if (self.currentPanel && self.currentPanel.parentNode) {
+        self.currentPanel.parentNode.removeChild(self.currentPanel);
+        self.currentPanel = null;
+      }
     });
 
-    panel.appendChild(closeBtn);
-    scene.appendChild(panel);
+    navContainer.appendChild(closeBtn);
   },
 
   showResponse: function(responseText) {
-    // Remove existing panel
-    const scene = this.el.sceneEl;
-    const panel = scene.querySelector('#dialog-panel');
-    if (panel) panel.parentNode.removeChild(panel);
+    // Update panel to response mode instead of creating new panel
+    const mainText = this.currentPanel.querySelector('#dialog-main-text');
+    mainText.setAttribute('value', responseText);
 
-    // Create response panel
-    const responsePanel = document.createElement('a-entity');
-    responsePanel.setAttribute('id', 'dialog-panel');
-    responsePanel.setAttribute('geometry', { primitive: 'plane', width: 4, height: 2.5 });
-    responsePanel.setAttribute('material', { color: '#10b981', opacity: 0.9 });
+    // Hide choices and show back to dialog button
+    const choicesContainer = this.currentPanel.querySelector('#dialog-choices-container');
+    this.clearContainer(choicesContainer);
 
-    // Position response panel
-    const camera = scene.querySelector('[camera]');
-    const camPos = new THREE.Vector3();
-    camera.object3D.getWorldPosition(camPos);
-    const camDir = new THREE.Vector3();
-    camera.object3D.getWorldDirection(camDir);
+    // Update navigation for response mode
+    const navContainer = this.currentPanel.querySelector('#dialog-nav-container');
+    this.clearContainer(navContainer);
 
-    const panelPos = camPos.clone().add(camDir.multiplyScalar(this.data.distance));
-    panelPos.y -= 0.3;
-    responsePanel.setAttribute('position', `${panelPos.x} ${panelPos.y} ${panelPos.z}`);
-
-    const lookAtPos = camPos.clone();
-    lookAtPos.y = panelPos.y;
-    responsePanel.object3D.lookAt(lookAtPos);
-
-    // Response text
-    const responseTextEl = document.createElement('a-text');
-    responseTextEl.setAttribute('value', responseText);
-    responseTextEl.setAttribute('align', 'center');
-    responseTextEl.setAttribute('color', 'white');
-    responseTextEl.setAttribute('width', 3.5);
-    responseTextEl.setAttribute('position', '0 0.3 0.02');
-    responseTextEl.setAttribute('wrap-count', 60);
-    responseTextEl.setAttribute('line-height', 40);
-    responsePanel.appendChild(responseTextEl);
-
-    // Back button
+    // Back to dialog button
     const backBtn = document.createElement('a-plane');
     backBtn.setAttribute('geometry', { primitive: 'plane', width: 2, height: 0.3 });
     backBtn.setAttribute('material', { color: '#1976D2' });
-    backBtn.setAttribute('position', '0 -0.8 0.02');
+    backBtn.setAttribute('position', '0 0 0');
     backBtn.classList.add('clickable');
     
     const backLabel = document.createElement('a-text');
@@ -676,14 +709,21 @@ AFRAME.registerComponent('npc-dialog-3d', {
       self.showDialog(previousDialog);
     });
 
-    responsePanel.appendChild(backBtn);
-    scene.appendChild(responsePanel);
+    navContainer.appendChild(backBtn);
 
-    // Auto close after 8 seconds
+    // Auto return to dialog after 8 seconds
     setTimeout(() => {
-      const existingPanel = scene.querySelector('#dialog-panel');
-      if (existingPanel) existingPanel.parentNode.removeChild(existingPanel);
+      if (self.currentPanel && self.currentPanel.parentNode) {
+        const previousDialog = self.dialogStack.length > 0 ? self.dialogStack[self.dialogStack.length - 1] : self.data.npcId;
+        self.showDialog(previousDialog);
+      }
     }, 8000);
+  },
+
+  clearContainer: function(container) {
+    while (container.firstChild) {
+      container.removeChild(container.firstChild);
+    }
   }
 });
 
