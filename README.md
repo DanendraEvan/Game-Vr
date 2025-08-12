@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Example of using realistic animated avatars in networked-aframe
 
 - [Live demo](https://naf-valid-avatars.glitch.me)
@@ -20,3 +21,6 @@ Some highlights:
 ## Sponsors
 
 This repository is a cumulation of changes and features that persons [sponsoring Vincent Fretin](https://github.com/sponsors/vincentfretin) asked for. Big thanks to them!
+=======
+# Game-Vr
+>>>>>>> 490ebd6a4a817d84601653ce020e3cbb07c4c739
