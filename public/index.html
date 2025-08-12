@@ -83,15 +83,18 @@
           ><a-box position="0 0 0.5" obb-collider visible="false"></a-box
         ></a-link>
         <!-- Portal to Desa Harmoni -->
-        <a-link
-          link="on:click"
-          href="desa.html"
-          position="2 1.5 3"
-          title="Desa Harmoni"
-          image="#thumbForest"
-        >
-          <a-box position="0 0 0.5" obb-collider visible="false"></a-box>
-        </a-link>
+<!-- Portal to Desa Harmoni -->
+<a-link
+  change-room="on:obbcollisionstarted;room:desa;url:desa.html"
+  link="on:ignore"
+  href="desa"
+  position="2 1.5 3"
+  title="Desa Harmoni"
+  image="#thumbForest"
+>
+  <a-box position="0 0 0.5" obb-collider visible="false"></a-box>
+</a-link>
+
         <a-cylinder radius="0.25" height="0.4" position="1.5 0.2 -2" rotation="0 180 0">
           <a-waypoint
             id="seat1"

@@ -1,0 +1,231 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <title>Metaverse - NPC Scene</title>
+
+    <script src="https://aframe.io/releases/1.7.0/aframe.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.8.1/socket.io.min.js"></script>
+    <script src="/easyrtc/easyrtc.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/networked-aframe@0.14.0/dist/networked-aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-extras@7.5.4/dist/aframe-extras.min.js"></script>
+    <script
+        src="https://cdn.jsdelivr.net/npm/aframe-environment-component@1.5.0/dist/aframe-environment-component.min.js"></script>
+
+    <style>
+        #hud {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            background: rgba(0, 0, 0, 0.6);
+            color: white;
+            padding: 10px;
+            font-family: monospace;
+            font-size: 14px;
+            border-radius: 5px;
+            white-space: pre-line;
+            z-index: 999;
+        }
+
+        #hud-score {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.6);
+            color: white;
+            padding: 10px;
+            font-family: monospace;
+            font-size: 14px;
+            border-radius: 5px;
+            z-index: 999;
+        }
+    </style>
+
+    <script>
+        const PETANI_DIALOGS = [
+            {
+                question: "Bagaimana Bapak menggambarkan kondisi lahan dan hasil panen?",
+                options: {
+                    kritis: "Daun padi menguning, hasil panen menurun 30%.",
+                    alternatif: "Panennya tidak bagus, namanya juga nasib."
+                }
+            },
+            {
+                question: "Apa penyebab utama penurunan hasil panen menurut Bapak?",
+                options: {
+                    kritis: "Perubahan iklim dan kurangnya air irigasi.",
+                    alternatif: "Sumber daya manusia sudah tua dan malas."
+                }
+            },
+            {
+                question: "Bagaimana pandangan Bapak tentang anak muda yang enggan bertani?",
+                options: {
+                    kritis: "Mereka kurang tertarik dan melihat pertanian kurang menjanjikan.",
+                    alternatif: "Anak muda lebih suka kerja di kota dan sektor lain."
+                }
+            }
+        ];
+
+        AFRAME.registerComponent('hud-coords', {
+            tick: function () {
+                const player = document.querySelector('#player');
+                if (player) {
+                    const pos = player.object3D.getWorldPosition(new THREE.Vector3());
+                    document.getElementById('hud').innerText =
+                        `Koordinat:\nX: ${pos.x.toFixed(2)}  Y: ${pos.y.toFixed(2)}  Z: ${pos.z.toFixed(2)}`;
+                }
+                const s = localStorage.getItem('score') || 0;
+                document.getElementById('hud-score').innerText = `Skor: ${s}`;
+            }
+        });
+
+        AFRAME.registerComponent('npc-dialog-3d', {
+            schema: { id: { type: 'string' }, distance: { type: 'number', default: 1.5 } },
+            init: function () {
+                this.dialogIndex = 0;
+                this.el.addEventListener('click', () => {
+                    this.dialogIndex = 0; // reset dialog tiap klik awal
+                    this.showDialog();
+                });
+            },
+            showDialog: function () {
+                const scene = this.el.sceneEl;
+                const existing = scene.querySelector('#dialog-panel');
+                if (existing) existing.parentNode.removeChild(existing);
+
+                if (this.dialogIndex >= PETANI_DIALOGS.length) {
+                    // Selesai dialog
+                    alert("Terima kasih atas waktunya! Investigasi selesai.");
+                    this.dialogIndex = 0;
+                    return;
+                }
+
+                const data = PETANI_DIALOGS[this.dialogIndex];
+
+                const panel = document.createElement('a-entity');
+                panel.setAttribute('id', 'dialog-panel');
+                panel.setAttribute('geometry', { primitive: 'plane', width: 1.8, height: 1.3 });
+                panel.setAttribute('material', { color: 'black', opacity: 0.85 });
+                panel.classList.add('clickable');
+
+                // Ambil kamera
+                const camera = scene.querySelector('[camera]');
+                const camPos = new THREE.Vector3();
+                camera.object3D.getWorldPosition(camPos);
+                const camDir = new THREE.Vector3();
+                camera.object3D.getWorldDirection(camDir);
+
+                // Posisi panel langsung di depan kamera (1.5m), tapi sedikit turun agar nyaman dilihat
+                const panelPos = camPos.clone().add(camDir.multiplyScalar(this.data.distance));
+                panelPos.y -= 0.2;
+                panel.setAttribute('position', `${panelPos.x} ${panelPos.y} ${panelPos.z}`);
+
+                // Agar panel menghadap kamera (tapi tegak lurus ke horizon)
+                const lookAtPos = camPos.clone();
+                lookAtPos.y = panelPos.y; // buat ketinggian sama supaya tidak miring
+                panel.object3D.lookAt(lookAtPos);
+
+                // Judul NPC
+                const title = document.createElement('a-text');
+                title.setAttribute('value', "Petani Senior");
+                title.setAttribute('align', 'center');
+                title.setAttribute('width', 1.6);
+                title.setAttribute('position', '0 0.5 0.02');
+                title.setAttribute('color', '#FFD700');
+
+                // Pertanyaan
+                const prompt = document.createElement('a-text');
+                prompt.setAttribute('value', data.question);
+                prompt.setAttribute('align', 'center');
+                prompt.setAttribute('color', 'white');
+                prompt.setAttribute('width', 1.6);
+                prompt.setAttribute('position', '0 0.1 0.02');
+                prompt.setAttribute('wrap-count', 40);
+
+                // Tombol Kritis
+                const kritisBtn = document.createElement('a-plane');
+                kritisBtn.setAttribute('geometry', { primitive: 'plane', width: 0.75, height: 0.2 });
+                kritisBtn.setAttribute('material', { color: '#4CAF50' });
+                kritisBtn.setAttribute('position', '-0.45 -0.4 0.02');
+                kritisBtn.classList.add('clickable');
+
+                // Tombol Alternatif
+                const altBtn = document.createElement('a-plane');
+                altBtn.setAttribute('geometry', { primitive: 'plane', width: 0.75, height: 0.2 });
+                altBtn.setAttribute('material', { color: '#2196F3' });
+                altBtn.setAttribute('position', '0.45 -0.4 0.02');
+                altBtn.classList.add('clickable');
+
+                // Label tombol
+                const kritisLabel = document.createElement('a-text');
+                kritisLabel.setAttribute('value', data.options.kritis);
+                kritisLabel.setAttribute('align', 'center');
+                kritisLabel.setAttribute('color', 'white');
+                kritisLabel.setAttribute('width', 0.7);
+                kritisBtn.appendChild(kritisLabel);
+
+                const altLabel = document.createElement('a-text');
+                altLabel.setAttribute('value', data.options.alternatif);
+                altLabel.setAttribute('align', 'center');
+                altLabel.setAttribute('color', 'white');
+                altLabel.setAttribute('width', 0.7);
+                altBtn.appendChild(altLabel);
+
+                const self = this;
+                kritisBtn.addEventListener('click', function (evt) {
+                    evt.stopPropagation();
+                    evt.preventDefault();
+                    self.handleAnswer('kritis');
+                });
+                altBtn.addEventListener('click', function (evt) {
+                    evt.stopPropagation();
+                    evt.preventDefault();
+                    self.handleAnswer('alternatif');
+                });
+
+                panel.appendChild(title);
+                panel.appendChild(prompt);
+                panel.appendChild(kritisBtn);
+                panel.appendChild(altBtn);
+
+                scene.appendChild(panel);
+            },
+            handleAnswer: function (type) {
+                let score = parseInt(localStorage.getItem('score') || '0', 10);
+                score += (type === 'kritis' ? 10 : 2);
+                localStorage.setItem('score', score);
+
+                // Hapus panel saat ini
+                const panel = this.el.sceneEl.querySelector('#dialog-panel');
+                if (panel) panel.parentNode.removeChild(panel);
+
+                // Increment dan show dialog berikutnya
+                this.dialogIndex++;
+                this.showDialog();
+            }
+        });
+    </script>
+</head>
+
+<body>
+    <div id="hud">Koordinat:</div>
+    <div id="hud-score">Skor: 0</div>
+
+    <a-scene hud-coords environment="preset: forest" networked-scene="room: npcscene; debug: true">
+        <a-assets>
+            <a-asset-item id="modelPetani" src="models/npc_petani.glb"></a-asset-item>
+        </a-assets>
+
+        <!-- NPC -->
+        <a-entity class="clickable" gltf-model="#modelPetani" position="0 0 -3" scale="0.07 0.07 0.07"
+            npc-dialog-3d="id: petani"></a-entity>
+
+        <!-- Kamera & Player -->
+        <a-entity id="player" camera look-controls wasd-controls position="0 1.6 2">
+            <a-entity cursor="rayOrigin: mouse" raycaster="objects: .clickable"></a-entity>
+        </a-entity>
+    </a-scene>
+</body>
+
+</html>

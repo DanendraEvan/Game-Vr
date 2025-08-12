@@ -82,6 +82,7 @@ AFRAME.registerComponent('change-room', {
           () => {
             connecting = false;
             const rig = document.getElementById('rig');
+            rig.setAttribute('position', '-50 1 5');
             rig.setAttribute('networked-aframe', { creator: NAF.clientId });
             NAF.utils.takeOwnership(rig);
           },
@@ -100,3 +101,4 @@ AFRAME.registerComponent('change-room', {
     this.el.removeEventListener(this.data.on, this.changeRoom);
   },
 });
+
