@@ -58,7 +58,7 @@
   change-room="on: obbcollisionstarted; room: pabrik; url: pabrik.html"
   link="on: ignore"
   href="pabrik.html"
-  position="0 3 0.05"
+  position="0 2.60 0.05"
   title="Portal ke Pabrik"
   image="#thumbForest">
   <a-box position="0 0 0.5" obb-collider visible="false"></a-box>
@@ -75,7 +75,7 @@
     </template>
     <img id="thumbJapan" crossorigin="anonymous" src="https://cdn.aframe.io/link-traversal/thumbs/japan.png" alt="Japan" />
     <img id="thumbForest" crossorigin="anonymous" src="https://cdn.aframe.io/link-traversal/thumbs/forest.png" alt="Forest" />
-    <a-asset-item id="village-model" src="village.glb"></a-asset-item>
+    <a-asset-item id="village-model" src="models/Untitled.glb"></a-asset-item>
   </a-assets>
 
   <a-entity id="scene">
@@ -86,11 +86,11 @@
     <a-entity light="type: hemisphere; color: #FFF; groundColor: #808080; intensity: 0.5"></a-entity>
 
     <!-- Desa -->
-    <a-entity gltf-model="#village-model" position="0 0 -10" scale="1 1 1" shadow="receive: true"></a-entity>
+    <a-entity gltf-model="#village-model" position="0 0 -10" scale="2 2 2" shadow="receive: true"></a-entity>
 
     <!-- Info text -->
-    <a-entity id="info-dialog-onload" position="0 4 -8">
-      <a-plane width="7" height="1.2" color="#1e293b" opacity="0.92" material="shader: flat"></a-plane>
+    <a-entity id="info-dialog" position="-5 4 -20">
+      <a-plane width="17" height="1.2" color="#1e293b" opacity="0.92" material="shader: flat"></a-plane>
       <a-text 
         value="Selamat datang di Desa Harmoni! Klik pada NPC untuk berbicara dengan mereka."
         align="center"
@@ -106,10 +106,11 @@
     position="0 1.6 0"
     movement-controls="fly:false; controls: gamepad, trackpad, keyboard, nipple;"
     spawn-in-circle="radius:1"
+    restrict-cube="minX: -100; maxX: 100; minZ: -140; maxZ: 20"
     networked="template:#avatar-template; attachTemplateToLocal:false"
     player-info
   >
-    <a-entity id="player" class="camera" camera position="0 1.6 0" look-controls>
+    <a-entity id="player" class="camera" camera position="16 1 -8" look-controls>
       <a-box obb-collider visible="false" height="0.4" depth="0.4" width="0.4"></a-box>
       <a-entity cursor="rayOrigin: mouse" raycaster="objects: .clickable; far: 10"></a-entity>
     </a-entity>
@@ -132,6 +133,22 @@ AFRAME.registerComponent('vr-detector', {
   init: function () {
     this.el.addEventListener('enter-vr', () => gameState.vrMode = true);
     this.el.addEventListener('exit-vr', () => gameState.vrMode = false);
+  }
+});
+
+AFRAME.registerComponent('restrict-cube', {
+  schema: {
+    minX: { type: 'number', default: -10 },
+    maxX: { type: 'number', default: 10 },
+    minZ: { type: 'number', default: -10 },
+    maxZ: { type: 'number', default: 10 }
+  },
+  tick: function () {
+    let pos = this.el.object3D.position;
+    if (pos.x < this.data.minX) pos.x = this.data.minX;
+    if (pos.x > this.data.maxX) pos.x = this.data.maxX;
+    if (pos.z < this.data.minZ) pos.z = this.data.minZ;
+    if (pos.z > this.data.maxZ) pos.z = this.data.maxZ;
   }
 });
 

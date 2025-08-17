@@ -82,29 +82,21 @@
         </template>
 
         <!-- Preload villageNaruto outside of template -->
-        <a-asset-item id="village-model" src="village.glb"></a-asset-item>
+        <a-asset-item id="village-model" src="models/Untitled.glb"></a-asset-item>
 
         <!-- Thumbnails -->
         <img id="thumbJapan" crossorigin="anonymous" src="https://cdn.aframe.io/link-traversal/thumbs/japan.png" />
         <img id="thumbForest" crossorigin="anonymous" src="https://cdn.aframe.io/link-traversal/thumbs/forest.png" />
+
       </a-assets>
 
       <a-entity id="scene">
-        <a-entity environment="preset:forest;shadow:true"></a-entity>
+        <a-entity environment="preset:none;shadow:true"></a-entity>
         <a-entity light="type:ambient;intensity:0.5"></a-entity>
-        <a-mirror id="mirror" position="0 1.8 -3" scale="5 3 1" layers="0,3">
+        <a-entity gltf-model="#loby-model" position="0 0 -10" scale="2 2 2" shadow="receive: true"></a-entity>
+        <a-mirror id="mirror" position="1 1.8 -13" scale="30 15 30" layers="0,3">
           <a-box color="black" position="0 0 -0.02" scale="1.02 1.02 0.01"></a-box>
         </a-mirror>
-
-        <a-link
-          change-room="on:obbcollisionstarted;room:japan;url:japan.html"
-          link="on:ignore"
-          href="japan"
-          position="-2 1.5 3"
-          image="#thumbJapan"
-        >
-          <a-box position="0 0 0.5" obb-collider visible="false"></a-box>
-        </a-link>
 
         <a-link
           change-room="on:obbcollisionstarted;room:desa;url:desa.html"
@@ -124,6 +116,7 @@
         simple-navmesh-constraint="navmesh:.environmentGround,.environmentDressing;fall:10;height:0;exclude:.navmesh-hole;"
         movement-controls="fly:false;controls: gamepad, trackpad, keyboard, nipple;"
         spawn-in-circle="radius:1"
+        restrict-cube="minX: -10; maxX: 10; minZ: -10; maxZ: 10"
         networked="template:#avatar-template;attachTemplateToLocal:false"
         player-info
       >
@@ -131,6 +124,34 @@
           <a-box obb-collider visible="false" height="0.4" depth="0.4" width="0.4"></a-box>
         </a-entity>
       </a-entity>
+
+      <a-box position="0 0 0" width="20" height="0.1" depth="20" color="##E7B07CFF" opacity="0.2"></a-box>
+
+      <a-entity id="dialog-box" position="0 1.6 -4" dialog-auto-hide visible="true">
+        <!-- Background dialog -->
+        <a-plane width="2.5" height="1.5" color="#222" opacity="0.8"></a-plane>
+        
+        <!-- Teks dialog -->
+        <a-text 
+          id="dialog-text" 
+          value="Selamat datang di Metaverse!\n\nTugasmu: kumpulkan data obyektif. Temui petani, kepala desa, pemilik pabrik, cari fakta di perpustakaan" 
+          color="#FFF" 
+          width="2.2" 
+          align="center" 
+          position="0 0.3 0.01">
+        </a-text>
+    
+        <!-- Tombol Next -->
+        <a-plane id="next-btn"
+                class="clickable"
+                position="0 -0.5 0.01"
+                width="0.8"
+                height="0.3"
+                color="#4CAF50">
+          <a-text value="Next" color="#FFF" align="center" width="2" position="0 0 0.01"></a-text>
+        </a-plane>
+      </a-entity>
+      
     </a-scene>
 
     <script>
@@ -147,6 +168,73 @@
 
       assets.addEventListener('loaded', function () {
         loader.style.display = 'none';
+      });
+
+      AFRAME.registerComponent('restrict-cube', {
+        schema: {
+          minX: { type: 'number', default: -10 },
+          maxX: { type: 'number', default: 10 },
+          minZ: { type: 'number', default: -10 },
+          maxZ: { type: 'number', default: 10 }
+        },
+        tick: function () {
+          let pos = this.el.object3D.position;
+          if (pos.x < this.data.minX) pos.x = this.data.minX;
+          if (pos.x > this.data.maxX) pos.x = this.data.maxX;
+          if (pos.z < this.data.minZ) pos.z = this.data.minZ;
+          if (pos.z > this.data.maxZ) pos.z = this.data.maxZ;
+        }
+      });
+
+      const dialogSteps = [
+        "Selamat datang di Metaverse!\n\nTugasmu: kumpulkan data obyektif. Temui petani, kepala desa, pemilik pabrik, cari fakta di perpustakaan",
+        "Jangan langsung percaya satu cerita\nDalam studi kasus ini, kebenaran tersembunyi di banyak kepala dan dokumen",
+        "Masuk ke portal di belakangmu untuk memulai"
+      ];
+      
+      let currentStep = 0;
+
+      const dialogText = document.querySelector("#dialog-text");
+      const nextBtn = document.querySelector("#next-btn");
+      const dialogBox = document.querySelector("#dialog-box");
+
+      // Fix: Use A-Frame's event system for VR/AR and desktop
+      nextBtn.addEventListener("click", () => {
+        currentStep++;
+        if (currentStep < dialogSteps.length) {
+          dialogText.setAttribute("value", dialogSteps[currentStep]);
+        } else {
+          dialogBox.setAttribute("visible", "false");
+        }
+      });
+
+      // Also support triggerdown (VR controller)
+      nextBtn.addEventListener("triggerdown", () => {
+        currentStep++;
+        if (currentStep < dialogSteps.length) {
+          dialogText.setAttribute("value", dialogSteps[currentStep]);
+        } else {
+          dialogBox.setAttribute("visible", "false");
+        }
+      });
+
+      // Fix: Use correct player rig id
+      AFRAME.registerComponent("dialog-auto-hide", {
+        tick: function () {
+          // Try #rig, fallback to #cameraRig for compatibility
+          const player = document.querySelector("#rig") || document.querySelector("#cameraRig");
+          if (!player) return;
+          const dialog = this.el;
+          const posPlayer = player.object3D.position;
+          const posDialog = dialog.object3D.position;
+
+          const dist = posPlayer.distanceTo(posDialog);
+          if (dist > 5) { // kalau jarak > 5 meter
+            dialog.setAttribute("visible", "false");
+          } else {
+            dialog.setAttribute("visible", "true");
+          }
+        }
       });
     </script>
   </body>

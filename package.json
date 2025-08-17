@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "@tailwindcss/forms": "^0.5.2",
+    "aframe-watcher": "^1.4.0",
     "networked-aframe": "^0.14.0",
     "solid-icons": "^1.1.0",
     "solid-js": "^1.8.15",
@@ -53,6 +54,6 @@
     "typescript": "^5.3.3",
     "webpack": "^5.90.2",
     "webpack-cli": "^5.1.4",
-    "webpack-dev-server": "^4.15.2"
+    "webpack-dev-server": "^5.2.2"
   }
 }

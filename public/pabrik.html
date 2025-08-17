@@ -64,7 +64,7 @@
       </a-entity>
     </template>
     <img id="thumbDesa" crossorigin="anonymous" src="https://cdn.aframe.io/link-traversal/thumbs/forest.png" alt="Desa" />
-    <a-asset-item id="pabrik-model" src="pabrik.glb"></a-asset-item>
+    <a-asset-item id="pabrik-model" src="Untitled.glb"></a-asset-item>
   </a-assets>
 
   <a-entity id="scene">
@@ -75,14 +75,14 @@
     <a-entity light="type: hemisphere; color: #FFF; groundColor: #808080; intensity: 0.5"></a-entity>
 
     <!-- Pabrik -->
-    <a-entity gltf-model="#pabrik-model" position="0 0 -10" scale="1 1 1" shadow="receive: true"></a-entity>
+    <a-entity gltf-model="#pabrik-model" position="0 0 -10" scale="2 2 2" shadow="receive: true"></a-entity>
 
     <!-- Portal balik ke desa -->
     <a-link
       change-room="on: obbcollisionstarted; room: desa; url: desa.html"
       link="on: ignore"
       href="desa.html"
-      position="0 1.6 -5"
+      position="0 2.6 -5"
       title="Kembali ke Desa"
       image="#thumbDesa">
       <a-box position="0 0 0.5" obb-collider></a-box>
@@ -107,9 +107,10 @@
     movement-controls="fly:false; controls: gamepad, trackpad, keyboard, nipple;"
     spawn-in-circle="radius:1"
     networked="template:#avatar-template; attachTemplateToLocal:false"
+    restrict-movement="radius: 10"
     player-info
   >
-    <a-entity id="player" class="camera" camera position="0 1.6 0" look-controls>
+    <a-entity id="player" class="camera" camera position="16 1 -8" rotation="0 120 0" look-controls>
       <a-box obb-collider visible="false" height="0.4" depth="0.4" width="0.4"></a-box>
       <a-entity cursor="rayOrigin: mouse" raycaster="objects: .clickable; far: 10"></a-entity>
     </a-entity>
