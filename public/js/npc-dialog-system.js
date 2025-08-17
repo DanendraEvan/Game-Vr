@@ -1,340 +1,447 @@
-// Global state
-let gameState = {
-  currentDialog: null,
-  dialogHistory: [],
-  vrMode: false,
-  currentNPC: null
-};
-
-// Komponen utama untuk dialog NPC
+// 3D Dialog Component dengan update konten instead of recreating panel
 AFRAME.registerComponent('npc-dialog-3d', {
-  schema: {
-    npcId: { type: 'string' }
+  schema: { 
+    npcId: { type: 'string' }, 
+    distance: { type: 'number', default: 2.5 } 
   },
-
+  
   init: function () {
-    this.el.addEventListener('click', this.onNPCClick.bind(this));
-    this.dialogPanel = null;
-    this.isDialogOpen = false;
-  },
-
-  onNPCClick: function (evt) {
-    console.log('NPC clicked:', this.data.npcId);
+    this.dialogStack = []; // Stack untuk tracking menu navigasi
+    this.currentPanel = null; // Reference ke panel yang sedang aktif
     
-    // Mencegah multiple clicks
-    if (this.isDialogOpen) return;
+    this.el.addEventListener('click', (evt) => {
+      evt.stopPropagation();
+      evt.preventDefault();
+      this.dialogStack = []; // reset stack
+      this.showDialog(this.data.npcId);
+    });
     
-    this.openDialog(this.data.npcId);
+    // Add hover effects
+    this.el.addEventListener('mouseenter', this.onHover.bind(this));
+    this.el.addEventListener('mouseleave', this.onLeave.bind(this));
   },
-
-  openDialog: function (npcId) {
-    // Mapping NPC ID ke dialog key
-    const npcMapping = {
-      'koordinator': 'koordinator',
-      'petani': 'farmer',
-      'kepala desa': 'village_head',
-      'ketua tani': 'farmer_leader',
-      'aktivis pengairan': 'water_activist',
-      'pengamat petani lokal': 'agri_observer'
-    };
-
-    const dialogKey = npcMapping[npcId] || npcId;
-    const dialogData = NPC_DIALOGS[dialogKey];
-
-    if (!dialogData) {
-      console.warn('Dialog not found for NPC:', npcId);
+  
+  onHover: function () {
+    // Efek hover - ubah cursor atau highlight
+    this.el.setAttribute('animation__hover', {
+      property: 'scale',
+      to: '1.1 1.1 1.1',
+      dur: 200
+    });
+  },
+  
+  onLeave: function () {
+    // Kembalikan ke ukuran normal
+    this.el.setAttribute('animation__hover', {
+      property: 'scale',
+      to: '1 1 1',
+      dur: 200
+    });
+  },
+  
+  showDialog: function (dialogId) {
+    const scene = this.el.sceneEl;
+    const dialog = NPC_DIALOGS[dialogId];
+    if (!dialog) {
+      console.error('Dialog not found:', dialogId);
       return;
     }
 
-    gameState.currentNPC = npcId;
-    gameState.currentDialog = dialogKey;
-    
-    this.createDialogPanel(dialogData);
-    this.isDialogOpen = true;
-  },
-
-  createDialogPanel: function (dialogData) {
-    // Hapus dialog yang ada
-    if (this.dialogPanel) {
-      this.dialogPanel.parentNode.removeChild(this.dialogPanel);
+    // Jika panel belum ada, buat panel baru
+    if (!this.currentPanel || !this.currentPanel.parentNode) {
+      this.createDialogPanel();
     }
 
-    // Buat container dialog
-    this.dialogPanel = document.createElement('a-entity');
-    this.dialogPanel.setAttribute('id', 'dialog-panel');
+    // Update konten panel yang sudah ada
+    this.updateDialogContent(dialog, dialogId);
     
-    // Posisi dialog di depan player
-    const camera = document.querySelector('#player');
-    const cameraPos = camera.object3D.position;
-    const cameraRot = camera.object3D.rotation;
+    // Update game state
+    gameState.currentDialog = dialogId;
+  },
+
+  createDialogPanel: function() {
+    const scene = this.el.sceneEl;
     
-    // Kalkulasi posisi dialog
-    const dialogDistance = 3;
-    const dialogPos = {
-      x: cameraPos.x + Math.sin(cameraRot.y) * dialogDistance,
-      y: cameraPos.y,
-      z: cameraPos.z - Math.cos(cameraRot.y) * dialogDistance
-    };
+    // Hapus panel lama jika ada
+    const existing = scene.querySelector('#dialog-panel');
+    if (existing) existing.parentNode.removeChild(existing);
 
-    this.dialogPanel.setAttribute('position', `${dialogPos.x} ${dialogPos.y} ${dialogPos.z}`);
-    this.dialogPanel.setAttribute('look-at', '#player');
+    const panel = document.createElement('a-entity');
+    panel.setAttribute('id', 'dialog-panel');
+    panel.setAttribute('geometry', { primitive: 'plane', width: 4, height: 3 });
+    panel.setAttribute('material', { color: '#1a1a1a', opacity: 0.95 });
 
-    // Background panel
-    const background = document.createElement('a-plane');
-    background.setAttribute('width', '6');
-    background.setAttribute('height', '4');
-    background.setAttribute('color', '#1a1a1a');
-    background.setAttribute('opacity', '0.9');
-    background.setAttribute('material', 'shader: flat');
-    this.dialogPanel.appendChild(background);
+    // Posisi panel di depan kamera menggunakan world coordinates
+    const camera = scene.querySelector('[camera]');
+    const camPos = new THREE.Vector3();
+    camera.object3D.getWorldPosition(camPos);
+    const camDir = new THREE.Vector3();
+    camera.object3D.getWorldDirection(camDir);
 
-    // Speaker name
-    const speakerText = document.createElement('a-text');
-    speakerText.setAttribute('value', dialogData.speaker);
-    speakerText.setAttribute('position', '0 1.5 0.01');
-    speakerText.setAttribute('align', 'center');
-    speakerText.setAttribute('color', '#FFD700');
-    speakerText.setAttribute('width', '8');
-    this.dialogPanel.appendChild(speakerText);
+    const panelPos = camPos.clone().add(camDir.multiplyScalar(this.data.distance));
+    panelPos.y -= 0.3;
+    panel.setAttribute('position', `${panelPos.x} ${panelPos.y} ${panelPos.z}`);
 
-    // Dialog text
+    const lookAtPos = camPos.clone();
+    lookAtPos.y = panelPos.y;
+    panel.object3D.lookAt(lookAtPos);
+
+    // Border panel
+    const border = document.createElement('a-plane');
+    border.setAttribute('id', 'dialog-border');
+    border.setAttribute('geometry', { primitive: 'plane', width: 4.1, height: 3.1 });
+    border.setAttribute('material', { color: '#4CAF50', opacity: 0.8 });
+    border.setAttribute('position', '0 0 -0.01');
+    panel.appendChild(border);
+
+    // Header dengan nama NPC dan tag
+    const header = document.createElement('a-plane');
+    header.setAttribute('id', 'dialog-header');
+    header.setAttribute('geometry', { primitive: 'plane', width: 3.8, height: 0.4 });
+    header.setAttribute('material', { color: '#2196F3' });
+    header.setAttribute('position', '0 1.25 0.02');
+    
+    const title = document.createElement('a-text');
+    title.setAttribute('id', 'dialog-title');
+    title.setAttribute('align', 'center');
+    title.setAttribute('width', 3);
+    title.setAttribute('position', '0 0 0.02');
+    title.setAttribute('color', 'white');
+    title.setAttribute('font', 'dejavu');
+    header.appendChild(title);
+
+    // Tag dialog
+    const tag = document.createElement('a-plane');
+    tag.setAttribute('id', 'dialog-tag');
+    tag.setAttribute('geometry', { primitive: 'plane', width: 1, height: 0.2 });
+    tag.setAttribute('material', { color: '#FFD700', opacity: 0.9 });
+    tag.setAttribute('position', '1.4 1.25 0.03');
+    
+    const tagText = document.createElement('a-text');
+    tagText.setAttribute('id', 'dialog-tag-text');
+    tagText.setAttribute('align', 'center');
+    tagText.setAttribute('width', 2.5);
+    tagText.setAttribute('position', '0 0 0.02');
+    tagText.setAttribute('color', '#1a1a1a');
+    tagText.setAttribute('font', 'dejavu');
+    tag.appendChild(tagText);
+    panel.appendChild(tag);
+    
+    panel.appendChild(header);
+
+    // Dialog text area
+    const dialogArea = document.createElement('a-plane');
+    dialogArea.setAttribute('id', 'dialog-text-area');
+    dialogArea.setAttribute('geometry', { primitive: 'plane', width: 3.8, height: 1 });
+    dialogArea.setAttribute('material', { color: '#f8fafc', opacity: 0.95 });
+    dialogArea.setAttribute('position', '0 0.5 0.02');
+    
     const dialogText = document.createElement('a-text');
-    dialogText.setAttribute('value', dialogData.text);
-    dialogText.setAttribute('position', '0 0.5 0.01');
+    dialogText.setAttribute('id', 'dialog-main-text');
     dialogText.setAttribute('align', 'center');
-    dialogText.setAttribute('color', '#FFFFFF');
-    dialogText.setAttribute('width', '5');
-    dialogText.setAttribute('wrap-count', '60');
-    this.dialogPanel.appendChild(dialogText);
+    dialogText.setAttribute('color', '#1a1a1a');
+    dialogText.setAttribute('width', 3.2);
+    dialogText.setAttribute('position', '0 0 0.02');
+    dialogText.setAttribute('wrap-count', 60);
+    dialogText.setAttribute('line-height', 40);
+    dialogArea.appendChild(dialogText);
+    panel.appendChild(dialogArea);
 
-    // Choices
-    if (dialogData.choices && dialogData.choices.length > 0) {
-      dialogData.choices.forEach((choice, index) => {
-        const choiceButton = this.createChoiceButton(choice, index, dialogData.choices.length);
-        this.dialogPanel.appendChild(choiceButton);
+    // Choices container
+    const choicesContainer = document.createElement('a-entity');
+    choicesContainer.setAttribute('id', 'dialog-choices-container');
+    choicesContainer.setAttribute('position', '0 -0.3 0.02');
+    panel.appendChild(choicesContainer);
+
+    // Navigation buttons container
+    const navContainer = document.createElement('a-entity');
+    navContainer.setAttribute('id', 'dialog-nav-container');
+    navContainer.setAttribute('position', '0 -1.2 0.02');
+    panel.appendChild(navContainer);
+
+    scene.appendChild(panel);
+    this.currentPanel = panel;
+  },
+
+  updateDialogContent: function(dialog, dialogId) {
+    // Update title
+    const title = this.currentPanel.querySelector('#dialog-title');
+    title.setAttribute('value', dialog.speaker);
+
+    // Update tag
+    const tagText = this.currentPanel.querySelector('#dialog-tag-text');
+    if (dialog.tag) {
+      tagText.setAttribute('value', dialog.tag);
+      this.currentPanel.querySelector('#dialog-tag').setAttribute('visible', true);
+    } else {
+      this.currentPanel.querySelector('#dialog-tag').setAttribute('visible', false);
+    }
+
+    // Update main text
+    const mainText = this.currentPanel.querySelector('#dialog-main-text');
+    mainText.setAttribute('value', dialog.text);
+
+    // Clear and update choices
+    const choicesContainer = this.currentPanel.querySelector('#dialog-choices-container');
+    this.clearContainer(choicesContainer);
+
+    if (dialog.choices && dialog.choices.length > 0) {
+      dialog.choices.forEach((choice, index) => {
+        const choiceBtn = document.createElement('a-plane');
+        const btnHeight = 0.3;
+        const spacing = 0.35;
+        const startY = ((dialog.choices.length - 1) * spacing) / 2;
+        
+        choiceBtn.setAttribute('geometry', { primitive: 'plane', width: 3.6, height: btnHeight });
+        
+        // Tentukan warna berdasarkan jenis pilihan
+        let btnColor = '#3b82f6'; // default blue untuk submenu
+        if (choice.response) {
+          btnColor = '#10b981'; // green untuk pilihan yang ada responsenya
+        }
+        
+        choiceBtn.setAttribute('material', { color: btnColor });
+        choiceBtn.setAttribute('position', `0 ${startY - (index * spacing)} 0`);
+        choiceBtn.classList.add('clickable');
+        choiceBtn.setAttribute('animation__hover', 'property: scale; to: 1.05 1.05 1.05; startEvents: mouseenter; dur: 200');
+        choiceBtn.setAttribute('animation__leave', 'property: scale; to: 1 1 1; startEvents: mouseleave; dur: 200');
+
+        const choiceLabel = document.createElement('a-text');
+        choiceLabel.setAttribute('value', choice.text);
+        choiceLabel.setAttribute('align', 'center');
+        choiceLabel.setAttribute('color', 'white');
+        choiceLabel.setAttribute('width', 2.8);
+        choiceLabel.setAttribute('wrap-count', 50);
+        choiceLabel.setAttribute('position', '0 0 0.02');
+        choiceBtn.appendChild(choiceLabel);
+
+        const self = this;
+        choiceBtn.addEventListener('click', function (evt) {
+          evt.stopPropagation();
+          evt.preventDefault();
+          
+          if (choice.submenu) {
+            // Navigate to submenu - update stack and content
+            self.dialogStack.push(dialogId);
+            self.showDialog(choice.submenu);
+          } else if (choice.response) {
+            // Show response - update content to response mode
+            self.showResponse(choice.response);
+          }
+          
+          // Update dialog history
+          self.updateDialogHistory(dialogId, choice);
+        });
+
+        choicesContainer.appendChild(choiceBtn);
       });
     }
 
-    // Close button
-    const closeButton = this.createCloseButton();
-    this.dialogPanel.appendChild(closeButton);
-
-    // Tambahkan ke scene
-    document.querySelector('#scene').appendChild(this.dialogPanel);
+    // Update navigation buttons
+    this.updateNavigationButtons(dialogId);
   },
 
-  createChoiceButton: function (choice, index, totalChoices) {
-    const button = document.createElement('a-entity');
-    
-    // Posisi button
-    const buttonWidth = 5;
-    const buttonHeight = 0.4;
-    const spacing = 0.6;
-    const startY = -0.5 - (index * spacing);
-    
-    button.setAttribute('position', `0 ${startY} 0.02`);
-    button.setAttribute('class', 'clickable');
+  updateNavigationButtons: function(dialogId) {
+    const navContainer = this.currentPanel.querySelector('#dialog-nav-container');
+    this.clearContainer(navContainer);
 
-    // Background button
-    const buttonBg = document.createElement('a-plane');
-    buttonBg.setAttribute('width', buttonWidth);
-    buttonBg.setAttribute('height', buttonHeight);
-    buttonBg.setAttribute('color', '#333333');
-    buttonBg.setAttribute('opacity', '0.8');
-    button.appendChild(buttonBg);
+    // Back button for submenus
+    if (this.dialogStack.length > 0) {
+      const backBtn = document.createElement('a-plane');
+      backBtn.setAttribute('geometry', { primitive: 'plane', width: 1.5, height: 0.25 });
+      backBtn.setAttribute('material', { color: '#6b7280' });
+      backBtn.setAttribute('position', '-1 0 0');
+      backBtn.classList.add('clickable');
+      backBtn.setAttribute('animation__hover', 'property: scale; to: 1.05 1.05 1.05; startEvents: mouseenter; dur: 200');
+      backBtn.setAttribute('animation__leave', 'property: scale; to: 1 1 1; startEvents: mouseleave; dur: 200');
+      
+      const backLabel = document.createElement('a-text');
+      backLabel.setAttribute('value', '← Kembali');
+      backLabel.setAttribute('align', 'center');
+      backLabel.setAttribute('color', 'white');
+      backLabel.setAttribute('width', 2.5);
+      backLabel.setAttribute('position', '0 0 0.02');
+      backBtn.appendChild(backLabel);
 
-    // Button text
-    const buttonText = document.createElement('a-text');
-    buttonText.setAttribute('value', choice.text);
-    buttonText.setAttribute('position', '0 0 0.01');
-    buttonText.setAttribute('align', 'center');
-    buttonText.setAttribute('color', '#FFFFFF');
-    buttonText.setAttribute('width', '4');
-    buttonText.setAttribute('wrap-count', '40');
-    button.appendChild(buttonText);
-
-    // Click handler
-    button.addEventListener('click', () => {
-      this.handleChoiceClick(choice);
-    });
-
-    // Hover effect
-    button.addEventListener('mouseenter', () => {
-      buttonBg.setAttribute('color', '#555555');
-    });
-
-    button.addEventListener('mouseleave', () => {
-      buttonBg.setAttribute('color', '#333333');
-    });
-
-    return button;
-  },
-
-  createCloseButton: function () {
-    const closeButton = document.createElement('a-entity');
-    closeButton.setAttribute('position', '2.5 1.5 0.02');
-    closeButton.setAttribute('class', 'clickable');
-
-    const closeBg = document.createElement('a-plane');
-    closeBg.setAttribute('width', '0.8');
-    closeBg.setAttribute('height', '0.4');
-    closeBg.setAttribute('color', '#CC0000');
-    closeBg.setAttribute('opacity', '0.8');
-    closeButton.appendChild(closeBg);
-
-    const closeText = document.createElement('a-text');
-    closeText.setAttribute('value', 'X');
-    closeText.setAttribute('position', '0 0 0.01');
-    closeText.setAttribute('align', 'center');
-    closeText.setAttribute('color', '#FFFFFF');
-    closeText.setAttribute('width', '6');
-    closeButton.appendChild(closeText);
-
-    closeButton.addEventListener('click', () => {
-      this.closeDialog();
-    });
-
-    return closeButton;
-  },
-
-  handleChoiceClick: function (choice) {
-    console.log('Choice clicked:', choice);
-
-    // Jika ada submenu, buka dialog baru
-    if (choice.submenu) {
-      const newDialogData = NPC_DIALOGS[choice.submenu];
-      if (newDialogData) {
-        // Simpan ke history
-        gameState.dialogHistory.push(gameState.currentDialog);
-        gameState.currentDialog = choice.submenu;
-        
-        // Buat dialog baru
-        this.createDialogPanel(newDialogData);
-      }
-    } 
-    // Jika ada response langsung
-    else if (choice.response) {
-      // Tampilkan response
-      this.showResponse(choice.response, choice.text);
-    }
-  },
-
-  showResponse: function (response, choiceText) {
-    // Hapus dialog yang ada
-    if (this.dialogPanel) {
-      this.dialogPanel.parentNode.removeChild(this.dialogPanel);
-    }
-
-    // Buat response panel
-    this.dialogPanel = document.createElement('a-entity');
-    this.dialogPanel.setAttribute('id', 'response-panel');
-    
-    // Posisi yang sama dengan dialog sebelumnya
-    const camera = document.querySelector('#player');
-    const cameraPos = camera.object3D.position;
-    const cameraRot = camera.object3D.rotation;
-    
-    const dialogDistance = 3;
-    const dialogPos = {
-      x: cameraPos.x + Math.sin(cameraRot.y) * dialogDistance,
-      y: cameraPos.y,
-      z: cameraPos.z - Math.cos(cameraRot.y) * dialogDistance
-    };
-
-    this.dialogPanel.setAttribute('position', `${dialogPos.x} ${dialogPos.y} ${dialogPos.z}`);
-    this.dialogPanel.setAttribute('look-at', '#player');
-
-    // Background
-    const background = document.createElement('a-plane');
-    background.setAttribute('width', '6');
-    background.setAttribute('height', '4');
-    background.setAttribute('color', '#1a1a1a');
-    background.setAttribute('opacity', '0.9');
-    this.dialogPanel.appendChild(background);
-
-    // Choice text (what player said)
-    const choiceDisplay = document.createElement('a-text');
-    choiceDisplay.setAttribute('value', `Anda: "${choiceText}"`);
-    choiceDisplay.setAttribute('position', '0 1.5 0.01');
-    choiceDisplay.setAttribute('align', 'center');
-    choiceDisplay.setAttribute('color', '#87CEEB');
-    choiceDisplay.setAttribute('width', '5');
-    choiceDisplay.setAttribute('wrap-count', '50');
-    this.dialogPanel.appendChild(choiceDisplay);
-
-    // Response text
-    const responseText = document.createElement('a-text');
-    responseText.setAttribute('value', response);
-    responseText.setAttribute('position', '0 0 0.01');
-    responseText.setAttribute('align', 'center');
-    responseText.setAttribute('color', '#FFFFFF');
-    responseText.setAttribute('width', '5');
-    responseText.setAttribute('wrap-count', '60');
-    this.dialogPanel.appendChild(responseText);
-
-    // Back button
-    const backButton = this.createBackButton();
-    this.dialogPanel.appendChild(backButton);
-
-    // Close button
-    const closeButton = this.createCloseButton();
-    this.dialogPanel.appendChild(closeButton);
-
-    document.querySelector('#scene').appendChild(this.dialogPanel);
-  },
-
-  createBackButton: function () {
-    const backButton = document.createElement('a-entity');
-    backButton.setAttribute('position', '0 -1.5 0.02');
-    backButton.setAttribute('class', 'clickable');
-
-    const backBg = document.createElement('a-plane');
-    backBg.setAttribute('width', '2');
-    backBg.setAttribute('height', '0.5');
-    backBg.setAttribute('color', '#4A90E2');
-    backBg.setAttribute('opacity', '0.8');
-    backButton.appendChild(backBg);
-
-    const backText = document.createElement('a-text');
-    backText.setAttribute('value', 'Kembali');
-    backText.setAttribute('position', '0 0 0.01');
-    backText.setAttribute('align', 'center');
-    backText.setAttribute('color', '#FFFFFF');
-    backText.setAttribute('width', '6');
-    backButton.appendChild(backText);
-
-    backButton.addEventListener('click', () => {
-      // Kembali ke dialog sebelumnya atau dialog utama NPC
-      if (gameState.dialogHistory.length > 0) {
-        const previousDialog = gameState.dialogHistory.pop();
-        const dialogData = NPC_DIALOGS[previousDialog];
-        if (dialogData) {
-          gameState.currentDialog = previousDialog;
-          this.createDialogPanel(dialogData);
+      const self = this;
+      backBtn.addEventListener('click', function (evt) {
+        evt.stopPropagation();
+        evt.preventDefault();
+        const previousDialog = self.dialogStack.pop();
+        if (previousDialog) {
+          self.showDialog(previousDialog);
         }
-      } else {
-        // Kembali ke dialog utama NPC
-        this.openDialog(gameState.currentNPC);
-      }
+      });
+
+      navContainer.appendChild(backBtn);
+    }
+
+    // Close button
+    const closeBtn = document.createElement('a-plane');
+    closeBtn.setAttribute('geometry', { primitive: 'plane', width: 1, height: 0.25 });
+    closeBtn.setAttribute('material', { color: '#f44336' });
+    closeBtn.setAttribute('position', '1 0 0');
+    closeBtn.classList.add('clickable');
+    closeBtn.setAttribute('animation__hover', 'property: scale; to: 1.05 1.05 1.05; startEvents: mouseenter; dur: 200');
+    closeBtn.setAttribute('animation__leave', 'property: scale; to: 1 1 1; startEvents: mouseleave; dur: 200');
+    
+    const closeLabel = document.createElement('a-text');
+    closeLabel.setAttribute('value', '✕ Tutup');
+    closeLabel.setAttribute('align', 'center');
+    closeLabel.setAttribute('color', 'white');
+    closeLabel.setAttribute('width', 2);
+    closeLabel.setAttribute('position', '0 0 0.02');
+    closeBtn.appendChild(closeLabel);
+    
+    const self = this;
+    closeBtn.addEventListener('click', function (evt) {
+      evt.stopPropagation();
+      evt.preventDefault();
+      self.closeDialog();
     });
 
-    return backButton;
+    navContainer.appendChild(closeBtn);
   },
 
-  closeDialog: function () {
-    if (this.dialogPanel) {
-      this.dialogPanel.parentNode.removeChild(this.dialogPanel);
-      this.dialogPanel = null;
-    }
+  showResponse: function(responseText) {
+    // Update panel to response mode instead of creating new panel
+    const mainText = this.currentPanel.querySelector('#dialog-main-text');
+    mainText.setAttribute('value', responseText);
+
+    // Hide choices and show back to dialog button
+    const choicesContainer = this.currentPanel.querySelector('#dialog-choices-container');
+    this.clearContainer(choicesContainer);
+
+    // Update navigation for response mode
+    const navContainer = this.currentPanel.querySelector('#dialog-nav-container');
+    this.clearContainer(navContainer);
+
+    // Back to dialog button
+    const backBtn = document.createElement('a-plane');
+    backBtn.setAttribute('geometry', { primitive: 'plane', width: 2, height: 0.3 });
+    backBtn.setAttribute('material', { color: '#1976D2' });
+    backBtn.setAttribute('position', '0 0 0');
+    backBtn.classList.add('clickable');
+    backBtn.setAttribute('animation__hover', 'property: scale; to: 1.05 1.05 1.05; startEvents: mouseenter; dur: 200');
+    backBtn.setAttribute('animation__leave', 'property: scale; to: 1 1 1; startEvents: mouseleave; dur: 200');
     
-    this.isDialogOpen = false;
+    const backLabel = document.createElement('a-text');
+    backLabel.setAttribute('value', '← Kembali ke Dialog');
+    backLabel.setAttribute('align', 'center');
+    backLabel.setAttribute('color', 'white');
+    backLabel.setAttribute('width', 2.5);
+    backLabel.setAttribute('position', '0 0 0.02');
+    backBtn.appendChild(backLabel);
+
+    const self = this;
+    backBtn.addEventListener('click', function (evt) {
+      evt.stopPropagation();
+      evt.preventDefault();
+      // Go back to previous dialog or main menu
+      const previousDialog = self.dialogStack.length > 0 ? self.dialogStack[self.dialogStack.length - 1] : self.data.npcId;
+      self.showDialog(previousDialog);
+    });
+
+    navContainer.appendChild(backBtn);
+
+    // Auto return to dialog after 8 seconds
+    setTimeout(() => {
+      if (self.currentPanel && self.currentPanel.parentNode) {
+        const previousDialog = self.dialogStack.length > 0 ? self.dialogStack[self.dialogStack.length - 1] : self.data.npcId;
+        self.showDialog(previousDialog);
+      }
+    }, 8000);
+  },
+
+  updateDialogHistory: function(npcId, choice) {
+    // Update dialog history
+    if (!gameState.dialogHistory) {
+      gameState.dialogHistory = {};
+    }
+    if (!gameState.dialogHistory[npcId]) {
+      gameState.dialogHistory[npcId] = [];
+    }
+    gameState.dialogHistory[npcId].push({
+      choice: choice.text,
+      timestamp: Date.now(),
+      submenu: choice.submenu || null,
+      response: choice.response || null
+    });
+  },
+
+  closeDialog: function() {
+    if (this.currentPanel && this.currentPanel.parentNode) {
+      this.currentPanel.parentNode.removeChild(this.currentPanel);
+      this.currentPanel = null;
+    }
     gameState.currentDialog = null;
-    gameState.currentNPC = null;
-    gameState.dialogHistory = [];
+    this.dialogStack = [];
+  },
+
+  clearContainer: function(container) {
+    while (container.firstChild) {
+      container.removeChild(container.firstChild);
+    }
   }
 });
 
-// Inisialisasi saat DOM ready
-document.addEventListener('DOMContentLoaded', function() {
-  console.log('NPC Dialog System loaded');
+// Komponen untuk dialog mapping (auto-fix ID mismatch)
+AFRAME.registerComponent('dialog-mapper', {
+  init: function () {
+    // Mapping antara ID di HTML dengan ID di NPC_DIALOGS
+    const dialogMapping = {
+      'koordinator': 'koordinator',
+      'pengamat petani lokal': 'agri_observer',
+      'anak petani': 'farmer', // atau buat dialog khusus untuk anak petani
+      'petani': 'farmer',
+      'aktivis pengairan': 'water_activist',
+      'ketua tani': 'farmer_leader',
+      'kepala desa': 'village_head',
+      'pemilik pabrik': 'factory_owner'
+
+    };
+    
+    // Update semua NPC dengan dialog mapping yang benar
+    Object.keys(dialogMapping).forEach(npcId => {
+      const npcElement = document.getElementById(npcId);
+      if (npcElement) {
+        const dialogComponent = npcElement.getAttribute('npc-dialog-3d');
+        if (dialogComponent) {
+          // Update npcId di komponen dialog
+          npcElement.setAttribute('npc-dialog-3d', {
+            npcId: dialogMapping[npcId],
+            distance: dialogComponent.distance || 2.5
+          });
+          console.log(`Updated NPC ${npcId} to use dialog ${dialogMapping[npcId]}`);
+        }
+      }
+    });
+  }
 });
+
+// Auto-initialize dialog mapper dan hide info dialog
+document.addEventListener('DOMContentLoaded', function() {
+  // Wait for A-Frame to load
+  setTimeout(() => {
+    const scene = document.querySelector('a-scene');
+    if (scene) {
+      scene.setAttribute('dialog-mapper', '');
+    }
+    
+    // Hide info dialog after 5 seconds
+    const infoDialog = document.getElementById('info-dialog');
+    if (infoDialog) {
+      setTimeout(() => {
+        infoDialog.setAttribute('visible', false);
+      }, 5000);
+    }
+  }, 1000);
+});
+
+// Global function untuk testing dialog dari console
+window.testDialog = function(npcId) {
+  const npc = document.getElementById('koordinator'); // use any NPC as test
+  if (npc && npc.components['npc-dialog-3d']) {
+    npc.components['npc-dialog-3d'].showDialog(npcId);
+  }
+};
