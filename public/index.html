@@ -230,9 +230,7 @@
 
           const dist = posPlayer.distanceTo(posDialog);
           if (dist > 5) { // kalau jarak > 5 meter
-            dialog.setAttribute("visible", "false");
-          } else {
-            dialog.setAttribute("visible", "true");
+            dialog.parentNode.removeChild(dialog);
           }
         }
       });
