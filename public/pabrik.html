@@ -45,7 +45,7 @@
 <div id="hud">Koordinat: X: 0.00 Y: 0.00 Z: 0.00</div>
 
 <a-scene
-  networked-scene="connectOnLoad: false; room: pabrik; debug: true; adapter: wseasyrtc;"
+  networked-scene="connectOnLoad: false; room: desa; debug: true; adapter: wseasyrtc;"
   shadow="type: pcfsoft"
   gltf-model="meshoptDecoderPath:https://unpkg.com/meshoptimizer@0.19.0/meshopt_decoder.js"
   raycaster="far: 10; objects: .clickable"
@@ -54,7 +54,7 @@
   hud-coords
 >
 
-  <a-assets>
+  <a-assets timeout="30000">
     <template id="avatar-template">
       <a-entity player-info>
         <a-entity class="model">
@@ -64,7 +64,7 @@
       </a-entity>
     </template>
     <img id="thumbDesa" crossorigin="anonymous" src="https://cdn.aframe.io/link-traversal/thumbs/forest.png" alt="Desa" />
-    <a-asset-item id="pabrik-model" src="pabrik.glb"></a-asset-item>
+    <a-asset-item id="pabrik-model" src="pabrik.glb" preload="auto"></a-asset-item>
   </a-assets>
 
   <a-entity id="scene">
@@ -75,18 +75,21 @@
     <a-entity light="type: hemisphere; color: #FFF; groundColor: #808080; intensity: 0.5"></a-entity>
 
     <!-- Pabrik -->
-    <a-entity gltf-model="#pabrik-model" position="0 0 -10" scale="1 1 1" shadow="receive: true"></a-entity>
+    <a-entity gltf-model="#pabrik-model" position="0 0 0" scale="1 1 1" shadow="receive: true"></a-entity>
 
     <!-- Portal balik ke desa -->
+
     <a-link
-      change-room="on: obbcollisionstarted; room: desa; url: desa.html"
-      link="on: ignore"
-      href="desa.html"
-      position="0 1.6 -5"
-      title="Kembali ke Desa"
-      image="#thumbDesa">
-      <a-box position="0 0 0.5" obb-collider></a-box>
-    </a-link>
+    change-room="on:obbcollisionstarted;room:desa;url:desa.html"
+    link="on:ignore"
+    href="desa.html"
+    position="25 -11 20"
+    title="Desa Harmoni"
+    image="#thumbForest"
+  >
+    <a-box  position="25 -11 20" obb-collider scale="2 2 2" visible="false"></a-box>
+  </a-link>
+  
 
     <!-- Info text -->
     <a-entity id="info-dialog-onload" position="0 4 -8">
@@ -103,7 +106,7 @@
   <!-- Rig (player) -->
   <a-entity
     id="rig"
-    position="0 1.6 0"
+    position="39 -12 18"
     movement-controls="fly:false; controls: gamepad, trackpad, keyboard, nipple;"
     spawn-in-circle="radius:1"
     networked="template:#avatar-template; attachTemplateToLocal:false"
