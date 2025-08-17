@@ -39,6 +39,9 @@
       white-space: pre-line;
     }
   </style>
+  <!-- Dialog System Scripts -->
+<script src="js/dialogs.js"></script>
+<script src="js/npc-dialog-system.js"></script>
 </head>
 <body>
 
@@ -113,8 +116,8 @@
       </a-entity>
 
       <!-- NPC Pengamat pertanian lokal -->
-      <a-entity id="petani" class="clickable" gltf-model="models/wise_man_33.glb" position="106.05687 0.92343 -99.6098"
-        npc-dialog-3d="npcId: petani" rotation="0 -3.465248744951219 0">
+      <a-entity id="pengamat petani lokal" class="clickable" gltf-model="models/wise_man_33.glb" position="106.05687 0.92343 -99.6098"
+        npc-dialog-3d="npcId: pengamat petani lokal" rotation="0 -3.465248744951219 0">
         <a-cylinder radius="1.2" height="0.45" material="opacity: 0; transparent: true"
           position="3.97959 0.5 -1.44845"></a-cylinder>
         <a-text position="0 2.3318666765371967 0" value="Pengamat Pertanian Lokal\nPak " align="center" color="#2F4F4F"
@@ -124,8 +127,8 @@
       </a-entity>
 
       <!-- NPC Anak Petani -->
-      <a-entity id="petani" class="clickable" gltf-model="models/wise_man_33.glb"
-        position="100.98863 0.75294 -121.26036" npc-dialog-3d="npcId: petani" rotation="0 -3.465248744951219 0">
+      <a-entity id="anak petani" class="clickable" gltf-model="models/wise_man_33.glb"
+        position="100.98863 0.75294 -121.26036" npc-dialog-3d="npcId: anak petani" rotation="0 -3.465248744951219 0">
         <a-cylinder radius="1.2" height="0.45" material="opacity: 0; transparent: true"
           position="3.97959 0.5 -1.44845"></a-cylinder>
         <a-text position="0 2.3366252987076477 0" value="Anak Petani\nDek Evan" align="center" color="#2F4F4F"
@@ -146,8 +149,8 @@
       </a-entity>
 
       <!-- NPC Aktivis pengairan -->
-      <a-entity id="petani" class="clickable" gltf-model="models/wise_man_33.glb"
-        position="207.97888 0.75294 -113.09263" npc-dialog-3d="npcId: petani" rotation="0 -3.465248744951219 0">
+      <a-entity id="aktivis pengairan" class="clickable" gltf-model="models/wise_man_33.glb"
+        position="207.97888 0.75294 -113.09263" npc-dialog-3d="npcId: aktivis pengairan" rotation="0 -3.465248744951219 0">
         <a-cylinder radius="1.2" height="0.45" material="opacity: 0; transparent: true"
           position="3.97959 0.5 -1.44845"></a-cylinder>
         <a-text position="0 2.3723199291130173 0" value="Aktivis Pengairan\nPak Air" align="center" color="#2F4F4F"
@@ -158,7 +161,7 @@
 
       <!-- NPC Ketua Tani -->
       <a-entity id="ketua tani" class="clickable" gltf-model="models/wise_man_33.glb"
-        position="230.97818 0.64825 -105.50623" npc-dialog-3d="npcId: petani" rotation="0 -3.465248744951219 0">
+        position="230.97818 0.64825 -105.50623" npc-dialog-3d="npcId: ketua tani" rotation="0 -3.465248744951219 0">
         <a-cylinder radius="1.2" height="0.45" material="opacity: 0; transparent: true"
           position="3.97959 0.5 -1.44845"></a-cylinder>
         <a-text position="0 2.3748271503345766 0" value="Ketua Tani\nPak Tani" align="center" color="#2F4F4F"
@@ -169,7 +172,7 @@
 
       <!-- NPC Kepala Desa -->
       <a-entity id="kepala desa" class="clickable" gltf-model="models/wise_man_33.glb"
-        position="11.00104 1.69333 -107.69743" npc-dialog-3d="npcId: petani" rotation="0 -3.465248744951219 0">
+        position="11.00104 1.69333 -107.69743" npc-dialog-3d="npcId: kepala desa" rotation="0 -3.465248744951219 0">
         <a-cylinder radius="1.2" height="0.45" material="opacity: 0; transparent: true"
           position="3.97959 0.5 -1.44845"></a-cylinder>
         <a-text position="0 2.375209618505944 0" value="Kepala Desa\nPak Rahmat" align="center" color="#2F4F4F"
