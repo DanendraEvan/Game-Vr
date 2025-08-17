@@ -76,13 +76,13 @@
     <a-entity light="type: hemisphere; color: #FFF; groundColor: #808080; intensity: 0.5"></a-entity>
 
     <!-- Desa -->
-    <a-entity gltf-model="#village-model" position="0 0 -10" scale="0.7 0.7 0.7" shadow="receive: true"></a-entity>
+    <a-entity gltf-model="#rapat-model" position="0 0 -10" scale="0.7 0.7 0.7" shadow="receive: true"></a-entity>
 
     <!-- Portal ke rapat -->
     <a-link
-      change-room="on: obbcollisionstarted; room: rapat; url: rapat.html"
+      change-room="on: obbcollisionstarted; room: rapat; url: desa.html"
       link="on: ignore"
-      href="rapat.html"
+      href="desa.html"
       position="0 1.6 -5"
       title="Menuju Ruang Rapat"
       image="#thumbRapat">
