@@ -5,7 +5,6 @@
     <title>Realistic avatars — Networked-Aframe</title>
     <meta name="description" content="Realistic avatars — Networked-Aframe" />
 
-    <script src="https://aframe.io/releases/1.7.0/aframe.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.8.1/socket.io.min.js"></script>
     <script src="/easyrtc/easyrtc.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/networked-aframe@0.14.0/dist/networked-aframe.min.js"></script>
@@ -16,6 +15,9 @@
     <script src="https://cdn.jsdelivr.net/npm/aframe-blink-controls@0.4.3/dist/aframe-blink-controls.min.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/AdaRoseCannon/aframe-xr-boilerplate@bca4792/simple-navmesh-constraint.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-gltf-model-plus@1.0.0/dist/gltf-model-plus.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-obb-collider@1.0.0/dist/aframe-obb-collider.min.js"></script>
+    <script src="https://aframe.io/releases/1.7.1/aframe.min.js"></script>
+
     <script>
       window.uiSettings = {
         showRandomAvatarButton: true,
@@ -133,6 +135,7 @@
       </a-entity>
     </a-scene>
 
+    <div id="hud">Koordinat: X: 0.00 Y: 0.00 Z: 0.00</div>
     <script>
       const loader = document.getElementById('loader');
       const progressbar = document.getElementById('progressbar');
@@ -148,6 +151,13 @@
       assets.addEventListener('loaded', function () {
         loader.style.display = 'none';
       });
+      const player = document.querySelector('#player');
+const hud = document.getElementById('hud');
+setInterval(() => {
+  const pos = player.object3D.position;
+  hud.textContent = `Koordinat: X: ${pos.x.toFixed(2)} Y: ${pos.y.toFixed(2)} Z: ${pos.z.toFixed(2)}`;
+}, 200);
+
     </script>
   </body>
 </html>
