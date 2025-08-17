@@ -79,303 +79,388 @@ const NPC_DIALOGS = {
   
   // DIALOG PETANI
   "farmer": {
-    "speaker": "Pak Seno - Petani Senior",
-    "text": "Selamat datang di desa kami, Pak. Saya sudah bertani di sini 20 tahun. Belakangan ini ada banyak perubahan yang membuat kami petani khawatir. Kondisi memang tidak seperti dulu lagi.",
-    "tag": "Testimoni",
+    "speaker": "Petani (Pak Seno)",
+    "text": "Apa yang ingin Anda ketahui tentang kondisi kami sebagai petani?",
+    "tag": "Opening",
     "choices": [
       {
-        "text": "🌾 Kondisi Lahan & Hasil Panen", 
-        "submenu": "farmer_kondisi"
+        "text": "Bagaimana Bapak menggambarkan kondisi lahan dan hasil panen dalam dua tahun terakhir?",
+        "submenu": "farmer_harvest"
       },
       {
-        "text": "🏭 Dampak Keberadaan Pabrik", 
-        "submenu": "farmer_pabrik"
+        "text": "Apa perubahan utama yang terjadi sejak pabrik berdiri di pinggir desa?",
+        "submenu": "farmer_changes"
       },
       {
-        "text": "👨‍👧 Generasi Muda & Masa Depan",
-        "submenu": "farmer_generasi"
+        "text": "Siapa menurut Bapak yang seharusnya bertanggung jawab jika hasil panen menurun?",
+        "submenu": "farmer_responsibility"
       },
       {
-        "text": "🤝 Solusi & Harapan", 
-        "submenu": "farmer_solusi"
+        "text": "Jika masalah air terus terjadi, apa dampak yang Bapak khawatirkan?",
+        "submenu": "farmer_concerns"
+      },
+      {
+        "text": "Apa saran Bapak untuk menyelesaikan konflik petani dan pabrik?",
+        "submenu": "farmer_solution"
+      },
+      {
+        "text": "Setelah mendengar sisi pabrik dan pemerintah desa, adakah pandangan Bapak yang berubah?",
+        "submenu": "farmer_reflection"
+      },
+      {
+        "text": "Apa alasan anak Bapak sekarang memilih bekerja di pabrik?",
+        "submenu": "farmer_children"
       }
     ]
   },
-  "farmer_kondisi": {
-    "speaker": "Pak Seno - Kondisi Lahan",
-    "text": "Tentang kondisi lahan dan hasil panen dua tahun terakhir ini...",
+  "farmer_harvest": {
+    "speaker": "Petani (Pak Seno)",
+    "text": "Tentang kondisi lahan dan hasil panen...",
+    "tag": "Interpretasi",
+    "choices": [
+      {
+        "text": "[Observasi Terdata]",
+        "response": "Dua tahun terakhir, daun padi banyak yang menguning. Hasil panen menurun sampai 30%, padahal sebelumnya selalu cukup untuk kebutuhan keluarga. Saya catat perubahan itu mulai setelah pabrik berdiri."
+      },
+      {
+        "text": "[Penerimaan Pasif]",
+        "response": "Panennya nggak begitu bagus, ya sudah namanya nasib petani kadang untung kadang rugi."
+      }
+    ]
+  },
+  "farmer_changes": {
+    "speaker": "Petani (Pak Seno)",
+    "text": "Tentang perubahan sejak pabrik berdiri...",
     "tag": "Analisis",
     "choices": [
       {
-        "text": "Data Spesifik - Penurunan 30%", 
-        "response": "Dua tahun terakhir, daun padi banyak yang menguning tidak wajar. Hasil panen menurun drastis sampai 30%, padahal sebelumnya selalu cukup untuk kebutuhan keluarga. Saya catat perubahan itu mulai setelah pabrik berdiri tahun 2022."
+        "text": "[Analisis Komparatif]",
+        "response": "Yang jelas, air irigasi makin keruh, baunya menyengat. Saya bandingkan dengan sawah Pak Harjo di ujung desa, wilayahnya yang airnya bersih hasilnya lebih baik. Ada perubahan yang bukan cuma karena musim."
       },
       {
-        "text": "Perbandingan Wilayah", 
-        "response": "Air irigasi makin keruh, baunya menyengat. Sawah Pak Harjo di ujung desa yang airnya masih bersih hasilnya jauh lebih baik. Polanya jelas - dekat pabrik rusak, yang jauh tetap normal."
-      },
-      {
-        "text": "Perspektif Nasib Petani", 
-        "response": "Ya panennya memang nggak begitu bagus, tapi ya sudah namanya nasib petani kadang untung kadang rugi. Musim juga tidak menentu akhir-akhir ini."
+        "text": "[Pengamatan Umum]",
+        "response": "Setelah ada pabrik, ya memang banyak yang berubah, tapi saya kurang tahu sebab pastinya."
       }
     ]
   },
-  "farmer_pabrik": {
-    "speaker": "Pak Seno - Dampak Pabrik",
-    "text": "Tentang perubahan sejak pabrik beroperasi...",
-    "tag": "Observasi",
+  "farmer_responsibility": {
+    "speaker": "Petani (Pak Seno)",
+    "text": "Tentang tanggung jawab atas penurunan hasil panen...",
+    "tag": "Evaluasi",
     "choices": [
       {
-        "text": "Bukti Kualitas Air", 
-        "response": "Air irigasi berubah total - keruh, bau kimia, ikan-ikan mati. Timing-nya pas setelah pabrik mulai produksi massal. Ini bukan kebetulan musiman."
+        "text": "[Pendekatan Objektif]",
+        "response": "Menurut saya, pemerintah desa dan pengelola pabrik harus duduk bersama dengan petani; evaluasi air dan lahan secara ilmiah, bukan asal tuduh."
       },
       {
-        "text": "Dampak Ekonomi Jangka Panjang", 
-        "response": "Kalau ini berlanjut, banyak petani bangkrut. Lahan menganggur, pemuda enggan bertani, ekonomi desa bisa lumpuh. Sudah mulai terlihat sekarang."
-      },
-      {
-        "text": "Ketidakpastian Penyebab", 
-        "response": "Setelah ada pabrik, memang banyak berubah. Tapi saya kurang tahu pasti sebab-akibatnya. Mungkin ada faktor lain juga."
+        "text": "[Sikap Pasif]",
+        "response": "Ya siapa aja yang penting masalah ini cepat selesai, saya ikut saja kata kepala desa."
       }
     ]
   },
-  "farmer_generasi": {
-    "speaker": "Pak Seno - Generasi Muda",
-    "text": "Tentang anak saya dan pemuda desa...",
-    "tag": "Transformasi",
+  "farmer_concerns": {
+    "speaker": "Petani (Pak Seno)",
+    "text": "Tentang dampak jika masalah air terus berlanjut...",
+    "tag": "Inferensi",
     "choices": [
       {
-        "text": "Alasan Beralih ke Pabrik", 
-        "response": "Anak saya bilang, di pabrik jam kerjanya jelas, gaji tetap tiap bulan plus asuransi. Bertani tidak menentu - musim gagal bisa rugi besar. Generasi sekarang butuh kepastian."
+        "text": "[Proyeksi Sistemik]",
+        "response": "Kalau ini berlanjut, banyak petani bisa bangkrut, lahan menganggur, orang muda makin enggan bertani, ekonomi desa bisa lumpuh."
       },
       {
-        "text": "Masa Depan Pertanian Desa", 
-        "response": "Kalau anak muda semua kerja di pabrik atau kota, siapa yang akan melanjutkan pertanian? Sistem bagi hasil pun sudah tidak menarik bagi mereka."
-      },
-      {
-        "text": "Pilihan Pragmatis", 
-        "response": "Katanya sih cuma bosan bertani, pengen coba suasana baru. Tapi saya tahu dasarnya karena penghasilan di pabrik lebih stabil."
+        "text": "[Kekhawatiran Sederhana]",
+        "response": "Kalau begini terus ya repot juga, mungkin panen makin jelek."
       }
     ]
   },
-  "farmer_solusi": {
-    "speaker": "Pak Seno - Solusi",
-    "text": "Tentang harapan penyelesaian masalah...",
-    "tag": "Solusi",
+  "farmer_solution": {
+    "speaker": "Petani (Pak Seno)",
+    "text": "Tentang saran penyelesaian konflik...",
+    "tag": "Penjelasan",
     "choices": [
       {
-        "text": "Audit Ilmiah Independen", 
-        "response": "Sebaiknya ada tim netral yang tes air dan tanah, hasilnya diumumkan terbuka. Kalau terbukti pabrik salah, harus diperbaiki. Kalau tidak, kami juga harus menerima."
+        "text": "[Solusi Berbasis Bukti]",
+        "response": "Sebaiknya ada tim netral yang benar-benar tes air dan tanah, hasilnya diumumkan terbuka. Kalau terbukti pabrik salah, harus diperbaiki. Kalau tidak, kita juga harus terima."
       },
       {
-        "text": "Pendekatan Kolaboratif", 
-        "response": "Pemerintah desa, pengelola pabrik, dan petani harus duduk bersama. Evaluasi secara ilmiah, bukan asal tuduh. Semua pihak perlu terbuka."
+        "text": "[Harapan Instan]",
+        "response": "Sebaiknya pemerintah cepat ambil keputusan supaya tidak gaduh."
+      }
+    ]
+  },
+  "farmer_reflection": {
+    "speaker": "Petani (Pak Seno)",
+    "text": "Tentang perubahan pandangan setelah mendengar berbagai pihak...",
+    "tag": "Self-Regulation",
+    "choices": [
+      {
+        "text": "[Refleksi Kritis]",
+        "response": "Awalnya saya yakin pasti pabrik penyebab semua. Tapi setelah dengar dokumen dan argumen mereka, saya sadar harus ada bukti kuat sebelum menyalahkan."
       },
       {
-        "text": "Evolusi Pandangan", 
-        "response": "Awalnya saya yakin pabrik penyebab semua. Tapi setelah dengar argumen mereka, saya sadar perlu bukti kuat sebelum menyalahkan. Pemerintah harus cepat ambil keputusan."
+        "text": "[Sikap Rigid]",
+        "response": "Saya tetap sama saja, pikiran saya nggak berubah."
+      }
+    ]
+  },
+  "farmer_children": {
+    "speaker": "Petani (Pak Seno)",
+    "text": "Tentang pilihan anak bekerja di pabrik...",
+    "tag": "Interpretasi",
+    "choices": [
+      {
+        "text": "[Analisis Rasional]",
+        "response": "Anak saya bilang, di pabrik jam kerjanya jelas, gaji tetap tiap bulan, bahkan dapat asuransi dan pelatihan. Bertani tidak menentu, musim gagal bisa rugi."
+      },
+      {
+        "text": "[Penjelasan Sederhana]",
+        "response": "Katanya bosan bertani, pengen coba suasana baru."
       }
     ]
   }, 
 
   //DIALOG PEMILIK PABRIK
   "factory_owner": {
-    "speaker": "Bu Anita - Pemilik Pabrik",
-    "text": "Selamat datang di pabrik kami. Kami berkomitmen menjalankan bisnis yang bertanggung jawab. Ada beberapa hal yang mungkin perlu diluruskan tentang operasional kami.",
-    "tag": "Pembuka",
+    "speaker": "Pemilik Pabrik (Bu Anita)",
+    "text": "Apa yang ingin Anda ketahui tentang operasional pabrik kami?",
+    "tag": "Opening",
     "choices": [
       {
-        "text": "♻️ Sistem Pengolahan Limbah", 
-        "submenu": "factory_limbah"
+        "text": "Bisa Ibu jelaskan proses pengolahan limbah di pabrik?",
+        "submenu": "owner_waste"
       },
       {
-        "text": "🤝 Hubungan dengan Petani", 
-        "submenu": "factory_relasi"
+        "text": "Apa faktor utama yang memengaruhi hubungan pabrik dan petani?",
+        "submenu": "owner_relations"
       },
       {
-        "text": "📊 Program CSR & Dampak", 
-        "submenu": "factory_csr"
+        "text": "Bagaimana Ibu menilai efektivitas CSR pabrik?",
+        "submenu": "owner_csr"
       },
       {
-        "text": "🔄 Evaluasi Kebijakan", 
-        "submenu": "factory_kebijakan"
+        "text": "Jika aktivitas pabrik dibatasi, apa dampaknya?",
+        "submenu": "owner_restrictions"
+      },
+      {
+        "text": "Apa pesan Ibu jika bicara dengan komunitas petani?",
+        "submenu": "owner_message"
+      },
+      {
+        "text": "Setelah dengar aspirasi warga, adakah kebijakan yang ingin diubah?",
+        "submenu": "owner_policy_change"
       }
     ]
   },
-  "factory_limbah": {
-    "speaker": "Bu Anita - Pengolahan Limbah",
-    "text": "Tentang sistem pengelolaan limbah kami...",
-    "tag": "Teknis Operasional",
+  "owner_waste": {
+    "speaker": "Pemilik Pabrik (Bu Anita)",
+    "text": "Tentang proses pengolahan limbah...",
+    "tag": "Interpretasi",
     "choices": [
       {
-        "text": "Prosedur Standar", 
-        "response": "Kami punya sistem IPAL (Instalasi Pengolahan Air Limbah) yang diuji dua pekan sekali oleh tim independen. Semua laporan pengujian terdokumentasi rapi dan bisa diakses untuk verifikasi."
+        "text": "[Transparansi Data]",
+        "response": "Kami punya sistem IPAL yang diuji dua pekan sekali oleh tim independen. Laporan pengujian air selalu dicatat dan bisa dicek. Selain itu, kami terbuka jika warga ingin inspeksi."
       },
       {
-        "text": "Transparansi Publik", 
-        "response": "Kami terbuka jika warga ingin inspeksi langsung. Sudah ada mekanisme pengaduan melalui website dan posko kelurahan. Pabrik tidak mungkin sembarangan membuang limbah ke sungai - risikonya terlalu besar."
-      },
-      {
-        "text": "Penjelasan Sederhana", 
-        "response": "Pabrik sudah dilengkapi alat pengolah limbah modern. Prosesnya melalui tiga tahap penyaringan sebelum dibuang sesuai standar Baku Mutu."
+        "text": "[Jaminan Umum]",
+        "response": "Pabrik sudah punya alat pengolah limbah kok, tidak mungkin langsung buang ke sungai."
       }
     ]
   },
-  "factory_relasi": {
-    "speaker": "Bu Anita - Relasi dengan Petani",
-    "text": "Tentang dinamika dengan komunitas petani...",
-    "tag": "Analisis Sosial",
+  "owner_relations": {
+    "speaker": "Pemilik Pabrik (Bu Anita)",
+    "text": "Tentang hubungan pabrik dan petani...",
+    "tag": "Analisis",
     "choices": [
       {
-        "text": "Akar Masalah", 
-        "response": "Faktor utamanya adalah komunikasi yang kurang intensif dan minimnya pertukaran data objektif. Kami mengakui kadang lalai dalam sosialisasi, sementara warga juga jarang memverifikasi informasi."
+        "text": "[Analisis Akar Masalah]",
+        "response": "Kurangnya komunikasi dan minimnya data objektif yang diterima kedua pihak. Kami kadang lalai sosialisasi, warga juga kurang mencari fakta."
       },
       {
-        "text": "Solusi Kolaboratif", 
-        "response": "Saya mengajak semua pihak duduk bersama. Mari adakan audit independen dengan biaya patungan (pabrik-petani-pemerintah) agar hasilnya benar-benar netral. Kami siap berdiskusi terbuka."
-      },
-      {
-        "text": "Persepsi Masyarakat", 
-        "response": "Keberadaan pabrik sering dijadikan kambing hitam. Padahal bisa saja ada faktor lain seperti perubahan iklim atau pola tanam yang berpengaruh."
+        "text": "[Asumsi Sederhana]",
+        "response": "Mungkin karena adanya pabrik saja, jadi warga pikir itu sumber masalah."
       }
     ]
   },
-  "factory_csr": {
-    "speaker": "Bu Anita - Program CSR",
-    "text": "Tentang kontribusi sosial pabrik...",
-    "tag": "Tanggung Jawab Sosial",
+  "owner_csr": {
+    "speaker": "Pemilik Pabrik (Bu Anita)",
+    "text": "Tentang efektivitas program CSR...",
+    "tag": "Evaluasi",
     "choices": [
       {
-        "text": "Evaluasi Program", 
-        "response": "Program CSR baru berjalan 1 tahun. Dari survei kepuasan warga dan realisasi bantuan alat pertanian, beberapa program kurang efektif. Tahun depan akan kami restrukturisasi berdasarkan masukan lapangan."
+        "text": "[Evaluasi Berbasis Data]",
+        "response": "Program CSR baru jalan setahun. Kami evaluasi dari survei kepuasan warga dan realisasi bantuan alat pertanian. Beberapa program kurang efektif, jadi tahun depan akan diubah."
       },
       {
-        "text": "Dampak Ekonomi", 
-        "response": "Jika operasional dibatasi, efisiensi produksi akan turun. Konsekuensinya mungkin ada pengurangan tenaga kerja lokal. Tapi jika terbukti limbah kami bermasalah, kami siap investasi perbaikan meski biaya operasional meningkat."
-      },
-      {
-        "text": "Pernyataan Umum", 
-        "response": "CSR kami sudah berjalan dan pasti cukup membantu warga. Ada pelatihan keterampilan dan bantuan permodalan UMKM."
+        "text": "[Keyakinan Tanpa Bukti]",
+        "response": "Sudah ada CSR, pasti cukup membantu warga."
       }
     ]
   },
-  "factory_kebijakan": {
-    "speaker": "Bu Anita - Evaluasi Kebijakan",
-    "text": "Tentang penyesuaian kebijakan pabrik...",
-    "tag": "Refleksi",
+  "owner_restrictions": {
+    "speaker": "Pemilik Pabrik (Bu Anita)",
+    "text": "Tentang pembatasan aktivitas pabrik...",
+    "tag": "Inferensi",
     "choices": [
       {
-        "text": "Perubahan Strategi", 
-        "response": "Setelah mendengar aspirasi warga, kami akan meningkatkan transparansi data limbah melalui dashboard online real-time. Juga membentuk tim pengawasan bersama warga dan pemerintah desa."
+        "text": "[Analisis Komprehensif]",
+        "response": "Kalau produksi dibatasi, efisiensi turun, kemungkinan akan ada pengurangan pekerja lokal. Namun, jika terbukti limbah kami bermasalah, kami siap perbaiki proses meski biaya naik."
       },
       {
-        "text": "Komitmen Berkelanjutan", 
-        "response": "Pesan saya ke petani: Mari bangun dialog konstruktif. Pabrik bukan musuh, tapi mitra pembangunan. Kami siap berinvestasi lebih untuk solusi win-win solution."
+        "text": "[Prediksi Negatif]",
+        "response": "Kalau dibatasi, pasti perusahaan rugi dan banyak pekerja dirumahkan."
+      }
+    ]
+  },
+  "owner_message": {
+    "speaker": "Pemilik Pabrik (Bu Anita)",
+    "text": "Tentang pesan untuk komunitas petani...",
+    "tag": "Penjelasan",
+    "choices": [
+      {
+        "text": "[Pendekatan Kolaboratif]",
+        "response": "Mari duduk bersama, kita adakan audit independen, biaya dari dua pihak dan pemerintah agar hasilnya netral. Pabrik terbuka diskusi."
       },
       {
-        "text": "Status Quo", 
-        "response": "Secara umum kebijakan sudah cukup memadai. Mungkin hanya perlu intensifikasi sosialisasi agar informasi lebih tersebar merata."
+        "text": "[Permintaan Kepercayaan]",
+        "response": "Saya harap petani percaya, pabrik tidak jahat."
+      }
+    ]
+  },
+  "owner_policy_change": {
+    "speaker": "Pemilik Pabrik (Bu Anita)",
+    "text": "Tentang perubahan kebijakan setelah mendengar aspirasi...",
+    "tag": "Self-Regulation",
+    "choices": [
+      {
+        "text": "[Refleksi dan Adaptasi]",
+        "response": "Ya, dengan diskusi terakhir saya sadar perlu transparansi data limbah secara terbuka dan pengawasan rutin oleh warga."
+      },
+      {
+        "text": "[Mempertahankan Kebijakan]",
+        "response": "Rasanya kebijakan sudah cukup, mungkin perlu lebih sosialisasi saja."
       }
     ]
   }, 
 
   //DIALOG KEPALA DESA
   "village_head": {
-    "speaker": "Pak Rahmat - Kepala Desa",
-    "text": "Selamat datang di Desa Harmoni. Sebagai kepala desa, saya berusaha menyeimbangkan pembangunan ekonomi dan kelestarian lingkungan. Mari kita bahas isu ini secara menyeluruh.",
-    "tag": "Pembuka",
+    "speaker": "Kepala Desa (Pak Rahmat)",
+    "text": "Apa yang ingin Anda ketahui tentang kondisi desa kami?",
+    "tag": "Opening",
     "choices": [
       {
-        "text": "📈 Dampak Keberadaan Pabrik", 
-        "submenu": "head_dampak"
+        "text": "Bagaimana perubahan desa sejak berdirinya pabrik?",
+        "submenu": "head_changes"
       },
       {
-        "text": "⚖️ Mediasi Konflik", 
-        "submenu": "head_mediasi"
+        "text": "Tantangan terbesar menyatukan aspirasi petani dan pekerja pabrik?",
+        "submenu": "head_challenges"
       },
       {
-        "text": "📝 Evaluasi Kebijakan", 
-        "submenu": "head_kebijakan"
+        "text": "Apakah izin pabrik sudah tepat?",
+        "submenu": "head_permit"
       },
       {
-        "text": "🛠️ Solusi ke Depan", 
-        "submenu": "head_solusi"
+        "text": "Apa solusi terbaik menurut Bapak untuk desa Harmoni?",
+        "submenu": "head_solution"
+      },
+      {
+        "text": "Argumen utama jika menjelaskan ke pemerintah kabupaten?",
+        "submenu": "head_argument"
+      },
+      {
+        "text": "Apakah ada keputusan desa yang ingin Bapak tinjau ulang?",
+        "submenu": "head_review"
       }
     ]
   },
-  "head_dampak": {
-    "speaker": "Pak Rahmat - Dampak Pabrik",
-    "text": "Tentang perubahan desa sejak industrialisasi...",
-    "tag": "Analisis Dampak",
+  "head_changes": {
+    "speaker": "Kepala Desa (Pak Rahmat)",
+    "text": "Tentang perubahan desa...",
+    "tag": "Interpretasi",
     "choices": [
       {
-        "text": "Data Ekonomi vs Lingkungan", 
-        "response": "Ekonomi desa naik signifikan dengan terbukanya lapangan kerja, tapi catatan kantor desa menunjukkan penurunan produktivitas sawah sebesar 15% tahun lalu. Ini harus diatasi tanpa mengorbankan pencapaian ekonomi."
+        "text": "[Analisis Data]",
+        "response": "Ekonomi desa naik, banyak lapangan kerja baru, tapi beberapa wilayah sawah produktivitasnya turun. Data panen di kantor desa menunjukkan penurunan 15% tahun lalu."
       },
       {
-        "text": "Perspektif Pembangunan", 
-        "response": "Perubahan pasti terjadi ketika desa berkembang. Yang penting kita kelola bersama agar kemajuan ekonomi tidak merusak dasar pertanian kita."
-      },
-      {
-        "text": "Pernyataan Umum", 
-        "response": "Desa jelas makin maju dengan adanya pabrik. Fasilitas umum dan perputaran uang meningkat pesat."
+        "text": "[Pernyataan Umum]",
+        "response": "Pasti banyak berubah, tapi desa makin maju dengan adanya pabrik."
       }
     ]
   },
-  "head_mediasi": {
-    "speaker": "Pak Rahmat - Mediasi Konflik",
-    "text": "Tentang tantangan mendamaikan kepentingan...",
-    "tag": "Analisis Sosial",
+  "head_challenges": {
+    "speaker": "Kepala Desa (Pak Rahmat)",
+    "text": "Tentang tantangan menyatukan aspirasi...",
+    "tag": "Analisis",
     "choices": [
       {
-        "text": "Akar Konflik", 
-        "response": "Petani khawatirkan lingkungan, pekerja pabrik pertahankan penghidupan. Masalahnya, data ilmiah yang jelas masih minim sehingga sulit mengambil keputusan obyektif."
+        "text": "[Analisis Konflik]",
+        "response": "Aspirasi petani soal lingkungan, pekerja pabrik soal penghasilan. Seringkali data yang berdasar belum jelas, maka pemerintah desa kesulitan membuat keputusan obyektif."
       },
       {
-        "text": "Strategi Mediasi", 
-        "response": "Kami sedang susun format dialog terstruktur dengan protokol jelas: (1) Catat semua keluhan, (2) Verifikasi data, (3) Cari titik temu. Tidak boleh asal pilih salah satu pihak."
-      },
-      {
-        "text": "Kendala Praktis", 
-        "response": "Memang sulit karena kepentingan mereka bertolak belakang. Tapi sebagai pemerintah desa, kami harus tetap netral."
+        "text": "[Pengamatan Sederhana]",
+        "response": "Sulit memang, karena dua-duanya saling bertentangan keinginannya."
       }
     ]
   },
-  "head_kebijakan": {
-    "speaker": "Pak Rahmat - Kebijakan Desa",
-    "text": "Tentang evaluasi perizinan dan regulasi...",
-    "tag": "Refleksi Kebijakan",
+  "head_permit": {
+    "speaker": "Kepala Desa (Pak Rahmat)",
+    "text": "Tentang kelayakan izin pabrik...",
+    "tag": "Evaluasi",
     "choices": [
       {
-        "text": "Evaluasi Izin Pabrik", 
-        "response": "Proses perizinan awal sudah melalui konsultasi AMDAL dan musyawarah desa. Namun kondisi lapangan sekarang mengharuskan peninjauan ulang secara periodik, bukan hanya saat awal operasi."
+        "text": "[Evaluasi Berbasis Data]",
+        "response": "Awal izin pabrik kami diskusikan dengan warga dan konsultasi amdal. Namun, sekarang data lapangan mengharuskan kami evaluasi ulang agar tidak terjadi kerugian lingkungan."
       },
       {
-        "text": "Perubahan Regulasi", 
-        "response": "Kami akan usulkan aturan baru: izin operasi pabrik harus dievaluasi tiap 6 bulan dengan parameter lingkungan yang ketat. Ini belajar dari pengalaman tahun lalu."
-      },
-      {
-        "text": "Status Quo", 
-        "response": "Prosedur yang ada sudah cukup baik. Tinggal sosialisasi ke warga agar lebih paham mekanismenya."
+        "text": "[Justifikasi Prosedural]",
+        "response": "Sudah sesuai prosedur, dulu semuanya setuju."
       }
     ]
   },
-  "head_solusi": {
-    "speaker": "Pak Rahmat - Solusi",
-    "text": "Tentang langkah strategis ke depan...",
-    "tag": "Rekomendasi",
+  "head_solution": {
+    "speaker": "Kepala Desa (Pak Rahmat)",
+    "text": "Tentang solusi terbaik untuk desa...",
+    "tag": "Inferensi",
     "choices": [
       {
-        "text": "Struktur Kolaboratif", 
-        "response": "Akan dibentuk Dewan Multi-Pihak berisi perwakilan petani, manajemen pabrik, dan desa. Setiap keputusan harus berdasar data terverifikasi dan dicatat secara terbuka."
+        "text": "[Rencana Struktural]",
+        "response": "Dibentuk dewan bersama dengan perwakilan petani, pabrik, dan desa. Evaluasi berbasis data dan keputusan dicatatkan terbuka"
       },
       {
-        "text": "Advokasi ke Pemerintah", 
-        "response": "Ke kabupaten kami minta dua hal: (1) Audit independen oleh ahli lingkungan, (2) Bantuan teknis untuk memetakan solusi win-win solution antara ekonomi dan ekologi."
+        "text": "[Delegasi Tanggung Jawab]",
+        "response": "Ikuti saja apa kata pemerintah pusat, jangan terlalu ramai."
+      }
+    ]
+  },
+  "head_argument": {
+    "speaker": "Kepala Desa (Pak Rahmat)",
+    "text": "Tentang argumen ke pemerintah kabupaten...",
+    "tag": "Penjelasan",
+    "choices": [
+      {
+        "text": "[Proposal Teknis]",
+        "response": "Perlu ada intervensi audit dan bantuan teknis, agar data baru bisa memperkuat klaim dan mempertemukan kepentingan ekonomi maupun lingkungan."
       },
       {
-        "text": "Pendekatan Hierarkis", 
-        "response": "Lebih baik serahkan ke pemerintah atas. Kami di desa hanya menjalankan instruksi dari tingkat kabupaten."
+        "text": "[Laporan Umum]",
+        "response": "Laporkan saja, biar atasan tahu desa ini butuh bantuan."
+      }
+    ]
+  },
+  "head_review": {
+    "speaker": "Kepala Desa (Pak Rahmat)",
+    "text": "Tentang tinjauan ulang keputusan...",
+    "tag": "Self-Regulation",
+    "choices": [
+      {
+        "text": "[Refleksi Kritis]",
+        "response": "Iya, izin pabrik harus lebih sering ditinjau bukan hanya saat awal, tapi secara periodik sesuai data."
+      },
+      {
+        "text": "[Mempertahankan Status Quo]",
+        "response": "Saya kira semua berjalan sesuai aturan, tidak perlu ditinjau lagi."
       }
     ]
   }, 
@@ -383,100 +468,198 @@ const NPC_DIALOGS = {
   //KETUA KELOMPOK TANI
   "farmer_leader": {
     "speaker": "Ketua Kelompok Tani",
-    "text": "Sebagai perwakilan petani Desa Harmoni, saya sampaikan keprihatinan kami dengan bukti-bukti konkret. Mari kita bahas berdasarkan catatan lapangan yang kami dokumentasikan.",
-    "tag": "Pembuka",
+    "text": "Apa yang ingin Anda ketahui tentang masalah pertanian kami?",
+    "tag": "Opening",
     "choices": [
       {
-        "text": "💧 Bukti Perubahan Kualitas Air", 
-        "submenu": "leader_air"
+        "text": "Bisa Bapak jelaskan perubahan kualitas air sejak pabrik beroperasi?",
+        "submenu": "leader_water"
       },
       {
-        "text": "🌱 Pola Kerusakan Lahan", 
-        "submenu": "leader_lahan"
+        "text": "Perubahan utama apa yang Bapak amati pada lahan pertanian?",
+        "submenu": "leader_land"
       },
       {
-        "text": "📊 Strategi Perlawanan", 
-        "submenu": "leader_strategi"
+        "text": "Mengapa beberapa petani tidak mengalami masalah kerusakan lahan?",
+        "submenu": "leader_resilience"
       },
       {
-        "text": "🛠️ Solusi Teknis", 
-        "submenu": "leader_solusi"
+        "text": "Bagaimana hubungan jadwal operasi pabrik dengan masalah tanaman?",
+        "submenu": "leader_schedule"
+      },
+      {
+        "text": "Seberapa efektif upaya yang sudah dilakukan kelompok tani?",
+        "submenu": "leader_efforts"
+      },
+      {
+        "text": "Bagaimana respon pemerintah terhadap keluhan ini?",
+        "submenu": "leader_response"
+      },
+      {
+        "text": "Apa yang akan terjadi jika kondisi ini terus berlanjut?",
+        "submenu": "leader_projection"
+      },
+      {
+        "text": "Dampak ekonomi jangka panjang untuk petani?",
+        "submenu": "leader_economy"
+      },
+      {
+        "text": "Solusi konkret apa yang Bapak usulkan?",
+        "submenu": "leader_solution"
+      },
+      {
+        "text": "Apa yang akan diperbaiki dalam strategi kelompok?",
+        "submenu": "leader_improvement"
       }
     ]
   },
-  "leader_air": {
-    "speaker": "Ketua Kelompok Tani - Kualitas Air",
-    "text": "Tentang perubahan kualitas air irigasi...",
-    "tag": "Data Lingkungan",
+  "leader_water": {
+    "speaker": "Ketua Kelompok Tani",
+    "text": "Tentang perubahan kualitas air...",
+    "tag": "Interpretasi",
     "choices": [
       {
-        "text": "Data Terukur", 
-        "response": "Kami catat parameter air mingguan selama 8 bulan terakhir. Hasilnya: tingkat kekeruhan meningkat 65%, pH turun menjadi 4.2, dan kandungan logam berat melebihi baku mutu. Semua terdokumentasi dalam buku catatan ini."
+        "text": "[Data Terukur]",
+        "response": "Kami melakukan pencatatan parameter air rutin tiap minggu dan menemukan penurunan kualitas signifikan dalam 8 bulan terakhir dengan data yang terdokumentasi"
       },
       {
-        "text": "Korelasi Waktu", 
-        "response": "Gejala kerusakan muncul konsisten 48-72 jam setelah periode pembuangan limbah rutin pabrik. Pola ini terulang 11 kali dalam pengamatan kami."
-      },
-      {
-        "text": "Observasi Visual", 
-        "response": "Airnya jelas lebih kotor sekarang. Warna kecoklatan dan bau menyengat yang tidak biasa."
+        "text": "[Observasi]",
+        "response": "Airnya memang tampak lebih kotor sekarang"
       }
     ]
   },
-  "leader_lahan": {
-    "speaker": "Ketua Kelompok Tani - Kerusakan Lahan",
-    "text": "Tentang perubahan kondisi pertanian...",
-    "tag": "Analisis Spasial",
+  "leader_land": {
+    "speaker": "Ketua Kelompok Tani",
+    "text": "Tentang perubahan lahan...",
+    "tag": "Interpretasi",
     "choices": [
       {
-        "text": "Pola Sebaran", 
-        "response": "Kerusakan menyebar dari saluran irigasi utama dengan tingkat keparahan berbeda. Petak sawah dalam radius 500m dari pabrik mengalami penurunan hasil 40-60%, sementara yang lebih jauh hanya 15-20%."
+        "text": "[Analisis Spasial]",
+        "response": "Terdapat pola kerusakan spesifik yang menyebar dari saluran irigasi utama dengan tingkat keparahan berbeda di tiap petak sawah"
       },
       {
-        "text": "Kasus Resistensi", 
-        "response": "Petani dengan sistem pengairan sumur dalam dan rotasi tanaman menunjukkan ketahanan lebih baik. Data perbandingan kami menunjukkan hasil mereka hanya turun 8-12%."
-      },
-      {
-        "text": "Pernyataan Umum", 
-        "response": "Tanah tidak sebaik dulu. Tanaman mudah layu dan hasil panen menyusut."
+        "text": "[Pengamatan Umum]",
+        "response": "Tanahnya tidak sebaik dulu"
       }
     ]
   },
-  "leader_strategi": {
-    "speaker": "Ketua Kelompok Tani - Strategi",
-    "text": "Tentang upaya perlawanan yang dilakukan...",
-    "tag": "Taktik Organisasi",
+  "leader_resilience": {
+    "speaker": "Ketua Kelompok Tani",
+    "text": "Tentang petani yang tidak terdampak...",
+    "tag": "Analisis",
     "choices": [
       {
-        "text": "Evaluasi Efektivitas", 
-        "response": "Dari semua pendekatan, hanya pengaduan resmi melalui jalur hukum yang memberi hasil terukur. Proses hukum memaksa pabrik merespon dalam 14 hari kerja, berbeda dengan aksi demonstrasi atau lobi informal."
+        "text": "[Studi Komparatif]",
+        "response": "Setelah kami teliti, petani dengan sistem pengairan alternatif dan pola tanam rotasi menunjukkan ketahanan lebih baik berdasarkan data perbandingan"
       },
       {
-        "text": "Respon Pemerintah", 
-        "response": "Respon awal cepat (3 hari), tetapi realisasi rencana aksi hanya 28%. Kami catat 5 janji yang tidak terealisasi dari 7 kesepakatan."
-      },
-      {
-        "text": "Pendekatan Konvensional", 
-        "response": "Sudah berusaha semampu kami melalui jalur musyawarah, tapi pemerintah tidak serius menindaklanjuti."
+        "text": "[Asumsi]",
+        "response": "Mungkin karena lokasi mereka lebih beruntung"
       }
     ]
   },
-  "leader_solusi": {
-    "speaker": "Ketua Kelompok Tani - Solusi",
-    "text": "Tentang rekomendasi teknis...",
-    "tag": "Rencana Aksi",
+  "leader_schedule": {
+    "speaker": "Ketua Kelompok Tani",
+    "text": "Tentang jadwal pabrik...",
+    "tag": "Analisis",
     "choices": [
       {
-        "text": "Infrastruktur Alternatif", 
-        "response": "Kami usulkan: (1) Jaringan irigasi alternatif dari sumber air bawah tanah, (2) Sistem pemantauan limbah partisipatif dengan protokol pengambilan sampel standar, (3) Pelatihan pertanian adaptif untuk varietas tahan."
+        "text": "[Catatan Harian]",
+        "response": "Catatan harian kami menunjukkan gejala kerusakan muncul konsisten 48-72 jam setelah periode pembuangan limbah rutin pabrik"
       },
       {
-        "text": "Proyeksi Kerusakan", 
-        "response": "Berdasarkan data tren: 65% lahan akan tidak produktif dalam 3 tahun dengan kerugian ekonomi mencapai 43% pendapatan petani. Butuh intervensi segera sebelum mencapai titik kritis."
+        "text": "[Korelasi]",
+        "response": "Tanaman sering rusak saat pabrik sedang aktif"
+      }
+    ]
+  },
+  "leader_efforts": {
+    "speaker": "Ketua Kelompok Tani",
+    "text": "Tentang upaya kami...",
+    "tag": "Evaluasi",
+    "choices": [
+      {
+        "text": "[Evaluasi Efektivitas]",
+        "response": "Dari semua pendekatan yang dicoba, hanya pengaduan resmi melalui jalur hukum yang memberi hasil terukur berdasarkan perkembangan kasus"
       },
       {
-        "text": "Penyederhanaan Masalah", 
-        "response": "Solusinya sederhana - pabrik harus bertanggung jawab sepenuhnya atas kerusakan ini dan mengganti rugi petani."
+        "text": "[Pernyataan]",
+        "response": "Sudah berusaha semampu kami"
+      }
+    ]
+  },
+  "leader_response": {
+    "speaker": "Ketua Kelompok Tani",
+    "text": "Tentang respon pemerintah...",
+    "tag": "Evaluasi",
+    "choices": [
+      {
+        "text": "[Data Realisasi]",
+        "response": "Respon awal cepat dalam 3 hari tapi follow up lambat, hanya 28% rencana aksi yang terealisasi penuh sampai sekarang"
+      },
+      {
+        "text": "[Kesimpulan]",
+        "response": "Pemerintah tidak serius menangani"
+      }
+    ]
+  },
+  "leader_projection": {
+    "speaker": "Ketua Kelompok Tani",
+    "text": "Tentang proyeksi kerusakan...",
+    "tag": "Inferensi",
+    "choices": [
+      {
+        "text": "[Proyeksi Data]",
+        "response": "Proyeksi berbasis data menunjukkan 65% lahan akan tidak produktif dalam 36 bulan jika tren kerusakan tetap seperti sekarang"
+      },
+      {
+        "text": "[Prediksi]",
+        "response": "Sawah akan habis semua"
+      }
+    ]
+  },
+  "leader_economy": {
+    "speaker": "Ketua Kelompok Tani",
+    "text": "Tentang dampak ekonomi...",
+    "tag": "Inferensi",
+    "choices": [
+      {
+        "text": "[Simulasi Ekonomi]",
+        "response": "Simulasi ekonomi menunjukkan penurunan pendapatan rata-rata 43% dalam 5 tahun jika tidak ada intervensi berarti"
+      },
+      {
+        "text": "[Dampak]",
+        "response": "Kehidupan petani akan sulit"
+      }
+    ]
+  },
+  "leader_solution": {
+    "speaker": "Ketua Kelompok Tani",
+    "text": "Tentang solusi...",
+    "tag": "Penjelasan",
+    "choices": [
+      {
+        "text": "[Rencana Teknis]",
+        "response": "Membangun jaringan irigasi alternatif, program pelatihan pertanian adaptif, serta sistem pemantauan limbah partisipatif dengan protokol jelas"
+      },
+      {
+        "text": "[Tuntutan]",
+        "response": "Pabrik harus bertanggungjawab sepenuhnya"
+      }
+    ]
+  },
+  "leader_improvement": {
+    "speaker": "Ketua Kelompok Tani",
+    "text": "Tentang perbaikan strategi...",
+    "tag": "Self-Regulation",
+    "choices": [
+      {
+        "text": "[Rencana Pengembangan]",
+        "response": "Meningkatkan sistem dokumentasi bukti, melatih analisis data dasar, serta memperluas jaringan dengan organisasi pendukung terkait"
+      },
+      {
+        "text": "[Komitmen]",
+        "response": "Akan lebih keras memperjuangkan hak kami"
       }
     ]
   }, 
@@ -484,100 +667,141 @@ const NPC_DIALOGS = {
   //AKTIVIS PENGAIRAN
   "water_activist": {
     "speaker": "Aktivis Pengairan",
-    "text": "Sebagai jaringan pemantau kualitas air independen, kami memiliki data terperinci tentang kondisi lingkungan di Desa Harmoni. Mari kita bahas temuan kami secara metodologis.",
-    "tag": "Pembuka",
+    "text": "Apa yang ingin Anda ketahui tentang kondisi air di wilayah kami?",
+    "tag": "Opening",
     "choices": [
       {
-        "text": "🔬 Metodologi Penelitian", 
-        "submenu": "activist_method"
+        "text": "Metode pengujian air seperti apa yang digunakan?", 
+        "submenu": "activist_methods"
       },
       {
-        "text": "⚠️ Parameter Kritis", 
-        "submenu": "activist_parameter"
+        "text": "Parameter apa yang paling mengkhawatirkan?", 
+        "submenu": "activist_parameters"
       },
       {
-        "text": "🗺️ Pola Sebaran", 
+        "text": "Mengapa pencemaran tidak merata di semua area?", 
         "submenu": "activist_distribution"
       },
       {
-        "text": "🛡️ Rekomendasi Teknis", 
-        "submenu": "activist_solution"
+        "text": "Bagaimana efektivitas upaya penanganan selama ini?",
+        "submenu": "activist_effectiveness"
+      },
+      {
+        "text": "Apa prediksi jika tidak ada tindakan lebih serius?",
+        "submenu": "activist_prediction"
+      },
+      {
+        "text": "Apa rekomendasi teknis untuk memperbaiki kualitas air?",
+        "submenu": "activist_recommendations"
+      },
+      {
+        "text": "Apa yang akan diperbaiki dalam metodologi penelitian?",
+        "submenu": "activist_improvements"
       }
     ]
   },
-  "activist_method": {
-    "speaker": "Aktivis - Metode Pengujian",
-    "text": "Tentang protokol penelitian kami...",
-    "tag": "Scientific Protocol",
+  "activist_methods": {
+    "speaker": "Aktivis Pengairan",
+    "text": "Tentang metode pengujian kami...",
+    "tag": "Interpretasi",
     "choices": [
       {
-        "text": "Standar Mutu", 
-        "response": "Kami mengikuti protokol BMLHK dengan ketat: pengambilan sampel di 15 titik strategis (hulu-tengah-hilir) setiap 2 minggu, menggunakan kit pengujian standar dan analisis di lab terakreditasi KAN. Semua prosedur terdokumentasi."
+        "text": "[Jawaban Teknis]", 
+        "response": "Mengikuti protokol standar BMLHK dengan pengambilan sampel di 15 titik strategis secara periodik dan analisis lab terakreditasi"
       },
       {
-        "text": "Peningkatan Metode", 
-        "response": "Kami sedang kembangkan sistem database terintegrasi dengan parameter lebih lengkap, serta memperluas jaringan relawan pemantauan untuk cakupan lebih menyeluruh."
-      },
-      {
-        "text": "Penjelasan Sederhana", 
-        "response": "Pengujian rutin kami lakukan dengan alat standar di berbagai lokasi. Hasilnya selalu kami catat untuk pemantauan berkala."
+        "text": "[Jawaban Sederhana]", 
+        "response": "Kami lakukan pengujian rutin dengan alat standar"
       }
     ]
   },
-  "activist_parameter": {
-    "speaker": "Aktivis - Parameter Darurat",
-    "text": "Tentang indikator pencemaran kritis...",
-    "tag": "Risk Analysis",
+  "activist_parameters": {
+    "speaker": "Aktivis Pengairan",
+    "text": "Mengenai parameter yang mengkhawatirkan...",
+    "tag": "Interpretasi",
     "choices": [
       {
-        "text": "Data Kontaminan", 
-        "response": "Kadar logam berat (khususnya merkuri dan kadmium) melebihi baku mutu hingga 5x lipat di titik tertentu. Pola fluktuasinya konsisten dengan jadwal operasi pabrik - puncaknya 72 jam setelah produksi massal."
+        "text": "[Data Spesifik]", 
+        "response": "Kadar logam berat tertentu melebihi baku mutu hingga 5 kali lipat dalam beberapa sampel dengan pola fluktuasi yang konsisten"
       },
       {
-        "text": "Dampak Kesehatan", 
-        "response": "Parameter BOD dan COD yang tinggi menunjukkan penurunan kualitas air secara biologis. Ini berpotensi menyebabkan gangguan pencernaan dan penyakit kulit berdasarkan studi WHO."
-      },
-      {
-        "text": "Peringatan Umum", 
-        "response": "Banyak kandungan berbahaya dalam air melebihi ambang aman. Masyarakat sebaiknya tidak mengonsumsi langsung tanpa pengolahan."
+        "text": "[Pernyataan Umum]", 
+        "response": "Banyak kandungan berbahaya di air"
       }
     ]
   },
   "activist_distribution": {
-    "speaker": "Aktivis - Pola Sebaran",
-    "text": "Tentang distribusi spasial pencemaran...",
-    "tag": "Geospatial Analysis",
+    "speaker": "Aktivis Pengairan",
+    "text": "Tentang distribusi pencemaran...",
+    "tag": "Analisis",
     "choices": [
       {
-        "text": "Analisis Hotspot", 
-        "response": "Daerah dataran rendah di sepanjang aliran langsung dari saluran pabrik menunjukkan kontaminasi 3x lebih tinggi. Radius 1km dari titik pembuangan memiliki tingkat pencemaran konsisten di atas ambang bahaya."
+        "text": "[Analisis Spasial]", 
+        "response": "Analisis spasial menunjukkan daerah dataran rendah dengan aliran air langsung dari saluran pembuangan pabrik memiliki tingkat kontaminasi 3 kali lebih tinggi"
       },
       {
-        "text": "Proyeksi Kontaminasi", 
-        "response": "Model prediktif kami memperkirakan sumber air utama akan melampaui ambang berbahaya dalam 18-24 bulan dengan laju pencemaran saat ini. Penyebaran mengikuti pola aliran sungai musiman."
-      },
-      {
-        "text": "Observasi Lokal", 
-        "response": "Pencemaran tidak merata karena perbedaan letak geografis. Daerah dekat pabrik jelas lebih tercemar."
+        "text": "[Penjelasan Sederhana]", 
+        "response": "Mungkin karena perbedaan letak geografis"
       }
     ]
   },
-  "activist_solution": {
-    "speaker": "Aktivis - Solusi",
-    "text": "Tentang rekomendasi teknis...",
-    "tag": "Engineering Solution",
+  "activist_effectiveness": {
+    "speaker": "Aktivis Pengairan",
+    "text": "Tentang efektivitas penanganan...",
+    "tag": "Evaluasi",
     "choices": [
       {
-        "text": "Intervensi Struktural", 
-        "response": "Perlu sistem filtrasi bertahap (fisika-kimia-biologi), rehabilitasi DAS dengan tanaman penyerap polutan, serta instalasi sensor kualitas air real-time yang terhubung dengan sistem peringatan dini."
+        "text": "[Evaluasi Kritis]", 
+        "response": "Tindakan darurat berhasil mengurangi dampak di beberapa titik tapi membutuhkan solusi struktural yang belum terwujud sepenuhnya"
       },
       {
-        "text": "Evaluasi Tindakan", 
-        "response": "Upaya darurat seperti distribusi filter sementara berhasil turunkan risiko kesehatan 35%, tapi solusi permanen membutuhkan intervensi teknis dan perubahan kebijakan pembuangan limbah."
+        "text": "[Tanggapan Umum]", 
+        "response": "Sudah ada kemajuan sedikit"
+      }
+    ]
+  },
+  "activist_prediction": {
+    "speaker": "Aktivis Pengairan",
+    "text": "Mengenai prediksi kami...",
+    "tag": "Inferensi",
+    "choices": [
+      {
+        "text": "[Proyeksi Ilmiah]", 
+        "response": "Model kontaminasi kami memperkirakan sumber air utama akan melewati ambang berbahaya dalam 18-24 bulan dengan laju saat ini"
       },
       {
-        "text": "Rekomendasi Sederhana", 
-        "response": "Pembersihan menyeluruh saluran air dan pengawasan ketat pembuangan limbah pabrik harus segera dilakukan."
+        "text": "[Pernyataan Sederhana]", 
+        "response": "Semua air akan tercemar total"
+      }
+    ]
+  },
+  "activist_recommendations": {
+    "speaker": "Aktivis Pengairan",
+    "text": "Tentang rekomendasi teknis...",
+    "tag": "Penjelasan",
+    "choices": [
+      {
+        "text": "[Rencana Komprehensif]", 
+        "response": "Sistem filtrasi bertahap, rehabilitasi daerah aliran sungai, serta implementasi teknologi pemantauan kualitas air real-time"
+      },
+      {
+        "text": "[Saran Sederhana]", 
+        "response": "Perlu pembersihan menyeluruh"
+      }
+    ]
+  },
+  "activist_improvements": {
+    "speaker": "Aktivis Pengairan",
+    "text": "Tentang perbaikan metodologi...",
+    "tag": "Self-Regulation",
+    "choices": [
+      {
+        "text": "[Rencana Pengembangan]", 
+        "response": "Menambah parameter uji, memperluas jaringan relawan pemantauan, serta mengembangkan sistem database terintegrasi"
+      },
+      {
+        "text": "[Pernyataan Umum]", 
+        "response": "Akan lebih intensif melakukan pengujian"
       }
     ]
   }, 
@@ -585,84 +809,122 @@ const NPC_DIALOGS = {
   //PENGAMAT PERTANIAN LOKAL
   "agri_observer": {
     "speaker": "Pengamat Pertanian Lokal",
-    "text": "",
-    "tag": "",
+    "text": "Apa yang ingin Anda tanyakan mengenai kondisi pertanian kami?",
+    "tag": "Opening",
     "choices": [
       {
-        "text": "🌱 Indikator Kerusakan", 
+        "text": "Apa indikator utama kerusakan ekosistem pertanian?", 
         "submenu": "observer_damage"
       },
       {
-        "text": "📉 Tren Produktivitas", 
+        "text": "Bagaimana tren produktivitas pertanian wilayah ini?", 
         "submenu": "observer_trends"
       },
       {
-        "text": "🏛️ Evaluasi Kebijakan", 
+        "text": "Bagaimana kinerja program pemerintah dalam penanganan ini?", 
         "submenu": "observer_policy"
       },
       {
-        "text": "🔮 Proyeksi Masa Depan",
+        "text": "Apa dampak jangka panjang bagi ketahanan pangan?",
         "submenu": "observer_future"
+      },
+      {
+        "text": "Apa strategi adaptasi paling realistis?",
+        "submenu": "observer_adaptation"
+      },
+      {
+        "text": "Apa yang akan diperbaiki dalam metode pengamatan?",
+        "submenu": "observer_methods"
       }
     ]
   },
   "observer_damage": {
     "speaker": "Pengamat Pertanian Lokal",
-    "text": "",
+    "text": "Mengenai indikator kerusakan ekosistem pertanian...",
     "tag": "Interpretasi",
     "choices": [
       {
-        "text": "Jawaban kritis", 
+        "text": "[Jawaban Analitis]", 
         "response": "Penurunan drastis mikroorganisma tanah esensial dan perubahan karakteristik fisika-kimia tanah yang mengganggu kesuburan"
       },
       {
-        "text": "Jawaban alternatif", 
+        "text": "[Jawaban Sederhana]", 
         "response": "Banyak lahan yang tidak bisa ditanami"
       }
     ]
   },
   "observer_trends": {
     "speaker": "Pengamat Pertanian Lokal",
-    "text": "",
+    "text": "Tentang tren produktivitas pertanian...",
     "tag": "Analisis",
     "choices": [
       {
-        "text": "Jawaban kritis", 
+        "text": "[Jawaban Berbasis Data]", 
         "response": "Data lima tahun terakhir menunjukkan penurunan produktivitas 5.2% per tahun, jauh lebih cepat dibanding rata-rata regional"
       },
       {
-        "text": "Jawaban alternatif", 
+        "text": "[Jawaban Umum]", 
         "response": "Hasil panen terus menurun"
       }
     ]
   },
   "observer_policy": {
     "speaker": "Pengamat Pertanian Lokal",
-    "text": "",
+    "text": "Tentang kinerja program pemerintah...",
     "tag": "Evaluasi",
     "choices": [
       {
-        "text": "Jawaban kritis", 
+        "text": "[Jawaban Terukur]", 
         "response": "Implementasi program hanya mencapai 40% dari rencana awal dengan keterlambatan signifikan dalam komponen krusial"
       },
       {
-        "text": "Jawaban alternatif", 
+        "text": "[Jawaban Sederhana]", 
         "response": "Program tidak berjalan baik"
       }
     ]
   },
   "observer_future": {
     "speaker": "Pengamat Pertanian Lokal",
-    "text": "",
+    "text": "Mengenai dampak jangka panjang...",
     "tag": "Inferensi",
     "choices": [
       {
-        "text": "Jawaban kritis", 
+        "text": "[Proyeksi Ilmiah]", 
         "response": "Dalam satu dekade diperkirakan tingkat ketergantungan pangan impor akan meningkat hingga 75% jika tidak ada perubahan kebijakan"
       },
       {
-        "text": "Jawaban alternatif", 
+        "text": "[Pernyataan Umum]", 
         "response": "Akan terjadi krisis pangan parah"
+      }
+    ]
+  },
+  "observer_adaptation": {
+    "speaker": "Pengamat Pertanian Lokal",
+    "text": "Tentang strategi adaptasi...",
+    "tag": "Penjelasan",
+    "choices": [
+      {
+        "text": "[Rekomendasi Komprehensif]", 
+        "response": "Kombinasi teknologi pertanian presisi, perubahan sistem budidaya, dan penguatan kapasitas kelembagaan petani berbasis bukti"
+      },
+      {
+        "text": "[Saran Sederhana]", 
+        "response": "Perlu revolusi sistem pertanian"
+      }
+    ]
+  },
+  "observer_methods": {
+    "speaker": "Pengamat Pertanian Lokal",
+    "text": "Mengenai perbaikan metode...",
+    "tag": "Self-Regulation",
+    "choices": [
+      {
+        "text": "[Rencana Pengembangan]", 
+        "response": "Memperluas cakupan variabel penelitian dengan memasukkan lebih banyak aspek sosial-ekonomi dan meningkatkan frekuensi pengambilan data"
+      },
+      {
+        "text": "[Pernyataan Umum]", 
+        "response": "Akan lebih sering turun lapangan"
       }
     ]
   }
