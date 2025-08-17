@@ -77,6 +77,7 @@
     <img id="thumbForest" crossorigin="anonymous" src="https://cdn.aframe.io/link-traversal/thumbs/forest.png" alt="Forest" />
     <a-asset-item id="village-model" src="models/Untitled.glb"></a-asset-item>
     <a-asset-item id="pabrik-model" src="models/pabrik.glb"></a-asset-item>
+    <a-asset-item id="signArrow" src="models/signArrow.glb"></a-asset-item>
   </a-assets>
 
   <a-entity id="scene">
@@ -88,7 +89,10 @@
 
     <!-- Desa -->
     <a-entity gltf-model="#village-model" position="0 0 -10" scale="2 2 2" shadow="receive: true"></a-entity>
-
+     <a-entity gltf-model="#signArrow" position="-9 2.6 -23" scale="20 20 20" rotation="0 90 0" shadow="receive: true"></a-entity>
+    <a-entity gltf-model="#signArrow" position="-9 2.6 -64" scale="20 20 20" rotation="0 90 0" shadow="receive: true"></a-entity>
+    <a-entity gltf-model="#signArrow" position="24 2.6 -104" scale="20 20 20" rotation="0 0 0" shadow="receive: true"></a-entity>
+    <a-entity gltf-model="#signArrow" position="59 2.6 -105" scale="20 20 20" rotation="0 0 0" shadow="receive: true"></a-entity>
     <!-- Info text -->
     <a-entity id="info-dialog" position="-5 4 -20">
       <a-plane width="17" height="1.2" color="#1e293b" opacity="0.92" material="shader: flat"></a-plane>
