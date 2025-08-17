@@ -5,7 +5,7 @@
   <title>VR Dialog System - Desa Harmoni</title>
   <meta name="description" content="VR Dialog System dengan A-Frame" />
 
-  <!-- Pakai hanya satu versi A-Frame -->
+  <!-- A-Frame -->
   <script src="https://aframe.io/releases/1.7.1/aframe.min.js"></script>
 
   <!-- Lib pendukung -->
@@ -18,7 +18,6 @@
   <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-cursor-teleport@1.6.0/dist/aframe-cursor-teleport-component.min.js"></script>
   <script src="https://cdn.jsdelivr.net/gh/AdaRoseCannon/aframe-xr-boilerplate@bca4792/simple-navmesh-constraint.js"></script>
   <script src="/dist/components.js"></script>
-  <script src="https://cdn.jsdelivr.net/gh/editvr/aframe-dialog-popup-component/dist/aframe-dialog-popup-component.min.js"></script>
   <script defer src="/dist/ui.js"></script>
 
   <style>
@@ -38,6 +37,42 @@
       z-index: 999;
       white-space: pre-line;
     }
+    #npc-dialog-overlay {
+      position: fixed;
+      left: 0; top: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.5);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+    #npc-dialog-box {
+      background: #fff;
+      padding: 1.5em;
+      border-radius: 12px;
+      max-width: 600px;
+      width: 90%;
+      font-family: sans-serif;
+    }
+    #npc-dialog-speaker { font-weight: bold; margin-bottom: .5em; }
+    #npc-dialog-choices button {
+      display: block;
+      margin: .3em 0;
+      padding: .6em 1em;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      background: #f9f9f9;
+      cursor: pointer;
+    }
+    #npc-dialog-close {
+      background: #dc2626;
+      color: #fff;
+      border: none;
+      padding: .6em 1em;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-top: 1em;
+    }
   </style>
 </head>
 <body>
@@ -53,17 +88,6 @@
   vr-detector
   hud-coords
 >
-<!-- Portal ke pabrik -->
-<a-link
-  change-room="on: obbcollisionstarted; room: pabrik; url: pabrik.html"
-  link="on: ignore"
-  href="pabrik.html"
-  position="0 3 0.05"
-  title="Portal ke Pabrik"
-  image="#thumbForest">
-  <a-box position="0 0 0.5" obb-collider visible="false"></a-box>
-</a-link>
-
   <a-assets>
     <template id="avatar-template">
       <a-entity player-info>
@@ -73,34 +97,26 @@
         <a-entity class="camera" position="0 1.6 0"></a-entity>
       </a-entity>
     </template>
-    <img id="thumbJapan" crossorigin="anonymous" src="https://cdn.aframe.io/link-traversal/thumbs/japan.png" alt="Japan" />
-    <img id="thumbForest" crossorigin="anonymous" src="https://cdn.aframe.io/link-traversal/thumbs/forest.png" alt="Forest" />
     <a-asset-item id="village-model" src="village.glb"></a-asset-item>
+    <a-asset-item id="koordinator-model" src="../models/wise_man_33.glb"></a-asset-item>
+    <a-asset-item id="farmer-model" src="../models/farmer.glb"></a-asset-item>
+    <a-asset-item id="pabrik-model" src="../models/low_poly_little_girl.glb"></a-asset-item>
   </a-assets>
 
   <a-entity id="scene">
     <a-sky color="#87CEEB"></a-sky>
-
-    <!-- Lighting -->
     <a-entity light="type: directional; color: #FFF; intensity: 0.8" position="-1 2 1"></a-entity>
     <a-entity light="type: hemisphere; color: #FFF; groundColor: #808080; intensity: 0.5"></a-entity>
-
-    <!-- Desa -->
     <a-entity gltf-model="#village-model" position="0 0 -10" scale="1 1 1" shadow="receive: true"></a-entity>
 
-    <!-- Info text -->
-    <a-entity id="info-dialog-onload" position="0 4 -8">
-      <a-plane width="7" height="1.2" color="#1e293b" opacity="0.92" material="shader: flat"></a-plane>
-      <a-text 
-        value="Selamat datang di Desa Harmoni! Klik pada NPC untuk berbicara dengan mereka."
-        align="center"
-        color="#fff"
-        position="0 0 0.05"
-        text="width: 12; wrapCount: 60; font: dejavu; weight: bold"></a-text>
-    </a-entity>
+    <!-- NPC Koordinator -->
+    <a-entity id="koordinator" gltf-model="#koordinator-model" scale="1 1 1" position="-5 0 -5" class="clickable" data-dialog="koordinator"></a-entity>
+    <!-- NPC Petani -->
+    <a-entity id="farmer" gltf-model="#farmer-model" scale="1 1 1" position="0 0 -5" class="clickable" data-dialog="farmer"></a-entity>
+    <!-- NPC Pemilik Pabrik -->
+    <a-entity id="pabrik" gltf-model="#pabrik-model" scale="1 1 1" position="5 0 -5" class="clickable" data-dialog="pabrik"></a-entity>
   </a-entity>
 
-  <!-- Rig (player) -->
   <a-entity
     id="rig"
     position="0 1.6 0"
@@ -116,26 +132,81 @@
   </a-entity>
 </a-scene>
 
+<!-- Overlay Dialog -->
+<div id="npc-dialog-overlay">
+  <div id="npc-dialog-box">
+    <div id="npc-dialog-speaker"></div>
+    <div id="npc-dialog-text"></div>
+    <div id="npc-dialog-choices"></div>
+    <button id="npc-dialog-close">Tutup</button>
+  </div>
+</div>
+
 <script>
-AFRAME.registerComponent('hud-coords', {
-  tick: function () {
-    const player = document.querySelector('#player');
-    const hud = document.getElementById('hud');
-    if (player && hud) {
-      const pos = player.object3D.getWorldPosition(new THREE.Vector3());
-      hud.innerText = `Koordinat:\nX: ${pos.x.toFixed(2)}\nY: ${pos.y.toFixed(2)}\nZ: ${pos.z.toFixed(2)}`;
-    }
-  }
-});
+let gameState = { currentDialog: null };
 
-AFRAME.registerComponent('vr-detector', {
-  init: function () {
-    this.el.addEventListener('enter-vr', () => gameState.vrMode = true);
-    this.el.addEventListener('exit-vr', () => gameState.vrMode = false);
+const dialogData = {
+  koordinator: {
+    speaker: "Dr. Ahmad Surya - Koordinator Peneliti",
+    text: "Selamat datang di Desa Harmoni! Sebagai sosiolog senior, tugasmu adalah mengumpulkan data obyektif tentang konflik kompleks antara sektor pertanian dan industri.",
+    choices: [
+      { text: "🔬 Panduan Metodologi Penelitian", response: "Gunakan etnografi partisipatif, wawancara mendalam, analisis dokumen, dan triangulasi data untuk validitas." },
+      { text: "👥 Identifikasi Key Informants", response: "Informan kunci: Pak Seno (petani senior), Bu Anita (pemilik pabrik), dokumen resmi & kepala desa." },
+      { text: "✅ Validasi Data & Bukti", response: "Cross-check sumber, analisis konsistensi, gunakan bukti empiris (foto, video, pengukuran)." }
+    ]
+  },
+  farmer: {
+    speaker: "Pak Seno - Petani Senior",
+    text: "Saya sudah bertani di sini 20 tahun. Belakangan ini banyak perubahan yang membuat kami petani khawatir.",
+    choices: [
+      { text: "🌾 Kondisi Lahan & Hasil Panen", response: "Panen menurun 30%, air keruh, daun padi menguning. Bandingkan dengan sawah jauh dari pabrik hasilnya lebih baik." },
+      { text: "🏭 Dampak Keberadaan Pabrik", response: "Air irigasi berubah warna, bau kimia, ikan mati, hasil panen turun, kualitas beras rendah." },
+      { text: "🤝 Solusi & Harapan", response: "Harapan: audit independen, dialog multi-stakeholder, transparansi data air & tanah." }
+    ]
+  },
+  pabrik: {
+    speaker: "Bu Anita - Pemilik Pabrik",
+    text: "Selamat datang! Kami berkomitmen beroperasi secara bertanggung jawab dan berkelanjutan.",
+    choices: [
+      { text: "🔬 Sistem Pengolahan Limbah", response: "Kami punya IPAL, diuji dua pekan sekali oleh tim independen DLH. Dokumen hasil tersedia untuk publik." },
+      { text: "🤝 Hubungan dengan Komunitas", response: "CSR baru berjalan, ada evaluasi program, transparansi data limbah akan melibatkan warga." },
+      { text: "📊 Dampak & Kebijakan", response: "Jika terbukti bermasalah, siap investasi perbaikan. Usulkan audit independen bersama dengan warga & pemerintah." }
+    ]
   }
-});
+};
 
-let gameState = { currentDialog: null, dialogHistory: [], vrMode: false };
+function showNpcDialog(dialogId) {
+  const dialog = dialogData[dialogId];
+  if (!dialog) return;
+  gameState.currentDialog = dialogId;
+
+  document.getElementById('npc-dialog-speaker').textContent = dialog.speaker;
+  document.getElementById('npc-dialog-text').textContent = dialog.text;
+
+  const choicesDiv = document.getElementById('npc-dialog-choices');
+  choicesDiv.innerHTML = '';
+  dialog.choices.forEach(choice => {
+    const btn = document.createElement('button');
+    btn.textContent = choice.text;
+    btn.onclick = () => {
+      document.getElementById('npc-dialog-text').textContent = choice.response;
+      choicesDiv.innerHTML = '';
+    };
+    choicesDiv.appendChild(btn);
+  });
+
+  document.getElementById('npc-dialog-overlay').style.display = 'flex';
+}
+function hideNpcDialog() {
+  document.getElementById('npc-dialog-overlay').style.display = 'none';
+}
+document.getElementById('npc-dialog-close').onclick = hideNpcDialog;
+
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('[data-dialog]').forEach(el => {
+    el.addEventListener('click', () => showNpcDialog(el.getAttribute('data-dialog')));
+  });
+});
 </script>
 </body>
 </html>
