@@ -80,7 +80,7 @@
     <a-entity light="type: hemisphere; color: #FFF; groundColor: #808080; intensity: 0.5"></a-entity>
 
     <!-- Model utama: Dalam Perpustakaan -->
-    <a-entity gltf-model="#perpus-model" position="0 0 0" scale="1 1 1" shadow="receive: true"></a-entity>
+    <a-entity gltf-model="#perpus-model" position="0 2 0" scale="0.100 0.01 0.10" shadow="receive: true"></a-entity>
 
     <!-- Portal kembali ke Desa (opsional) -->
     <a-link
@@ -108,7 +108,7 @@
   <!-- Rig (player) -->
   <a-entity
     id="rig"
-    position="0 1.6 0"
+    position="0 0 0"
     cursor-teleport="cameraRig: #rig; cameraHead: #player; collisionEntities: .environmentGround; ignoreEntities: .clickable,[link]"
     movement-controls="fly:false; controls: gamepad, trackpad, keyboard, nipple;"
     spawn-in-circle="radius:1"
@@ -116,7 +116,7 @@
     player-info
   >
     <a-entity id="player" class="camera" camera position="0 1.6 0" look-controls>
-      <a-box obb-collider visible="false" height="0.4" depth="0.4" width="0.4"></a-box>
+      <a-box obb-collider visible="false" height="4" depth="4" width="0.4"></a-box>
       <a-entity cursor="rayOrigin: mouse" raycaster="objects: .clickable; far: 10"></a-entity>
     </a-entity>
   </a-entity>
