@@ -61,9 +61,11 @@
   change-room="on: obbcollisionstarted; room: pabrik; url: pabrik.html"
   link="on: ignore"
   href="pabrik.html"
-  position="0 2.60 0.05"
+  position="5 2.60 7"
   title="Portal ke Pabrik"
-  image="#thumbForest">
+  image="#thumbForest"
+  rotation="0 90 0"
+  >
   <a-box position="0 0 0.5" obb-collider visible="false"></a-box>
 </a-link>
 
@@ -193,14 +195,14 @@
   <!-- Rig (player) -->
   <a-entity
     id="rig"
-    position="0 1.6 0"
+    position="1 1.6 7"
     movement-controls="fly:false; controls: gamepad, trackpad, keyboard, nipple;"
     spawn-in-circle="radius:1"
     restrict-cube="minX: -100; maxX: 360; minZ: -200; maxZ: 200"
     networked="template:#avatar-template; attachTemplateToLocal:false"
     player-info
   >
-    <a-entity id="player" class="camera" camera position="16 1 -8" look-controls>
+    <a-entity id="player" class="camera" camera position="1 1 7" look-controls>
       <a-box obb-collider visible="false" height="0.4" depth="0.4" width="0.4"></a-box>
       <a-entity cursor="rayOrigin: mouse" raycaster="objects: .clickable; far: 10"></a-entity>
     </a-entity>

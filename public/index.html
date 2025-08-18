@@ -100,16 +100,15 @@
         </a-mirror>
 
         <a-link
-          change-room="on:obbcollisionstarted;room:desa;url:desa.html"
-          link="on:ignore"
-          href="desa"
-          position="2 1.5 3"
-          title="Desa Harmoni"
-          image="#thumbForest"
-        >
-          <a-box position="0 0 0.5" obb-collider visible="false"></a-box>
-        </a-link>
-      </a-entity>
+        id="portal-desa"
+        href="desa.html"
+        title="Desa Harmoni"
+        image="#thumbForest"
+        position="2 1.5 3"
+      >
+        <a-box obb-collider visible="false"></a-box>
+      </a-link>
+      
 
       <a-entity
         id="rig"
@@ -235,6 +234,10 @@
           }
         }
       });
+      const portal = document.querySelector("#portal-desa");
+  portal.addEventListener("obbcollisionstarted", () => {
+    window.location.href = "desa.html"; // langsung redirect / refresh
+  });
     </script>
   </body>
 </html>
