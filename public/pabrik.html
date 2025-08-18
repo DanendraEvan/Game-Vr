@@ -81,6 +81,8 @@
       <img id="thumbDesa" crossorigin="anonymous" src="https://cdn.aframe.io/link-traversal/thumbs/forest.png"
         alt="Desa" />
       <a-asset-item id="pabrik-model" src="models/pabrik.glb"></a-asset-item>
+      <a-asset-item id="signArrow" src="models/signArrow.glb"></a-asset-item>
+      <a-asset-item id="village-model" src="models/Untitled.glb"></a-asset-item>
     </a-assets>
 
     <a-entity id="scene">
@@ -92,16 +94,18 @@
 
       <!-- Pabrik -->
       <a-entity gltf-model="#pabrik-model" position="0 0 -10" scale="2 2 2" shadow="receive: true"></a-entity>
-
+      <a-entity gltf-model="#signArrow" position="-25 2.6 -20" scale="20 20 20" rotation="0 90 0" shadow="receive: true"></a-entity>
+      <a-entity gltf-model="#signArrow" position="-25 2.6 -38" scale="20 20 20" rotation="0 90 0" shadow="receive: true"></a-entity>
+      <a-entity gltf-model="#signArrow" position="-25 2.6 -64" scale="20 20 20" rotation="0 90 0" shadow="receive: true"></a-entity>
       <!-- Portal balik ke desa -->
       <a-link change-room="on: obbcollisionstarted; room: desa; url: desa.html" link="on: ignore" href="desa.html"
         position="0 2.6 -5" title="Kembali ke Desa" image="#thumbDesa">
-        <a-box position="0 0 0.5" obb-collider></a-box>
+        <a-box position="0 0 0" obb-collider visible="false"></a-box>
       </a-link>
 
       <!-- Info text -->
-      <a-entity id="info-dialog-onload" position="0 4 -8">
-        <a-plane width="7" height="1.2" color="#1e293b" opacity="0.92" material="shader: flat"></a-plane>
+      <a-entity id="info-dialog-onload" position="-0.23 4 -39">
+        <a-plane width="15" height="1.2" color="#1e293b" opacity="0.92" material="shader: flat"></a-plane>
         <a-text value="Selamat datang di Pabrik! Gunakan portal untuk kembali ke Desa Harmoni." align="center"
           color="#fff" position="0 0 0.05" text="width: 12; wrapCount: 60; font: dejavu; weight: bold"></a-text>
       </a-entity>
