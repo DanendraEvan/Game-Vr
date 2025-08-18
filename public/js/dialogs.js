@@ -465,7 +465,7 @@ const NPC_DIALOGS = {
     ]
   }, 
 
-  //KETUA KELOMPOK TANI
+  //DIALOG KETUA KELOMPOK TANI
   "farmer_leader": {
     "speaker": "Ketua Kelompok Tani",
     "text": "Apa yang ingin Anda ketahui tentang masalah pertanian kami?",
@@ -664,7 +664,7 @@ const NPC_DIALOGS = {
     ]
   }, 
 
-  //AKTIVIS PENGAIRAN
+  //DIALOG AKTIVIS PENGAIRAN
   "water_activist": {
     "speaker": "Aktivis Pengairan",
     "text": "Apa yang ingin Anda ketahui tentang kondisi air di wilayah kami?",
@@ -806,7 +806,7 @@ const NPC_DIALOGS = {
     ]
   }, 
 
-  //PENGAMAT PERTANIAN LOKAL
+  //DIALOG PENGAMAT PERTANIAN LOKAL
   "agri_observer": {
     "speaker": "Pengamat Pertanian Lokal",
     "text": "Apa yang ingin Anda tanyakan mengenai kondisi pertanian kami?",
