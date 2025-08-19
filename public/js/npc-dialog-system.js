@@ -528,13 +528,13 @@ AFRAME.registerComponent('npc-dialog-3d', {
 
     navContainer.appendChild(backBtn);
 
-    // Auto return to dialog after 8 seconds
+    // Auto return to dialog after 20 seconds
     setTimeout(() => {
       if (self.currentPanel && self.currentPanel.parentNode) {
         const previousDialog = self.dialogStack.length > 0 ? self.dialogStack[self.dialogStack.length - 1] : self.data.npcId;
         self.showDialog(previousDialog);
       }
-    }, 8000);
+    }, 20000);
   },
 
   updateDialogHistory: function(npcId, choice) {
@@ -595,7 +595,7 @@ AFRAME.registerComponent('dialog-mapper', {
           // Update npcId di komponen dialog
           npcElement.setAttribute('npc-dialog-3d', {
             npcId: dialogMapping[npcId],
-            distance: dialogComponent.distance || 2.5
+            distance: dialogComponent.distance || 2
           });
           console.log(`Updated NPC ${npcId} to use dialog ${dialogMapping[npcId]}`);
         }
