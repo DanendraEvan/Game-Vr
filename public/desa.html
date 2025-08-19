@@ -59,7 +59,14 @@
   hud-coords
 >
 
-<a-entity gltf-model="models/sky_dome_demo.glb" scale="10 10 10" position="0 0 0" rotation="0 0 0"></a-entity>
+<!-- Musik Latar -->
+<a-entity id="backSound" sound="src: MusicDesa.mp3; autoplay: true; loop: true; volume: 1; positional: false"></a-entity>
+<a-entity id="backSound" sound="src: DesaAyam.mp3; autoplay: true; loop: true; volume: 1"></a-entity>
+<a-entity id="backSound" position="113 3 -110" sound="src: musikSawah.mp3; autoplay: true; loop: true; volume: 4; positional: true"></a-entity>
+<a-entity id="backSound" position="230 3 -105" sound="src: musikSawah.mp3; autoplay: true; loop: true; volume: 4; positional: true"></a-entity>
+
+
+<a-entity gltf-model="models/sky_dome_demo.glb" scale="12 12 12" position="0 0 0" rotation="0 0 0"></a-entity>
 
 
 <!-- Portal ke pabrik -->
@@ -132,19 +139,19 @@
       </a-entity>
 
       <!-- NPC Pengamat pertanian lokal -->
-      <a-entity id="pengamat petani lokal" class="clickable" gltf-model="models/farmer.glb" position="106.05687 0.92343 -99.6098"
+      <a-entity id="pengamat petani lokal" class="clickable" gltf-model="models/pengamat.glb" position="100.05687 0.3 -109.6098"
         npc-dialog-3d="npcId: agri_observer" rotation="0 -3.465248744951219 0">
         <a-cylinder radius="1.2" height="0.45" material="opacity: 0; transparent: true"
           position="3.97959 0.5 -1.44845"></a-cylinder>
-        <a-text position="0 2.3318666765371967 0" value="Pengamat Pertanian Lokal\nPak " align="center" color="#2F4F4F"
-          geometry="primitive: plane; height: 1.4591728525980912; width: 8" material="opacity: 0.9; color: #fff"
-          text="width: 8; wrapCount: 20" animation__bob="dur: 2000; loop: true; property: position; to: 0 2.4 0">
+        <a-text position="0 6.5 0" value="Pengamat Pertanian Lokal\nPak " align="center" color="#2F4F4F"
+          geometry="primitive: plane; height: 1.4591728525980912; width: 15" material="opacity: 0.9; color: #fff"
+          text="width: 10; wrapCount: 20" animation__bob="dur: 2000; loop: true; property: position; to: 0 7 0">
         </a-text>
       </a-entity>
 
       <!-- NPC Anak Petani -->
       <a-entity id="anak petani" class="clickable" gltf-model="models/Boy.glb"
-        position="60.98863 0.52 -100.26036" npc-dialog-3d="npcId: anak petani" rotation="0 -3.465248744951219 0">
+        position="125.98863 0.52 -177.26036" npc-dialog-3d="npcId: anak petani" rotation="0 -3.465248744951219 0">
         <a-cylinder radius="1.2" height="0.45" material="opacity: 0; transparent: true"
           position="3.97959 0.5 -1.44845"></a-cylinder>
         <a-text position="0 4 0" value="Anak Petani\nDek Evan" align="center" color="#2F4F4F"
@@ -165,35 +172,35 @@
       </a-entity>
 
       <!-- NPC Aktivis pengairan -->
-      <a-entity id="aktivis pengairan" class="clickable" gltf-model="models/wise_man_33.glb"
+      <a-entity id="aktivis pengairan" class="clickable" gltf-model="models/desi_villager.glb"
         position="207.97888 0.75294 -113.09263" npc-dialog-3d="npcId: water_activist" rotation="0 -3.465248744951219 0">
         <a-cylinder radius="1.2" height="0.45" material="opacity: 0; transparent: true"
           position="3.97959 0.5 -1.44845"></a-cylinder>
-        <a-text position="0 2.3723199291130173 0" value="Aktivis Pengairan\nPak Air" align="center" color="#2F4F4F"
+        <a-text position="0 6 0" value="Aktivis Pengairan\nPak Air" align="center" color="#2F4F4F"
           geometry="primitive: plane; height: 1.4591728525980912; width: 8" material="opacity: 0.9; color: #fff"
-          text="width: 8; wrapCount: 20" animation__bob="dur: 2000; loop: true; property: position; to: 0 2.4 0">
+          text="width: 8; wrapCount: 20" animation__bob="dur: 2000; loop: true; property: position; to: 0 6.4 0">
         </a-text>
       </a-entity>
 
       <!-- NPC Ketua Tani -->
-      <a-entity id="ketua tani" class="clickable" gltf-model="models/wise_man_33.glb"
+      <a-entity id="ketua tani" class="clickable" gltf-model="models/pakair.glb"
         position="230.97818 0.64825 -105.50623" npc-dialog-3d="npcId: farmer_leader" rotation="0 -3.465248744951219 0">
         <a-cylinder radius="1.2" height="0.45" material="opacity: 0; transparent: true"
           position="3.97959 0.5 -1.44845"></a-cylinder>
-        <a-text position="0 2.3748271503345766 0" value="Ketua Tani\nPak Tani" align="center" color="#2F4F4F"
+        <a-text position="0 4 0" value="Ketua Tani\nPak Tani" align="center" color="#2F4F4F"
           geometry="primitive: plane; height: 1.4591728525980912; width: 8" material="opacity: 0.9; color: #fff"
-          text="width: 8; wrapCount: 20" animation__bob="dur: 2000; loop: true; property: position; to: 0 2.4 0">
+          text="width: 8; wrapCount: 20" animation__bob="dur: 2000; loop: true; property: position; to: 0 4.4 0">
         </a-text>
       </a-entity>
 
       <!-- NPC Kepala Desa -->
-      <a-entity id="kepala desa" class="clickable" gltf-model="models/wise_man_33.glb"
+      <a-entity id="kepala desa" class="clickable" gltf-model="models/kepala.glb"
         position="11.00104 1.69333 -107.69743" npc-dialog-3d="npcId: village_head" rotation="0 -3.465248744951219 0">
         <a-cylinder radius="1.2" height="0.45" material="opacity: 0; transparent: true"
           position="3.97959 0.5 -1.44845"></a-cylinder>
-        <a-text position="0 2.375209618505944 0" value="Kepala Desa\nPak Rahmat" align="center" color="#2F4F4F"
+        <a-text position="0 6 0" value="Kepala Desa\nPak Rahmat" align="center" color="#2F4F4F"
           geometry="primitive: plane; height: 1.4591728525980912; width: 8" material="opacity: 0.9; color: #fff"
-          text="width: 8; wrapCount: 20" animation__bob="dur: 2000; loop: true; property: position; to: 0 2.4 0">
+          text="width: 8; wrapCount: 20" animation__bob="dur: 2000; loop: true; property: position; to: 0 6.4 0">
         </a-text>
       </a-entity>
   </a-entity>

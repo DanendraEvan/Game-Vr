@@ -1,4 +1,4 @@
-// 3D Dialog Component dengan update konten instead of recreating panel
+// 3D Dialog Component dengan scroll untuk choices yang banyak
 AFRAME.registerComponent('npc-dialog-3d', {
   schema: { 
     npcId: { type: 'string' }, 
@@ -8,11 +8,15 @@ AFRAME.registerComponent('npc-dialog-3d', {
   init: function () {
     this.dialogStack = []; // Stack untuk tracking menu navigasi
     this.currentPanel = null; // Reference ke panel yang sedang aktif
+    this.currentChoices = []; // Store current choices for scrolling
+    this.scrollOffset = 0; // Current scroll position
+    this.maxVisibleChoices = 4; // Maximum choices visible at once
     
     this.el.addEventListener('click', (evt) => {
       evt.stopPropagation();
       evt.preventDefault();
       this.dialogStack = []; // reset stack
+      this.scrollOffset = 0; // reset scroll
       this.showDialog(this.data.npcId);
     });
     
@@ -59,7 +63,7 @@ AFRAME.registerComponent('npc-dialog-3d', {
     gameState.currentDialog = dialogId;
   },
 
-createDialogPanel: function() {
+  createDialogPanel: function() {
     const scene = this.el.sceneEl;
     
     // Hapus panel lama jika ada
@@ -68,7 +72,7 @@ createDialogPanel: function() {
 
     const panel = document.createElement('a-entity');
     panel.setAttribute('id', 'dialog-panel');
-    panel.setAttribute('geometry', { primitive: 'plane', width: 4, height: 3 });
+    panel.setAttribute('geometry', { primitive: 'plane', width: 4, height: 3.5 });
     panel.setAttribute('material', { color: '#1a1a1a', opacity: 0.95 });
 
     // Dapatkan posisi NPC dan kamera
@@ -95,7 +99,7 @@ createDialogPanel: function() {
     // Border panel
     const border = document.createElement('a-plane');
     border.setAttribute('id', 'dialog-border');
-    border.setAttribute('geometry', { primitive: 'plane', width: 4.1, height: 3.1 });
+    border.setAttribute('geometry', { primitive: 'plane', width: 4.1, height: 3.6 });
     border.setAttribute('material', { color: '#4CAF50', opacity: 0.8 });
     border.setAttribute('position', '0 0 -0.01');
     panel.appendChild(border);
@@ -105,7 +109,7 @@ createDialogPanel: function() {
     header.setAttribute('id', 'dialog-header');
     header.setAttribute('geometry', { primitive: 'plane', width: 3.8, height: 0.4 });
     header.setAttribute('material', { color: '#2196F3' });
-    header.setAttribute('position', '0 1.25 0.02');
+    header.setAttribute('position', '0 1.5 0.02');
     
     const title = document.createElement('a-text');
     title.setAttribute('id', 'dialog-title');
@@ -121,7 +125,7 @@ createDialogPanel: function() {
     tag.setAttribute('id', 'dialog-tag');
     tag.setAttribute('geometry', { primitive: 'plane', width: 1, height: 0.2 });
     tag.setAttribute('material', { color: '#FFD700', opacity: 0.9 });
-    tag.setAttribute('position', '1.4 1.25 0.03');
+    tag.setAttribute('position', '1.4 1.5 0.03');
     
     const tagText = document.createElement('a-text');
     tagText.setAttribute('id', 'dialog-tag-text');
@@ -138,9 +142,9 @@ createDialogPanel: function() {
     // Dialog text area
     const dialogArea = document.createElement('a-plane');
     dialogArea.setAttribute('id', 'dialog-text-area');
-    dialogArea.setAttribute('geometry', { primitive: 'plane', width: 3.8, height: 1 });
+    dialogArea.setAttribute('geometry', { primitive: 'plane', width: 3.8, height: 0.6 });
     dialogArea.setAttribute('material', { color: '#f8fafc', opacity: 0.95 });
-    dialogArea.setAttribute('position', '0 0.5 0.02');
+    dialogArea.setAttribute('position', '0 0.9 0.02');
     
     const dialogText = document.createElement('a-text');
     dialogText.setAttribute('id', 'dialog-main-text');
@@ -149,27 +153,111 @@ createDialogPanel: function() {
     dialogText.setAttribute('width', 3.2);
     dialogText.setAttribute('position', '0 0 0.02');
     dialogText.setAttribute('wrap-count', 60);
-    dialogText.setAttribute('line-height', 40);
+    dialogText.setAttribute('line-height', 30);
     dialogArea.appendChild(dialogText);
     panel.appendChild(dialogArea);
 
-    // Choices container
+    // Scroll container untuk choices
+    const scrollContainer = document.createElement('a-entity');
+    scrollContainer.setAttribute('id', 'dialog-scroll-container');
+    scrollContainer.setAttribute('position', '0 -0.1 0.02');
+    panel.appendChild(scrollContainer);
+
+    // Scroll viewport (clipping area)
+    const scrollViewport = document.createElement('a-plane');
+    scrollViewport.setAttribute('id', 'dialog-scroll-viewport');
+    scrollViewport.setAttribute('geometry', { primitive: 'plane', width: 3.2, height: 1.2 });
+    scrollViewport.setAttribute('material', { color: '#ffffff', opacity: 0.01 }); // Almost transparent
+    scrollViewport.setAttribute('position', '0 0 -0.01');
+    scrollContainer.appendChild(scrollViewport);
+
+    // Choices container (will be scrolled)
     const choicesContainer = document.createElement('a-entity');
     choicesContainer.setAttribute('id', 'dialog-choices-container');
-    choicesContainer.setAttribute('position', '0 -0.3 0.02');
-    panel.appendChild(choicesContainer);
+    choicesContainer.setAttribute('position', '0 0 0');
+    scrollViewport.appendChild(choicesContainer);
+
+    // Scroll indicators
+    this.createScrollIndicators(panel);
 
     // Navigation buttons container
     const navContainer = document.createElement('a-entity');
     navContainer.setAttribute('id', 'dialog-nav-container');
-    navContainer.setAttribute('position', '0 -1.2 0.02');
+    navContainer.setAttribute('position', '0 -1.5 0.02');
     panel.appendChild(navContainer);
 
     scene.appendChild(panel);
     this.currentPanel = panel;
-},
+  },
+
+  createScrollIndicators: function(panel) {
+    // Scroll up button
+    const scrollUpBtn = document.createElement('a-plane');
+    scrollUpBtn.setAttribute('id', 'scroll-up-btn');
+    scrollUpBtn.setAttribute('geometry', { primitive: 'plane', width: 0.3, height: 0.3 });
+    scrollUpBtn.setAttribute('material', { color: '#607D8B', opacity: 0.8 });
+    scrollUpBtn.setAttribute('position', '1.5 0.2 0.03');
+    scrollUpBtn.classList.add('clickable');
+    
+    const upArrow = document.createElement('a-text');
+    upArrow.setAttribute('value', '↑');
+    upArrow.setAttribute('align', 'center');
+    upArrow.setAttribute('color', 'white');
+    upArrow.setAttribute('width', 4);
+    upArrow.setAttribute('position', '0 0 0.02');
+    scrollUpBtn.appendChild(upArrow);
+
+    // Scroll down button
+    const scrollDownBtn = document.createElement('a-plane');
+    scrollDownBtn.setAttribute('id', 'scroll-down-btn');
+    scrollDownBtn.setAttribute('geometry', { primitive: 'plane', width: 0.3, height: 0.3 });
+    scrollDownBtn.setAttribute('material', { color: '#607D8B', opacity: 0.8 });
+    scrollDownBtn.setAttribute('position', '1.5 -0.6 0.03');
+    scrollDownBtn.classList.add('clickable');
+    
+    const downArrow = document.createElement('a-text');
+    downArrow.setAttribute('value', '↓');
+    downArrow.setAttribute('align', 'center');
+    downArrow.setAttribute('color', 'white');
+    downArrow.setAttribute('width', 4);
+    downArrow.setAttribute('position', '0 0 0.02');
+    scrollDownBtn.appendChild(downArrow);
+
+    // Scroll indicator (shows current position)
+    const scrollIndicator = document.createElement('a-plane');
+    scrollIndicator.setAttribute('id', 'scroll-indicator');
+    scrollIndicator.setAttribute('geometry', { primitive: 'plane', width: 0.2, height: 0.6 });
+    scrollIndicator.setAttribute('material', { color: '#9E9E9E', opacity: 0.3 });
+    scrollIndicator.setAttribute('position', '1.5 -0.2 0.02');
+    
+    const scrollThumb = document.createElement('a-plane');
+    scrollThumb.setAttribute('id', 'scroll-thumb');
+    scrollThumb.setAttribute('geometry', { primitive: 'plane', width: 0.15, height: 0.15 });
+    scrollThumb.setAttribute('material', { color: '#4CAF50', opacity: 0.8 });
+    scrollThumb.setAttribute('position', '0 0.2 0.02');
+    scrollIndicator.appendChild(scrollThumb);
+
+    panel.appendChild(scrollUpBtn);
+    panel.appendChild(scrollDownBtn);
+    panel.appendChild(scrollIndicator);
+
+    // Add scroll event listeners
+    const self = this;
+    scrollUpBtn.addEventListener('click', function(evt) {
+      evt.stopPropagation();
+      self.scrollUp();
+    });
+
+    scrollDownBtn.addEventListener('click', function(evt) {
+      evt.stopPropagation();
+      self.scrollDown();
+    });
+  },
 
   updateDialogContent: function(dialog, dialogId) {
+    // Reset scroll offset
+    this.scrollOffset = 0;
+    
     // Update title
     const title = this.currentPanel.querySelector('#dialog-title');
     title.setAttribute('value', dialog.speaker);
@@ -187,64 +275,153 @@ createDialogPanel: function() {
     const mainText = this.currentPanel.querySelector('#dialog-main-text');
     mainText.setAttribute('value', dialog.text);
 
-    // Clear and update choices
-    const choicesContainer = this.currentPanel.querySelector('#dialog-choices-container');
-    this.clearContainer(choicesContainer);
-
-    if (dialog.choices && dialog.choices.length > 0) {
-      dialog.choices.forEach((choice, index) => {
-        const choiceBtn = document.createElement('a-plane');
-        const btnHeight = 0.3;
-        const spacing = 0.35;
-        const startY = ((dialog.choices.length - 1) * spacing) / 2;
-        
-        choiceBtn.setAttribute('geometry', { primitive: 'plane', width: 3.6, height: btnHeight });
-        
-        // Tentukan warna berdasarkan jenis pilihan
-        let btnColor = '#3b82f6'; // default blue untuk submenu
-        if (choice.response) {
-          btnColor = '#10b981'; // green untuk pilihan yang ada responsenya
-        }
-        
-        choiceBtn.setAttribute('material', { color: btnColor });
-        choiceBtn.setAttribute('position', `0 ${startY - (index * spacing)} 0`);
-        choiceBtn.classList.add('clickable');
-        choiceBtn.setAttribute('animation__hover', 'property: scale; to: 1.05 1.05 1.05; startEvents: mouseenter; dur: 200');
-        choiceBtn.setAttribute('animation__leave', 'property: scale; to: 1 1 1; startEvents: mouseleave; dur: 200');
-
-        const choiceLabel = document.createElement('a-text');
-        choiceLabel.setAttribute('value', choice.text);
-        choiceLabel.setAttribute('align', 'center');
-        choiceLabel.setAttribute('color', 'white');
-        choiceLabel.setAttribute('width', 2.8);
-        choiceLabel.setAttribute('wrap-count', 50);
-        choiceLabel.setAttribute('position', '0 0 0.02');
-        choiceBtn.appendChild(choiceLabel);
-
-        const self = this;
-        choiceBtn.addEventListener('click', function (evt) {
-          evt.stopPropagation();
-          evt.preventDefault();
-          
-          if (choice.submenu) {
-            // Navigate to submenu - update stack and content
-            self.dialogStack.push(dialogId);
-            self.showDialog(choice.submenu);
-          } else if (choice.response) {
-            // Show response - update content to response mode
-            self.showResponse(choice.response);
-          }
-          
-          // Update dialog history
-          self.updateDialogHistory(dialogId, choice);
-        });
-
-        choicesContainer.appendChild(choiceBtn);
-      });
-    }
+    // Store choices and update display
+    this.currentChoices = dialog.choices || [];
+    this.updateChoicesDisplay(dialogId);
 
     // Update navigation buttons
     this.updateNavigationButtons(dialogId);
+    
+    // Update scroll indicators
+    this.updateScrollIndicators();
+  },
+
+  updateChoicesDisplay: function(dialogId) {
+    const choicesContainer = this.currentPanel.querySelector('#dialog-choices-container');
+    this.clearContainer(choicesContainer);
+
+    if (this.currentChoices.length === 0) return;
+
+    // Calculate visible choices
+    const startIndex = this.scrollOffset;
+    const endIndex = Math.min(startIndex + this.maxVisibleChoices, this.currentChoices.length);
+    const visibleChoices = this.currentChoices.slice(startIndex, endIndex);
+
+    visibleChoices.forEach((choice, displayIndex) => {
+      const actualIndex = startIndex + displayIndex;
+      const choiceBtn = document.createElement('a-plane');
+      const btnHeight = 0.3;
+      const spacing = 0.35;
+      const startY = ((this.maxVisibleChoices - 1) * spacing) / 2;
+      
+      choiceBtn.setAttribute('geometry', { primitive: 'plane', width: 3.0, height: btnHeight });
+      
+      // Tentukan warna berdasarkan jenis pilihan
+      let btnColor = '#3b82f6'; // default blue untuk submenu
+      if (choice.response) {
+        btnColor = '#10b981'; // green untuk pilihan yang ada responsenya
+      }
+      
+      choiceBtn.setAttribute('material', { color: btnColor });
+      choiceBtn.setAttribute('position', `0 ${startY - (displayIndex * spacing)} 0`);
+      choiceBtn.classList.add('clickable');
+      choiceBtn.setAttribute('animation__hover', 'property: scale; to: 1.05 1.05 1.05; startEvents: mouseenter; dur: 200');
+      choiceBtn.setAttribute('animation__leave', 'property: scale; to: 1 1 1; startEvents: mouseleave; dur: 200');
+
+      const choiceLabel = document.createElement('a-text');
+      choiceLabel.setAttribute('value', `${actualIndex + 1}. ${choice.text}`);
+      choiceLabel.setAttribute('align', 'center');
+      choiceLabel.setAttribute('color', 'white');
+      choiceLabel.setAttribute('width', 2.4);
+      choiceLabel.setAttribute('wrap-count', 40);
+      choiceLabel.setAttribute('position', '0 0 0.02');
+      choiceBtn.appendChild(choiceLabel);
+
+      const self = this;
+      choiceBtn.addEventListener('click', function (evt) {
+        evt.stopPropagation();
+        evt.preventDefault();
+        
+        if (choice.submenu) {
+          // Navigate to submenu - update stack and content
+          self.dialogStack.push(dialogId);
+          self.showDialog(choice.submenu);
+        } else if (choice.response) {
+          // Show response - update content to response mode
+          self.showResponse(choice.response);
+        }
+        
+        // Update dialog history
+        self.updateDialogHistory(dialogId, choice);
+      });
+
+      choicesContainer.appendChild(choiceBtn);
+    });
+  },
+
+  scrollUp: function() {
+    if (this.scrollOffset > 0) {
+      this.scrollOffset--;
+      this.updateChoicesDisplay(gameState.currentDialog);
+      this.updateScrollIndicators();
+    }
+  },
+
+  scrollDown: function() {
+    const maxOffset = Math.max(0, this.currentChoices.length - this.maxVisibleChoices);
+    if (this.scrollOffset < maxOffset) {
+      this.scrollOffset++;
+      this.updateChoicesDisplay(gameState.currentDialog);
+      this.updateScrollIndicators();
+    }
+  },
+
+  updateScrollIndicators: function() {
+    const scrollUpBtn = this.currentPanel.querySelector('#scroll-up-btn');
+    const scrollDownBtn = this.currentPanel.querySelector('#scroll-down-btn');
+    const scrollThumb = this.currentPanel.querySelector('#scroll-thumb');
+
+    if (!scrollUpBtn || !scrollDownBtn || !scrollThumb) return;
+
+    // Show/hide scroll buttons
+    const canScrollUp = this.scrollOffset > 0;
+    const canScrollDown = this.scrollOffset < Math.max(0, this.currentChoices.length - this.maxVisibleChoices);
+    const hasScroll = this.currentChoices.length > this.maxVisibleChoices;
+
+    scrollUpBtn.setAttribute('visible', hasScroll);
+    scrollDownBtn.setAttribute('visible', hasScroll);
+    scrollUpBtn.setAttribute('material', { 
+      color: canScrollUp ? '#607D8B' : '#BDBDBD', 
+      opacity: canScrollUp ? 0.8 : 0.4 
+    });
+    scrollDownBtn.setAttribute('material', { 
+      color: canScrollDown ? '#607D8B' : '#BDBDBD', 
+      opacity: canScrollDown ? 0.8 : 0.4 
+    });
+
+    // Update scroll thumb position
+    if (hasScroll && this.currentChoices.length > 0) {
+      const progress = this.scrollOffset / Math.max(1, this.currentChoices.length - this.maxVisibleChoices);
+      const thumbY = 0.2 - (progress * 0.4); // Range from 0.2 to -0.2
+      scrollThumb.setAttribute('position', `0 ${thumbY} 0.02`);
+    }
+
+    // Show choice counter
+    this.updateChoiceCounter();
+  },
+
+  updateChoiceCounter: function() {
+    let counter = this.currentPanel.querySelector('#choice-counter');
+    if (!counter && this.currentChoices.length > this.maxVisibleChoices) {
+      counter = document.createElement('a-text');
+      counter.setAttribute('id', 'choice-counter');
+      counter.setAttribute('align', 'center');
+      counter.setAttribute('color', '#666666');
+      counter.setAttribute('width', 2);
+      counter.setAttribute('position', '0 -1.0 0.02');
+      this.currentPanel.appendChild(counter);
+    }
+
+    if (counter) {
+      if (this.currentChoices.length > this.maxVisibleChoices) {
+        const start = this.scrollOffset + 1;
+        const end = Math.min(this.scrollOffset + this.maxVisibleChoices, this.currentChoices.length);
+        counter.setAttribute('value', `Menampilkan ${start}-${end} dari ${this.currentChoices.length} pilihan`);
+        counter.setAttribute('visible', true);
+      } else {
+        counter.setAttribute('visible', false);
+      }
+    }
   },
 
   updateNavigationButtons: function(dialogId) {
@@ -314,9 +491,10 @@ createDialogPanel: function() {
     const mainText = this.currentPanel.querySelector('#dialog-main-text');
     mainText.setAttribute('value', responseText);
 
-    // Hide choices and show back to dialog button
-    const choicesContainer = this.currentPanel.querySelector('#dialog-choices-container');
-    this.clearContainer(choicesContainer);
+    // Clear choices and hide scroll indicators
+    this.currentChoices = [];
+    this.updateChoicesDisplay('');
+    this.updateScrollIndicators();
 
     // Update navigation for response mode
     const navContainer = this.currentPanel.querySelector('#dialog-nav-container');
@@ -350,13 +528,13 @@ createDialogPanel: function() {
 
     navContainer.appendChild(backBtn);
 
-    // Auto return to dialog after 8 seconds
+    // Auto return to dialog after 20 seconds
     setTimeout(() => {
       if (self.currentPanel && self.currentPanel.parentNode) {
         const previousDialog = self.dialogStack.length > 0 ? self.dialogStack[self.dialogStack.length - 1] : self.data.npcId;
         self.showDialog(previousDialog);
       }
-    }, 8000);
+    }, 20000);
   },
 
   updateDialogHistory: function(npcId, choice) {
@@ -382,6 +560,8 @@ createDialogPanel: function() {
     }
     gameState.currentDialog = null;
     this.dialogStack = [];
+    this.currentChoices = [];
+    this.scrollOffset = 0;
   },
 
   clearContainer: function(container) {
@@ -404,7 +584,6 @@ AFRAME.registerComponent('dialog-mapper', {
       'ketua tani': 'farmer_leader',
       'kepala desa': 'village_head',
       'pemilik pabrik': 'factory_owner'
-
     };
     
     // Update semua NPC dengan dialog mapping yang benar
@@ -416,7 +595,7 @@ AFRAME.registerComponent('dialog-mapper', {
           // Update npcId di komponen dialog
           npcElement.setAttribute('npc-dialog-3d', {
             npcId: dialogMapping[npcId],
-            distance: dialogComponent.distance || 2.5
+            distance: dialogComponent.distance || 2
           });
           console.log(`Updated NPC ${npcId} to use dialog ${dialogMapping[npcId]}`);
         }
@@ -451,3 +630,29 @@ window.testDialog = function(npcId) {
     npc.components['npc-dialog-3d'].showDialog(npcId);
   }
 };
+
+// Keyboard controls untuk scroll (optional)
+document.addEventListener('keydown', function(event) {
+  const activeDialog = document.querySelector('#dialog-panel');
+  if (activeDialog) {
+    const npc = document.querySelector('[npc-dialog-3d]');
+    const component = npc && npc.components['npc-dialog-3d'];
+    
+    if (component) {
+      switch(event.key) {
+        case 'ArrowUp':
+          event.preventDefault();
+          component.scrollUp();
+          break;
+        case 'ArrowDown':
+          event.preventDefault();
+          component.scrollDown();
+          break;
+        case 'Escape':
+          event.preventDefault();
+          component.closeDialog();
+          break;
+      }
+    }
+  }
+});
