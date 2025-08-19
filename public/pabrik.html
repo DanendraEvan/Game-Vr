@@ -70,7 +70,11 @@
     raycaster="far: 10; objects: .clickable" cursor="rayOrigin: mouse" vr-detector hud-coords>
 
     <!-- Musik Latar -->
-<a-entity id="backSound" sound="src: Pabrik.mp3; autoplay: true; loop: true; volume: 1; positional: false"></a-entity>
+<a-assets>
+  <audio id="bgm" src="Pabrik.mp3" preload="auto"></audio>
+</a-assets>
+
+<a-entity sound="src: #bgm; autoplay: true; loop: true; volume: 1"></a-entity>
 
     <a-assets>
       <template id="avatar-template">

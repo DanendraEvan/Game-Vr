@@ -57,11 +57,25 @@
   hud-coords
 >
 
-<!-- Musik Latar -->
-<a-entity id="backSound" sound="src: MusicDesa.mp3; autoplay: true; loop: true; volume: 1; positional: false"></a-entity>
-<a-entity id="backSound" sound="src: DesaAyam.mp3; autoplay: true; loop: true; volume: 1"></a-entity>
-<a-entity id="backSound" position="113 3 -110" sound="src: musikSawah.mp3; autoplay: true; loop: true; volume: 2; positional: true"></a-entity>
-<a-entity id="backSound" position="230 3 -105" sound="src: musikSawah.mp3; autoplay: true; loop: true; volume: 2; positional: true"></a-entity>
+<!-- Musik global (didengar di seluruh scene, non-positional) -->
+<a-entity id="musikGlobal" 
+          sound="src: url(MusicDesa.mp3); autoplay: true; loop: true; volume: 1; positional: false">
+</a-entity>
+
+<a-entity id="musikAyam" 
+          sound="src: url(DesaAyam.mp3); autoplay: true; loop: true; volume: 2; positional: false">
+</a-entity>
+
+<!-- Musik lokal (positional, hanya terdengar dekat posisinya) -->
+<a-entity id="musikSawah1" 
+          position="113 3 -110" 
+          sound="src: url(musikSawah.mp3); autoplay: true; loop: true; volume: 4; positional: true">
+</a-entity>
+
+<a-entity id="musikSawah2" 
+          position="230 3 -105" 
+          sound="src: url(musikSawah.mp3); autoplay: true; loop: true; volume: 4; positional: true">
+</a-entity>
 
 <!-- Portal ke pabrik -->
 <a-link
