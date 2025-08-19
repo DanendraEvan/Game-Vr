@@ -1,0 +1,243 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title></title>
+    <meta name="description" content="" />
+
+    <script src="https://aframe.io/releases/1.7.0/aframe.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.8.1/socket.io.min.js"></script>
+    <script src="/easyrtc/easyrtc.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/networked-aframe@0.14.0/dist/networked-aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-extras@7.5.4/dist/aframe-extras.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/aframe-environment-component@1.5.0/dist/aframe-environment-component.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@fern-solutions/aframe-mirror@1.1.1/dist/mirror.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-cursor-teleport@1.6.0/dist/aframe-cursor-teleport-component.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/aframe-blink-controls@0.4.3/dist/aframe-blink-controls.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/AdaRoseCannon/aframe-xr-boilerplate@bca4792/simple-navmesh-constraint.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-gltf-model-plus@1.0.0/dist/gltf-model-plus.min.js"></script>
+    <script>
+      window.uiSettings = {
+        showRandomAvatarButton: true,
+        showDieButton: true,
+      };
+    </script>
+    <script src="/dist/components.js"></script>
+    <script defer src="/dist/ui.js"></script>
+
+    <style>
+      /* Loader overlay */
+      #loader {
+        position: fixed;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+        background: rgba(0,0,0,0.9);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        z-index: 9999;
+        color: white;
+        font-family: sans-serif;
+      }
+      #loader progress {
+        width: 50%;
+        height: 20px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- Loading overlay -->
+    <div id="loader">
+      <h2>Loading Assets...</h2>
+      <progress id="progressbar" value="0" max="100"></progress>
+    </div>
+
+    <a-scene
+      light="defaultLightsEnabled:false"
+      renderer="stencil:true"
+      networked-scene="
+        connectOnLoad: false;
+        room: forest;
+        debug: true;
+        adapter: wseasyrtc;
+        audio: false;
+        video: false;
+      "
+      shadow="type: pcfsoft"
+      gltf-model="meshoptDecoderPath:https://unpkg.com/meshoptimizer@0.19.0/meshopt_decoder.js"
+      raycaster="far: 100; objects: .clickable,[link];"
+      cursor="rayOrigin: mouse"
+    >
+      <a-assets timeout="60000">
+        <!-- Avatar template -->
+        <template id="avatar-template">
+          <a-entity player-info>
+            <a-entity class="model">
+              <a-text class="nametag" align="center" value="?" position="0 2.1 0" scale=".5 .5 .5"></a-text>
+            </a-entity>
+            <a-entity class="camera" position="0 1.6 0"></a-entity>
+          </a-entity>
+        </template>
+
+        <!-- Preload villageNaruto outside of template -->
+        <a-asset-item id="village-model" src="models/Untitled.glb"></a-asset-item>
+        <a-asset-item id="signArrow" src="models/signArrow.glb"></a-asset-item>
+
+        <!-- Thumbnails -->
+        <img id="thumbJapan" crossorigin="anonymous" src="https://cdn.aframe.io/link-traversal/thumbs/japan.png" />
+        <img id="thumbForest" crossorigin="anonymous" src="https://cdn.aframe.io/link-traversal/thumbs/forest.png" />
+
+      </a-assets>
+
+      <a-entity id="scene">
+        <a-entity environment="preset:none;shadow:true"></a-entity>
+        <a-entity light="type:ambient;intensity:0.5"></a-entity>
+        <a-entity gltf-model="#loby-model" position="0 0 -10" scale="2 2 2" shadow="receive: true"></a-entity>
+        <a-mirror id="mirror" position="1 1.8 -13" scale="30 15 30" layers="0,3">
+          <a-box color="black" position="0 0 -0.02" scale="1.02 1.02 0.01"></a-box>
+        </a-mirror>
+
+        <a-link
+        id="portal-desa"
+        href="desa.html"
+        title="Desa Harmoni"
+        image="#thumbForest"
+        position="2 1.5 3"
+      >
+        <a-box obb-collider visible="false"></a-box>
+      </a-link>
+      
+
+      <a-entity
+        id="rig"
+        cursor-teleport="cameraRig: #rig; cameraHead: #player; collisionEntities: .environmentGround; ignoreEntities: .clickable,[link]"
+        simple-navmesh-constraint="navmesh:.environmentGround,.environmentDressing;fall:10;height:0;exclude:.navmesh-hole;"
+        movement-controls="fly:false;controls: gamepad, trackpad, keyboard, nipple;"
+        spawn-in-circle="radius:1"
+        restrict-cube="minX: -300; maxX: 100; minZ: -10; maxZ: 300"
+        networked="template:#avatar-template;attachTemplateToLocal:false"
+        player-info
+      >
+        <a-entity id="player" class="camera" camera position="0 1.6 0" look-controls>
+          <a-box obb-collider visible="false" height="0.4" depth="0.4" width="0.4"></a-box>
+        </a-entity>
+      </a-entity>
+
+      <a-box position="0 0 0" width="20" height="0.1" depth="20" color="##E7B07CFF" opacity="0.2"></a-box>
+
+      <a-entity id="dialog-box" position="0 1.6 -4" dialog-auto-hide visible="true">
+        <!-- Background dialog -->
+        <a-plane width="2.5" height="1.5" color="#222" opacity="0.8"></a-plane>
+        
+        <!-- Teks dialog -->
+        <a-text 
+          id="dialog-text" 
+          value="Selamat datang di Metaverse!\n\nTugasmu: kumpulkan data obyektif. Temui petani, kepala desa, pemilik pabrik, cari fakta di perpustakaan" 
+          color="#FFF" 
+          width="2.2" 
+          align="center" 
+          position="0 0.3 0.01">
+        </a-text>
+    
+        <!-- Tombol Next -->
+        <a-plane id="next-btn"
+                class="clickable"
+                position="0 -0.5 0.01"
+                width="0.8"
+                height="0.3"
+                color="#4CAF50">
+          <a-text value="Next" color="#FFF" align="center" width="2" position="0 0 0.01"></a-text>
+        </a-plane>
+      </a-entity>
+      
+    </a-scene>
+
+    <script>
+      const loader = document.getElementById('loader');
+      const progressbar = document.getElementById('progressbar');
+      const assets = document.querySelector('a-assets');
+
+      assets.addEventListener('progress', function (e) {
+        if (e.detail && e.detail.loaded && e.detail.total) {
+          const percent = (e.detail.loaded / e.detail.total) * 100;
+          progressbar.value = percent;
+        }
+      });
+
+      assets.addEventListener('loaded', function () {
+        loader.style.display = 'none';
+      });
+
+      AFRAME.registerComponent('restrict-cube', {
+        schema: {
+          minX: { type: 'number', default: -10 },
+          maxX: { type: 'number', default: 10 },
+          minZ: { type: 'number', default: -10 },
+          maxZ: { type: 'number', default: 10 }
+        },
+        tick: function () {
+          let pos = this.el.object3D.position;
+          if (pos.x < this.data.minX) pos.x = this.data.minX;
+          if (pos.x > this.data.maxX) pos.x = this.data.maxX;
+          if (pos.z < this.data.minZ) pos.z = this.data.minZ;
+          if (pos.z > this.data.maxZ) pos.z = this.data.maxZ;
+        }
+      });
+
+      const dialogSteps = [
+        "Selamat datang di Metaverse!\n\nTugasmu: kumpulkan data obyektif. Temui petani, kepala desa, pemilik pabrik, cari fakta di perpustakaan",
+        "Jangan langsung percaya satu cerita\nDalam studi kasus ini, kebenaran tersembunyi di banyak kepala dan dokumen",
+        "Masuk ke portal di belakangmu untuk memulai"
+      ];
+      
+      let currentStep = 0;
+
+      const dialogText = document.querySelector("#dialog-text");
+      const nextBtn = document.querySelector("#next-btn");
+      const dialogBox = document.querySelector("#dialog-box");
+
+      // Fix: Use A-Frame's event system for VR/AR and desktop
+      nextBtn.addEventListener("click", () => {
+        currentStep++;
+        if (currentStep < dialogSteps.length) {
+          dialogText.setAttribute("value", dialogSteps[currentStep]);
+        } else {
+          dialogBox.setAttribute("visible", "false");
+        }
+      });
+
+      // Also support triggerdown (VR controller)
+      nextBtn.addEventListener("triggerdown", () => {
+        currentStep++;
+        if (currentStep < dialogSteps.length) {
+          dialogText.setAttribute("value", dialogSteps[currentStep]);
+        } else {
+          dialogBox.setAttribute("visible", "false");
+        }
+      });
+
+      // Fix: Use correct player rig id
+      AFRAME.registerComponent("dialog-auto-hide", {
+        tick: function () {
+          // Try #rig, fallback to #cameraRig for compatibility
+          const player = document.querySelector("#rig") || document.querySelector("#cameraRig");
+          if (!player) return;
+          const dialog = this.el;
+          const posPlayer = player.object3D.position;
+          const posDialog = dialog.object3D.position;
+
+          const dist = posPlayer.distanceTo(posDialog);
+          if (dist > 5) { // kalau jarak > 5 meter
+            dialog.parentNode.removeChild(dialog);
+          }
+        }
+      });
+      const portal = document.querySelector("#portal-desa");
+  portal.addEventListener("obbcollisionstarted", () => {
+    window.location.href = "desa.html"; // langsung redirect / refresh
+  });
+    </script>
+  </body>
+</html>
