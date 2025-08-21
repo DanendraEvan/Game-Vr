@@ -63,7 +63,7 @@ AFRAME.registerComponent('npc-dialog-3d', {
     gameState.currentDialog = dialogId;
   },
 
-  createDialogPanel: function() {
+    createDialogPanel: function() {
     const scene = this.el.sceneEl;
     
     // Hapus panel lama jika ada
@@ -73,7 +73,7 @@ AFRAME.registerComponent('npc-dialog-3d', {
     const panel = document.createElement('a-entity');
     panel.setAttribute('id', 'dialog-panel');
     panel.setAttribute('geometry', { primitive: 'plane', width: 4, height: 3.5 });
-    panel.setAttribute('material', { color: '#1a1a1a', opacity: 0.95 });
+    panel.setAttribute('material', { color: '#282c34', opacity: 0.92 });
 
     // Dapatkan posisi NPC dan kamera
     const npc = this.el;
@@ -102,7 +102,7 @@ AFRAME.registerComponent('npc-dialog-3d', {
     const border = document.createElement('a-plane');
     border.setAttribute('id', 'dialog-border');
     border.setAttribute('geometry', { primitive: 'plane', width: 4.1, height: 3.6 });
-    border.setAttribute('material', { color: '#4CAF50', opacity: 0.8 });
+    border.setAttribute('material', { color: '#00bcd4', opacity: 1 });
     border.setAttribute('position', '0 0 -0.01');
     panel.appendChild(border);
 
@@ -110,7 +110,7 @@ AFRAME.registerComponent('npc-dialog-3d', {
     const header = document.createElement('a-plane');
     header.setAttribute('id', 'dialog-header');
     header.setAttribute('geometry', { primitive: 'plane', width: 3.8, height: 0.4 });
-    header.setAttribute('material', { color: '#2196F3' });
+    header.setAttribute('material', { color: '#323842' });
     header.setAttribute('position', '0 1.5 0.02');
     
     const title = document.createElement('a-text');
@@ -119,14 +119,14 @@ AFRAME.registerComponent('npc-dialog-3d', {
     title.setAttribute('width', 3);
     title.setAttribute('position', '0 0 0.02');
     title.setAttribute('color', 'white');
-    title.setAttribute('font', 'dejavu');
+    title.setAttribute('font', 'roboto');
     header.appendChild(title);
 
     // Tag dialog
     const tag = document.createElement('a-plane');
     tag.setAttribute('id', 'dialog-tag');
     tag.setAttribute('geometry', { primitive: 'plane', width: 1, height: 0.2 });
-    tag.setAttribute('material', { color: '#FFD700', opacity: 0.9 });
+    tag.setAttribute('material', { color: '#ffc107', opacity: 1 });
     tag.setAttribute('position', '1.4 1.5 0.03');
     
     const tagText = document.createElement('a-text');
@@ -135,7 +135,7 @@ AFRAME.registerComponent('npc-dialog-3d', {
     tagText.setAttribute('width', 2.5);
     tagText.setAttribute('position', '0 0 0.02');
     tagText.setAttribute('color', '#1a1a1a');
-    tagText.setAttribute('font', 'dejavu');
+    tagText.setAttribute('font', 'roboto');
     tag.appendChild(tagText);
     panel.appendChild(tag);
     
@@ -145,17 +145,18 @@ AFRAME.registerComponent('npc-dialog-3d', {
     const dialogArea = document.createElement('a-plane');
     dialogArea.setAttribute('id', 'dialog-text-area');
     dialogArea.setAttribute('geometry', { primitive: 'plane', width: 3.8, height: 0.6 });
-    dialogArea.setAttribute('material', { color: '#f8fafc', opacity: 0.95 });
+    dialogArea.setAttribute('material', { color: '#e0e0e0', opacity: 1 });
     dialogArea.setAttribute('position', '0 0.9 0.02');
     
     const dialogText = document.createElement('a-text');
     dialogText.setAttribute('id', 'dialog-main-text');
     dialogText.setAttribute('align', 'center');
-    dialogText.setAttribute('color', '#1a1a1a');
+    dialogText.setAttribute('color', '#000000');
     dialogText.setAttribute('width', 3.2);
     dialogText.setAttribute('position', '0 0 0.02');
     dialogText.setAttribute('wrap-count', 60);
     dialogText.setAttribute('line-height', 30);
+    dialogText.setAttribute('font', 'roboto');
     dialogArea.appendChild(dialogText);
     panel.appendChild(dialogArea);
 
@@ -309,12 +310,12 @@ AFRAME.registerComponent('npc-dialog-3d', {
       choiceBtn.setAttribute('geometry', { primitive: 'plane', width: 3.0, height: btnHeight });
       
       // Tentukan warna berdasarkan jenis pilihan
-      let btnColor = '#3b82f6'; // default blue untuk submenu
+      let btnColor = '#673ab7'; // New purple for submenu
       if (choice.response) {
-        btnColor = '#10b981'; // green untuk pilihan yang ada responsenya
+        btnColor = '#009688'; // New teal for response
       }
       
-      choiceBtn.setAttribute('material', { color: btnColor });
+      choiceBtn.setAttribute('material', { color: btnColor, side: 'double' });
       choiceBtn.setAttribute('position', `0 ${startY - (displayIndex * spacing)} 0`);
       choiceBtn.classList.add('clickable');
       choiceBtn.setAttribute('animation__hover', 'property: scale; to: 1.05 1.05 1.05; startEvents: mouseenter; dur: 200');
@@ -327,6 +328,7 @@ AFRAME.registerComponent('npc-dialog-3d', {
       choiceLabel.setAttribute('width', 2.4);
       choiceLabel.setAttribute('wrap-count', 40);
       choiceLabel.setAttribute('position', '0 0 0.02');
+      choiceLabel.setAttribute('font', 'roboto');
       choiceBtn.appendChild(choiceLabel);
 
       const self = this;
@@ -434,7 +436,7 @@ AFRAME.registerComponent('npc-dialog-3d', {
     if (this.dialogStack.length > 0) {
       const backBtn = document.createElement('a-plane');
       backBtn.setAttribute('geometry', { primitive: 'plane', width: 1.5, height: 0.25 });
-      backBtn.setAttribute('material', { color: '#6b7280' });
+      backBtn.setAttribute('material', { color: '#ff9800' });
       backBtn.setAttribute('position', '-1 0 0');
       backBtn.classList.add('clickable');
       backBtn.setAttribute('animation__hover', 'property: scale; to: 1.05 1.05 1.05; startEvents: mouseenter; dur: 200');
@@ -464,7 +466,7 @@ AFRAME.registerComponent('npc-dialog-3d', {
     // Close button
     const closeBtn = document.createElement('a-plane');
     closeBtn.setAttribute('geometry', { primitive: 'plane', width: 1, height: 0.25 });
-    closeBtn.setAttribute('material', { color: '#f44336' });
+    closeBtn.setAttribute('material', { color: '#e91e63' });
     closeBtn.setAttribute('position', '1 0 0');
     closeBtn.classList.add('clickable');
     closeBtn.setAttribute('animation__hover', 'property: scale; to: 1.05 1.05 1.05; startEvents: mouseenter; dur: 200');
