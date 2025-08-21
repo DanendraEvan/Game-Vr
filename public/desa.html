@@ -114,7 +114,7 @@
     <img id="thumbForest" crossorigin="anonymous" src="https://cdn.aframe.io/link-traversal/thumbs/forest.png" alt="Forest" />
     <a-asset-item id="village-model" src="models/Untitled.glb"></a-asset-item>
     <a-asset-item id="pabrik-model" src="models/pabrik.glb"></a-asset-item>
-    <a-asset-item id="signArrow" src="models/signArrow.glb"></a-asset-item>
+    <a-asset-item id="signArrow" src="models/little_post_fbx.glb"></a-asset-item>
   </a-assets>
 
   <a-entity id="scene">
@@ -126,14 +126,16 @@
 
     <!-- Desa -->
     <a-entity gltf-model="#village-model" position="0 0 -10" scale="2 2 2" shadow="receive: true"></a-entity>
-     <a-entity gltf-model="#signArrow" position="-9 2.6 -23" scale="20 20 20" rotation="0 90 0" shadow="receive: true"></a-entity>
-    <a-entity gltf-model="#signArrow" position="-9 2.6 -64" scale="20 20 20" rotation="0 90 0" shadow="receive: true"></a-entity>
-    <a-entity gltf-model="#signArrow" position="24 2.6 -104" scale="20 20 20" rotation="0 0 0" shadow="receive: true"></a-entity>
-    <a-entity gltf-model="#signArrow" position="59 2.6 -105" scale="20 20 20" rotation="0 0 0" shadow="receive: true"></a-entity>
-    <a-entity gltf-model="#signArrow" position="88 2.6 -88" scale="20 20 20" rotation="0 0 0" shadow="receive: true"></a-entity>
-    <a-entity gltf-model="#signArrow" position="156 2.6 -88" scale="20 20 20" rotation="0 0 0" shadow="receive: true"></a-entity>
-    <a-entity gltf-model="#signArrow" position="88 2.6 -88" scale="20 20 20" rotation="0 0 0" shadow="receive: true"></a-entity>
-    <a-entity gltf-model="#signArrow" position="209 2.6 -88" scale="20 20 20" rotation="0 0 0" shadow="receive: true"></a-entity>
+    <a-entity gltf-model="#signArrow" position="-10.56202 -0.31295 -23" scale="0.015 0.02 -0.02" rotation="0 -90 0" shadow=""></a-entity>
+    <a-entity gltf-model="#signArrow" position="7.29307 -0.31295 -23" scale="0.015 0.02 0.02" rotation="0 -90 0" shadow=""></a-entity>
+    <a-entity gltf-model="#signArrow" position="-10.56202 -0.31295 -58.62655" scale="0.015 0.02 -0.02" rotation="0 -90 0" shadow=""></a-entity>
+    <a-entity gltf-model="#signArrow" position="7.29307 -0.31295 -58.62655" scale="0.015 0.02 0.02" rotation="0 -90 0" shadow=""></a-entity>
+    <a-entity gltf-model="#signArrow" position="-10.56202 -0.31295 -107.81141" scale="0.015 0.02 -0.02" rotation="-0.5683741327697767 180 0" shadow=""></a-entity>
+    <a-entity gltf-model="#signArrow" position="36.95782 -0.31295 -91.80302" scale="0.015 0.02 0.02" rotation="-0.54837 180 0" shadow=""></a-entity>
+    <a-entity gltf-model="#signArrow" position="85.29338 -0.31295 -91.80302" scale="0.015 0.02 0.02" rotation="-0.54837 180 0" shadow=""></a-entity>
+    <a-entity gltf-model="#signArrow" position="129.04488 -0.31295 -91.80302" scale="0.015 0.02 0.02" rotation="-0.54837 180 0" shadow=""></a-entity>
+    <a-entity gltf-model="#signArrow" position="171.07064 -0.31295 -91.80302" scale="0.015 0.02 0.02" rotation="-0.54837 180 0" shadow=""></a-entity>
+    <a-entity gltf-model="#signArrow" position="201.5843 -0.31295 -91.80302" scale="0.015 0.02 0.02" rotation="-0.5483206099401978 -87.98168014690383 0" shadow=""></a-entity>
     <!-- Info text -->
     <a-entity id="info-dialog" position="-5 4 9">
       <a-plane width="17" height="1.2" color="#1e293b" opacity="0.92" material="shader: flat"></a-plane>
@@ -146,7 +148,7 @@
     </a-entity>
 
 <!-- NPC Koordinator -->
-      <a-entity id="koordinator" class="clickable" gltf-model="models/wise_man_33.glb" position="0 0 -5.37487"
+      <a-entity id="koordinator" class="clickable" gltf-model="models/koordinator.glb" position="0 0 -5.37487" scale="1 1.6 1"
         npc-dialog-3d="npcId: koordinator" rotation="0 -3.465248744951219 0">
         <a-cylinder radius="1.2" height="0.45" material="opacity: 0; transparent: true"
           position="3.97959 0 -1.44845"></a-cylinder>
@@ -158,57 +160,37 @@
       </a-entity>
 
       <!-- NPC Pengamat pertanian lokal -->
-      <a-entity id="pengamat petani lokal" class="clickable" gltf-model="models/pengamat.glb" position="100.05687 0.3 -109.6098"
-        npc-dialog-3d="npcId: agri_observer" rotation="0 -3.465248744951219 0">
-        <a-cylinder radius="1.2" height="0.45" material="opacity: 0; transparent: true"
-          position="3.97959 0.5 -1.44845"></a-cylinder>
-        <a-text position="0 6.5 0" value="Pengamat Pertanian Lokal\nPak " align="center" color="#2F4F4F"
-          geometry="primitive: plane; height: 1.4591728525980912; width: 15" material="opacity: 0.9; color: #fff"
-          text="width: 10; wrapCount: 20" animation__bob="dur: 2000; loop: true; property: position; to: 0 7 0">
+      <a-entity id="pengamat petani lokal" class="clickable" gltf-model="models/pengamat.glb" position="111.2989 0.3 -91.79971" npc-dialog-3d="npcId: agri_observer" rotation="0 -158.22057625199145 0" animation__hover="dur: 200; property: scale; to: 1 1 1">
+        <a-cylinder radius="1.2" height="0.45" material="opacity: 0; transparent: true" position="3.97959 0.5 -1.44845"></a-cylinder>
+        <a-text position="0 6.669713999555717 0" value="Pengamat Pertanian Lokal\nPak " align="center" color="#2F4F4F" geometry="primitive: plane; height: 1.4591728525980912; width: 15" material="opacity: 0.9; color: #fff" text="value: Pengamat Pertanian Lokal\nPak; width: 10; wrapCount: 20" animation__bob="dur: 2000; loop: true; property: position; to: 0 7 0">
         </a-text>
       </a-entity>
 
       <!-- NPC Anak Petani -->
-      <a-entity id="anak petani" class="clickable" gltf-model="models/Boy.glb"
-        position="125.98863 0.52 -177.26036" npc-dialog-3d="npcId: anak petani" rotation="0 -3.465248744951219 0">
-        <a-cylinder radius="1.2" height="0.45" material="opacity: 0; transparent: true"
-          position="3.97959 0.5 -1.44845"></a-cylinder>
-        <a-text position="0 4 0" value="Anak Petani\nDek Evan" align="center" color="#2F4F4F"
-          geometry="primitive: plane; height: 1.4591728525980912; width: 8" material="opacity: 0.9; color: #fff"
-          text="width: 8; wrapCount: 20" animation__bob="dur: 5000; loop: true; property: position; to: 0 3.8 0">
+      <a-entity id="anak petani" class="clickable" gltf-model="models/Boy.glb" position="80.8602 0.52 -126.55562" npc-dialog-3d="npcId: farmer" rotation="0 -3.465248744951219 0" animation__hover="dur: 200; property: scale; to: 1 1 1">
+        <a-cylinder radius="1.2" height="0.45" material="opacity: 0; transparent: true" position="3.97959 0.5 -1.44845"></a-cylinder>
+        <a-text position="0 3.9101579307574026 0" value="Anak Petani\nDek Evan" align="center" color="#2F4F4F" geometry="primitive: plane; height: 1.4591728525980912; width: 8" material="opacity: 0.9; color: #fff" text="width: 8; wrapCount: 20" animation__bob="dur: 5000; loop: true; property: position; to: 0 3.8 0">
         </a-text>
       </a-entity>
 
       <!-- NPC Petani -->
-      <a-entity id="petani" class="clickable" gltf-model="models/farmer.glb" position="60.0066 0 -114.30631"
-        npc-dialog-3d="npcId: farmer" rotation="0 -3.465248744951219 0">
-        <a-cylinder radius="1.2" height="0.45" material="opacity: 0; transparent: true"
-          position="3.97959 0 -1.44845"></a-cylinder>
-        <a-text position="0 5 0" value="Petani Senior\nPak Seno" align="center" color="#2F4F4F"
-          geometry="primitive: plane; height: 1.4591728525980912; width: 8" material="opacity: 0.9; color: #fff"
-          text="width: 8; wrapCount: 20" animation__bob="dur: 2000; loop: true; property: position; to: 0 5.5 0">
+      <a-entity id="petani" class="clickable" gltf-model="models/farmer.glb" position="87.07554 1.20883 -118.85626" npc-dialog-3d="npcId: farmer" rotation="0 -3.465248744951219 0" animation__hover="dur: 200; property: scale; to: 1 1 1">
+        <a-cylinder radius="1.2" height="0.45" material="opacity: 0; transparent: true" position="3.97959 0 -1.44845"></a-cylinder>
+        <a-text position="0 5.0237863840047385 0" value="Petani Senior\nPak Seno" align="center" color="#2F4F4F" geometry="primitive: plane; height: 1.4591728525980912; width: 8" material="opacity: 0.9; color: #fff" text="width: 8; wrapCount: 20" animation__bob="dur: 2000; loop: true; property: position; to: 0 5.5 0">
         </a-text>
       </a-entity>
 
       <!-- NPC Aktivis pengairan -->
-      <a-entity id="aktivis pengairan" class="clickable" gltf-model="models/desi_villager.glb"
-        position="207.97888 0.75294 -113.09263" npc-dialog-3d="npcId: water_activist" rotation="0 -3.465248744951219 0">
-        <a-cylinder radius="1.2" height="0.45" material="opacity: 0; transparent: true"
-          position="3.97959 0.5 -1.44845"></a-cylinder>
-        <a-text position="0 6 0" value="Aktivis Pengairan\nPak Air" align="center" color="#2F4F4F"
-          geometry="primitive: plane; height: 1.4591728525980912; width: 8" material="opacity: 0.9; color: #fff"
-          text="width: 8; wrapCount: 20" animation__bob="dur: 2000; loop: true; property: position; to: 0 6.4 0">
+      <a-entity id="aktivis pengairan" class="clickable" gltf-model="models/aktivis.glb" position="176.07534 0.75294 -116.53111" npc-dialog-3d="npcId: water_activist" rotation="0 -3.465248744951219 0" animation__hover="dur: 200; property: scale; to: 1 1 1" scale="1 0.8 1">
+        <a-cylinder radius="1.2" height="0.45" material="opacity: 0; transparent: true" position="3.97959 0.5 -1.44845"></a-cylinder>
+        <a-text position="0 6.036432120783702 0" value="Aktivis Pengairan\nPak Air" align="center" color="#2F4F4F" geometry="primitive: plane; height: 1.4591728525980912; width: 8" material="opacity: 0.9; color: #fff" text="width: 8; wrapCount: 20" animation__bob="dur: 2000; loop: true; property: position; to: 0 6.4 0">
         </a-text>
       </a-entity>
 
       <!-- NPC Ketua Tani -->
-      <a-entity id="ketua tani" class="clickable" gltf-model="models/pakair.glb"
-        position="230.97818 0.64825 -105.50623" npc-dialog-3d="npcId: farmer_leader" rotation="0 -3.465248744951219 0">
-        <a-cylinder radius="1.2" height="0.45" material="opacity: 0; transparent: true"
-          position="3.97959 0.5 -1.44845"></a-cylinder>
-        <a-text position="0 4 0" value="Ketua Tani\nPak Tani" align="center" color="#2F4F4F"
-          geometry="primitive: plane; height: 1.4591728525980912; width: 8" material="opacity: 0.9; color: #fff"
-          text="width: 8; wrapCount: 20" animation__bob="dur: 2000; loop: true; property: position; to: 0 4.4 0">
+      <a-entity id="ketua tani" class="clickable" gltf-model="models/ketua.glb" position="191.94696 0.64825 -105.50623" npc-dialog-3d="npcId: farmer_leader" rotation="0 -92.64956730383464 0" animation__hover="dur: 200; property: scale; to: 1 1 1" scale="0.98 1.56 1">
+        <a-cylinder radius="1.2" height="0.45" material="opacity: 0; transparent: true" position="3.97959 0.5 -1.44845"></a-cylinder>
+        <a-text position="0 4.036432120783702 0" value="Ketua Tani\nPak Tani" align="center" color="#2F4F4F" geometry="primitive: plane; height: 1.4591728525980912; width: 8" material="opacity: 0.9; color: #fff" text="width: 8; wrapCount: 20" animation__bob="dur: 2000; loop: true; property: position; to: 0 4.4 0">
         </a-text>
       </a-entity>
 

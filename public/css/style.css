@@ -199,7 +199,7 @@ main {
 
 .button.disabled {
     background-color: #6c757d;
-    cursor: not-allowed;
+    cursor: pointer;
     border-color: #6c757d;
 }
 

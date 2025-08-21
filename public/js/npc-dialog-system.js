@@ -90,11 +90,13 @@ AFRAME.registerComponent('npc-dialog-3d', {
     
     const panelPos = new THREE.Vector3();
     panelPos.copy(npcPos).add(direction.multiplyScalar(1.5));
-    panelPos.y = 2; // Tinggi panel 2 meter dari tanah
+    panelPos.y = 3; // Tinggi panel 2 meter dari tanah
     panel.setAttribute('position', panelPos);
     
-    // Atur rotasi seperti contoh (hanya rotasi X)
-    panel.setAttribute('rotation', '-2.3 0 0'); // Condong ke depan sekitar 132 derajat
+    // Atur rotasi agar menghadap ke depan relatif terhadap NPC
+    const npcRotation = this.el.object3D.rotation;
+    const yRotationInDegrees = THREE.MathUtils.radToDeg(npcRotation.y);
+    panel.setAttribute('rotation', `-2.3 ${yRotationInDegrees} 0`); // Menjaga kemiringan X, menyesuaikan rotasi Y
 
     // Border panel
     const border = document.createElement('a-plane');
