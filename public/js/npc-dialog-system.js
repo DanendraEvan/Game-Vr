@@ -197,13 +197,13 @@ AFRAME.registerComponent('npc-dialog-3d', {
     // Scroll up button
     const scrollUpBtn = document.createElement('a-plane');
     scrollUpBtn.setAttribute('id', 'scroll-up-btn');
-    scrollUpBtn.setAttribute('geometry', { primitive: 'plane', width: 0.3, height: 0.3 });
+    scrollUpBtn.setAttribute('geometry', { primitive: 'plane', width: 0.8, height: 0.3 });
     scrollUpBtn.setAttribute('material', { color: '#607D8B', opacity: 0.8 });
-    scrollUpBtn.setAttribute('position', '1.5 0.2 0.03');
+    scrollUpBtn.setAttribute('position', '-1 -1.0 0.03');
     scrollUpBtn.classList.add('clickable');
     
     const upArrow = document.createElement('a-text');
-    upArrow.setAttribute('value', '↑');
+    upArrow.setAttribute('value', 'Prev');
     upArrow.setAttribute('align', 'center');
     upArrow.setAttribute('color', 'white');
     upArrow.setAttribute('width', 4);
@@ -213,13 +213,13 @@ AFRAME.registerComponent('npc-dialog-3d', {
     // Scroll down button
     const scrollDownBtn = document.createElement('a-plane');
     scrollDownBtn.setAttribute('id', 'scroll-down-btn');
-    scrollDownBtn.setAttribute('geometry', { primitive: 'plane', width: 0.3, height: 0.3 });
+    scrollDownBtn.setAttribute('geometry', { primitive: 'plane', width: 0.8, height: 0.3 });
     scrollDownBtn.setAttribute('material', { color: '#607D8B', opacity: 0.8 });
-    scrollDownBtn.setAttribute('position', '1.5 -0.6 0.03');
+    scrollDownBtn.setAttribute('position', '1 -1.0 0.03');
     scrollDownBtn.classList.add('clickable');
     
     const downArrow = document.createElement('a-text');
-    downArrow.setAttribute('value', '↓');
+    downArrow.setAttribute('value', 'Next');
     downArrow.setAttribute('align', 'center');
     downArrow.setAttribute('color', 'white');
     downArrow.setAttribute('width', 4);
@@ -229,15 +229,15 @@ AFRAME.registerComponent('npc-dialog-3d', {
     // Scroll indicator (shows current position)
     const scrollIndicator = document.createElement('a-plane');
     scrollIndicator.setAttribute('id', 'scroll-indicator');
-    scrollIndicator.setAttribute('geometry', { primitive: 'plane', width: 0.2, height: 0.6 });
+    scrollIndicator.setAttribute('geometry', { primitive: 'plane', width: 1, height: 0.1 });
     scrollIndicator.setAttribute('material', { color: '#9E9E9E', opacity: 0.3 });
-    scrollIndicator.setAttribute('position', '1.5 -0.2 0.02');
+    scrollIndicator.setAttribute('position', '0 -1.0 0.02');
     
     const scrollThumb = document.createElement('a-plane');
     scrollThumb.setAttribute('id', 'scroll-thumb');
-    scrollThumb.setAttribute('geometry', { primitive: 'plane', width: 0.15, height: 0.15 });
+    scrollThumb.setAttribute('geometry', { primitive: 'plane', width: 0.1, height: 0.1 });
     scrollThumb.setAttribute('material', { color: '#4CAF50', opacity: 0.8 });
-    scrollThumb.setAttribute('position', '0 0.2 0.02');
+    scrollThumb.setAttribute('position', '-0.45 0 0.02');
     scrollIndicator.appendChild(scrollThumb);
 
     panel.appendChild(scrollUpBtn);
@@ -374,8 +374,9 @@ AFRAME.registerComponent('npc-dialog-3d', {
     const scrollUpBtn = this.currentPanel.querySelector('#scroll-up-btn');
     const scrollDownBtn = this.currentPanel.querySelector('#scroll-down-btn');
     const scrollThumb = this.currentPanel.querySelector('#scroll-thumb');
+    const scrollIndicator = this.currentPanel.querySelector('#scroll-indicator');
 
-    if (!scrollUpBtn || !scrollDownBtn || !scrollThumb) return;
+    if (!scrollUpBtn || !scrollDownBtn || !scrollThumb || !scrollIndicator) return;
 
     // Show/hide scroll buttons
     const canScrollUp = this.scrollOffset > 0;
@@ -384,6 +385,8 @@ AFRAME.registerComponent('npc-dialog-3d', {
 
     scrollUpBtn.setAttribute('visible', hasScroll);
     scrollDownBtn.setAttribute('visible', hasScroll);
+    scrollIndicator.setAttribute('visible', hasScroll);
+    
     scrollUpBtn.setAttribute('material', { 
       color: canScrollUp ? '#607D8B' : '#BDBDBD', 
       opacity: canScrollUp ? 0.8 : 0.4 
@@ -396,8 +399,8 @@ AFRAME.registerComponent('npc-dialog-3d', {
     // Update scroll thumb position
     if (hasScroll && this.currentChoices.length > 0) {
       const progress = this.scrollOffset / Math.max(1, this.currentChoices.length - this.maxVisibleChoices);
-      const thumbY = 0.2 - (progress * 0.4); // Range from 0.2 to -0.2
-      scrollThumb.setAttribute('position', `0 ${thumbY} 0.02`);
+      const thumbX = -0.45 + (progress * 0.9); // Range from -0.45 to 0.45
+      scrollThumb.setAttribute('position', `${thumbX} 0 0.02`);
     }
 
     // Show choice counter
@@ -412,7 +415,7 @@ AFRAME.registerComponent('npc-dialog-3d', {
       counter.setAttribute('align', 'center');
       counter.setAttribute('color', '#666666');
       counter.setAttribute('width', 2);
-      counter.setAttribute('position', '0 -1.0 0.02');
+      counter.setAttribute('position', '0 -1.2 0.02');
       this.currentPanel.appendChild(counter);
     }
 

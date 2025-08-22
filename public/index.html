@@ -3,364 +3,140 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Desa Harmony - VR Metaverse Game</title>
-    <!-- <link rel="stylesheet" href="css/style.css"> -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
-
+    <title>Selamat Datang di Desa Harmoni</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* Import Fonts */
-:root {
-    --primary-color: #007bff; /* Bright Blue */
-    --secondary-color: #8A2BE2; /* Blue Violet */
-    --background-color: #ffffff; /* White */
-    --surface-color: #f8f9fa; /* Off-white */
-    --text-color: #343a40; /* Dark Gray */
-    --header-font: 'Orbitron', sans-serif;
-    --body-font: 'Roboto', sans-serif;
-}
-
-body {
-    background-color: var(--background-color);
-    color: var(--text-color);
-    font-family: var(--body-font);
-    margin: 0;
-    line-height: 1.6;
-}
-
-.container {
-    width: 90%;
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 20px;
-}
-
-/* Header */
-header {
-    background-color: rgba(255, 255, 255, 0.9);
-    padding: 1rem 0;
-    border-bottom: 1px solid #dee2e6;
-    position: sticky;
-    top: 0;
-    z-index: 1000;
-    backdrop-filter: blur(10px);
-}
-
-header .container {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-header h1 {
-    font-family: var(--header-font);
-    color: var(--primary-color);
-    margin: 0;
-    font-size: 2rem;
-}
-
-header nav ul {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: flex;
-}
-
-header nav ul li {
-    margin-left: 20px;
-}
-
-header nav ul li a {
-    color: var(--text-color);
-    text-decoration: none;
-    font-weight: 700;
-    transition: color 0.3s ease;
-}
-
-header nav ul li a:hover {
-    color: var(--primary-color);
-}
-
-/* Hero Section */
-.hero {
-    height: 80vh;
-    background: linear-gradient(rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.8)), url('https://source.unsplash.com/1600x900/?vr,metaverse,abstract') no-repeat center center/cover;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-}
-
-.hero-text h2 {
-    font-family: var(--header-font);
-    font-size: 3.5rem;
-    color: var(--text-color);
-    margin-bottom: 1rem;
-    text-shadow: 0 0 10px rgba(0, 123, 255, 0.2);
-}
-
-.hero-text p {
-    font-size: 1.2rem;
-    max-width: 600px;
-    margin: 0 auto 2rem auto;
-    color: #5a5a5a;
-}
-
-.cta-button {
-    font-family: var(--header-font);
-    background-color: var(--primary-color);
-    color: #fff;
-    padding: 15px 30px;
-    text-decoration: none;
-    border-radius: 5px;
-    font-size: 1.1rem;
-    transition: background-color 0.3s ease, transform 0.3s ease;
-    border: none;
-}
-
-.cta-button:hover {
-    background-color: #0056b3;
-    transform: translateY(-3px);
-}
-
-/* Content Sections */
-main {
-    padding: 40px 0;
-}
-
-.content-section {
-    background-color: var(--background-color);
-    padding: 40px;
-    margin-bottom: 40px;
-    border-radius: 8px;
-}
-
-.content-section h2 {
-    font-family: var(--header-font);
-    color: var(--primary-color);
-    font-size: 2.5rem;
-    margin-top: 0;
-    margin-bottom: 20px;
-    text-align: center;
-}
-
-/* Document List */
-.document-list {
-    list-style: none;
-    padding: 0;
-}
-
-.document-item {
-    background-color: var(--surface-color);
-    padding: 20px;
-    margin-bottom: 15px;
-    border-radius: 5px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    border: 1px solid #e9ecef;
-}
-
-.document-item:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.07);
-}
-
-.document-item span {
-    font-size: 1.1rem;
-    font-weight: 700;
-    margin-right: 15px; /* Add space between text and buttons */
-}
-
-.document-buttons {
-    display: flex;
-    align-items: center;
-    flex-shrink: 0; /* Prevent buttons from wrapping */
-}
-
-.button {
-    background-color: var(--secondary-color);
-    color: #fff;
-    padding: 10px 20px;
-    text-decoration: none;
-    border-radius: 5px;
-    font-weight: 700;
-    transition: background-color 0.3s ease, transform 0.3s ease, color 0.3s ease, border-color 0.3s ease;
-    border: 2px solid transparent;
-}
-
-.button:hover {
-    background-color: #6a1db8;
-    transform: scale(1.05);
-}
-
-.button.button-preview {
-    background-color: transparent;
-    color: var(--primary-color);
-    border-color: var(--primary-color);
-    margin-right: 10px;
-}
-
-.button.button-preview:hover {
-    background-color: var(--primary-color);
-    color: #fff;
-    transform: scale(1.05);
-}
-
-.button.disabled {
-    background-color: #6c757d;
-    cursor: not-allowed;
-    border-color: #6c757d;
-}
-
-/* Footer */
-footer {
-    text-align: center;
-    padding: 20px 0;
-    margin-top: 40px;
-    background-color: var(--surface-color);
-    border-top: 1px solid #e9ecef;
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-    header .container {
-        flex-direction: column;
-    }
-
-    header h1 {
-        margin-bottom: 1rem;
-    }
-
-    .hero-text h2 {
-        font-size: 2.5rem;
-    }
-
-    .document-item {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-
-    .document-item span {
-        margin-bottom: 15px;
-    }
-
-    .document-buttons {
-        width: 100%;
-        justify-content: flex-start;
-    }
-}
+        html {
+            scroll-behavior: smooth;
+        }
+        body {
+            background-image: url('textures/pexels-pixabay-53594.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+        .overlay {
+            background-color: rgba(0, 0, 0, 0.6);
+        }
     </style>
 </head>
-<body>
+<body class="font-sans bg-gray-900">
 
-    <header>
-        <div class="container">
-            <h1>Desa Harmony</h1>
-            <nav>
-                <ul>
-                    <li><a href="#about">Tentang</a></li>
-                    <li><a href="#documents">Dokumen</a></li>
-                    <li><a href="#download">Play Game</a></li>
-                </ul>
-            </nav>
-        </div>
-    </header>
+    <!-- Navigation -->
+    <nav class="fixed top-0 left-0 right-0 bg-black bg-opacity-50 p-4 z-20 flex justify-center items-center gap-8 backdrop-blur-sm">
+        <button id="open-guide-btn" class="text-white hover:text-blue-300 transition-colors duration-300 font-semibold">Buku Petunjuk</button>
+        <a href="#documents" class="text-white hover:text-blue-300 transition-colors duration-300 font-semibold">Dokumen Proyek</a>
+    </nav>
 
-    <section class="hero">
-        <div class="hero-text">
-            <h2>Selamat Datang di Dunia Virtual Desa Harmony</h2>
-            <p>Jelajahi keindahan, bangun komunitas, dan ciptakan petualangan tak terlupakan di metaverse kami.</p>
-            <a href="#about" class="cta-button">Pelajari Lebih Lanjut</a>
+    <!-- Hero Section -->
+    <div class="overlay min-h-screen flex flex-col items-center justify-center text-white p-4 text-center">
+        <h1 class="text-5xl md:text-7xl font-bold mb-4" style="font-family: 'Orbitron', sans-serif;">Desa Harmoni</h1>
+        <p class="text-lg md:text-xl mb-8 max-w-2xl">Sebuah pengalaman virtual reality untuk pembelajaran sosial. Jelajahi, berinteraksi, dan berpartisipasi dalam kehidupan desa.</p>
+        <a href="index1.html" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-10 rounded-lg text-2xl transition-transform transform hover:scale-105">Mainkan</a>
+    </div>
+
+    <!-- Documents Section -->
+    <section id="documents" class="py-20 bg-gray-900 bg-opacity-80 backdrop-blur-sm">
+        <div class="container mx-auto px-4">
+            <h2 class="text-4xl font-bold text-white text-center mb-12">Dokumen Proyek</h2>
+            <div class="max-w-4xl mx-auto space-y-4">
+                <!-- Document Items -->
+                <div class="bg-gray-800 bg-opacity-70 p-4 rounded-lg flex flex-col sm:flex-row justify-between items-center gap-3 transition-all duration-300 hover:bg-opacity-90">
+                    <span class="font-semibold text-white text-left">📄 Angket Penelitian Desa Harmoni</span>
+                    <div class="flex-shrink-0">
+                        <a href="assets/documents/ANGKET PENELITIAN DESA HARMONI.pdf" target="_blank" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-md text-sm transition">Preview</a>
+                        <a href="assets/documents/ANGKET PENELITIAN DESA HARMONI.pdf" download class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-md text-sm transition ml-2">Download</a>
+                    </div>
+                </div>
+                <div class="bg-gray-800 bg-opacity-70 p-4 rounded-lg flex flex-col sm:flex-row justify-between items-center gap-3 transition-all duration-300 hover:bg-opacity-90">
+                    <span class="font-semibold text-white text-left">📄 Interview Guide</span>
+                    <div class="flex-shrink-0">
+                        <a href="assets/documents/INTERVIEW GUIDE WAWANCARA DESA HARMONI.pdf" target="_blank" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-md text-sm transition">Preview</a>
+                        <a href="assets/documents/INTERVIEW GUIDE WAWANCARA DESA HARMONI.pdf" download class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-md text-sm transition ml-2">Download</a>
+                    </div>
+                </div>
+                <div class="bg-gray-800 bg-opacity-70 p-4 rounded-lg flex flex-col sm:flex-row justify-between items-center gap-3 transition-all duration-300 hover:bg-opacity-90">
+                    <span class="font-semibold text-white text-left">📄 Studi Dokumentasi</span>
+                    <div class="flex-shrink-0">
+                        <a href="assets/documents/STUDI DOKUMENTASI.pdf" target="_blank" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-md text-sm transition">Preview</a>
+                        <a href="assets/documents/STUDI DOKUMENTASI.pdf" download class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-md text-sm transition ml-2">Download</a>
+                    </div>
+                </div>
+                <div class="bg-gray-800 bg-opacity-70 p-4 rounded-lg flex flex-col sm:flex-row justify-between items-center gap-3 transition-all duration-300 hover:bg-opacity-90">
+                    <span class="font-semibold text-white text-left">📄 Lembar Observasi</span>
+                    <div class="flex-shrink-0">
+                        <a href="assets/documents/LEMBAR OBSERVASI DESA HARMONI.pdf" target="_blank" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-md text-sm transition">Preview</a>
+                        <a href="assets/documents/LEMBAR OBSERVASI DESA HARMONI.pdf" download class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-md text-sm transition ml-2">Download</a>
+                    </div>
+                </div>
+                <div class="bg-gray-800 bg-opacity-70 p-4 rounded-lg flex flex-col sm:flex-row justify-between items-center gap-3 transition-all duration-300 hover:bg-opacity-90">
+                    <span class="font-semibold text-white text-left">📄 Hasil Angket</span>
+                    <div class="flex-shrink-0">
+                        <a href="assets/documents/Hasil_Angket_Desa_Harmoni_dengan_Karakter.pdf" target="_blank" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-md text-sm transition">Preview</a>
+                        <a href="assets/documents/Hasil_Angket_Desa_Harmoni_dengan_Karakter.pdf" download class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-md text-sm transition ml-2">Download</a>
+                    </div>
+                </div>
+                <div class="bg-gray-800 bg-opacity-70 p-4 rounded-lg flex flex-col sm:flex-row justify-between items-center gap-3 transition-all duration-300 hover:bg-opacity-90">
+                    <span class="font-semibold text-white text-left">📄 Buku Model Experiental Social Learning</span>
+                    <div class="flex-shrink-0">
+                        <a href="assets/documents/BUKU MODEL EXPERIENTAL SOCIAL LEARNING.pdf" target="_blank" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-md text-sm transition">Preview</a>
+                        <a href="assets/documents/BUKU MODEL EXPERIENTAL SOCIAL LEARNING.pdf" download class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-md text-sm transition ml-2">Download</a>
+                    </div>
+                </div>
+            </div>
         </div>
     </section>
 
-    <main>
-        <div class="container">
-            <section id="about" class="content-section">
-                <h2>Tentang Game</h2>
-                <p>Desa Harmony adalah sebuah game VR metaverse yang menggabungkan elemen eksplorasi, interaksi sosial, dan kreativitas. Di sini, Anda bisa membangun rumah impian, bercocok tanam, mengikuti event musiman, dan berinteraksi dengan pemain lain dari seluruh dunia. Rasakan pengalaman hidup di desa virtual yang damai dan penuh harmoni dengan sentuhan teknologi masa depan.</p>
-            </section>
-
-            <section id="documents" class="content-section">
-                <h2>Dokumen Proyek</h2>
-                <p>Lihat dan unduh dokumen resmi kami untuk mengetahui lebih dalam tentang konsep dan pengembangan Desa Harmony.</p>
-                <ul class="document-list">
-                    <li>
-                        <div class="document-item">
-                            <span>📄 Angket Penelitian Desa Harmony</span>
-                            <div class="document-buttons">
-                                <a href="assets/documents/ANGKET PENELITIAN DESA HARMONI.pdf" target="_blank" class="button button-preview">Preview</a>
-                                <a href="assets/documents/ANGKET PENELITIAN DESA HARMONI.pdf" download class="button">Download</a>
-                            </div>
-                        </div>
-                    </li>
-                    <li>
-                        <div class="document-item">
-                            <span>📄 Interview Guide</span>
-                            <div class="document-buttons">
-                                <a href="assets/documents/INTERVIEW GUIDE WAWANCARA DESA HARMONI.pdf" target="_blank" class="button button-preview">Preview</a>
-                                <a href="assets/documents/INTERVIEW GUIDE WAWANCARA DESA HARMONI.pdf" download class="button">Download</a>
-                            </div>
-                        </div>
-                    </li>
-                    <li>
-                        <div class="document-item">
-                            <span>📄 Studi Dokumentasi</span>
-                            <div class="document-buttons">
-                                <a href="assets/documents/STUDI DOKUMENTASI.pdf" target="_blank" class="button button-preview">Preview</a>
-                                <a href="assets/documents/STUDI DOKUMENTASI.pdf" download class="button">Download</a>
-                            </div>
-                        </div>
-                    </li>
-                    <li>
-                        <div class="document-item">
-                            <span>📄 Lembar Observasi</span>
-                            <div class="document-buttons">
-                                <a href="assets/documents/LEMBAR OBSERVASI DESA HARMONI.pdf" target="_blank" class="button button-preview">Preview</a>
-                                <a href="assets/documents/LEMBAR OBSERVASI DESA HARMONI.pdf" download class="button">Download</a>
-                            </div>
-                        </div>
-                    </li>
-                    <li>
-                        <div class="document-item">
-                            <span>📄 Hasil Angket</span>
-                            <div class="document-buttons">
-                                <a href="assets/documents/Hasil_Angket_Desa_Harmoni_dengan_Karakter.pdf" target="_blank" class="button button-preview">Preview</a>
-                                <a href="assets/documents/Hasil_Angket_Desa_Harmoni_dengan_Karakter.pdf" download class="button">Download</a>
-                            </div>
-                        </div>
-                    </li>
-                    <li>
-                        <div class="document-item">
-                            <span>📄 Buku Model</span>
-                            <div class="document-buttons">
-                                <a href="assets/documents/BUKU MODEL EXPERIENTAL SOCIAL LEARNING.pdf" target="_blank" class="button button-preview">Preview</a>
-                                <a href="assets/documents/BUKU MODEL EXPERIENTAL SOCIAL LEARNING.pdf" download class="button">Download</a>
-                            </div>
-                        </div>
-                    </li>
-                </ul>
-            </section>
-            
-            <section id="download" class="content-section">
-                <h2>Play Game</h2>
-                <p>Mainkan Game sekarang. Explore!</p>
-                <a href="/index1.html" class="button disabled">Mainkan</a>
-            </section>
-        </div>
-    </main>
-
-    <footer>
-        <div class="container">
-            <p>&copy; 2025 Desa Harmony. Semua Hak Cipta Dilindungi.</p>
-        </div>
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-center p-6">
+        <p class="font-bold text-white">Info Pengembang</p>
+        <p class="text-gray-400">Nama Pengembang: [Nama Anda/Tim Anda]</p>
+        <p class="text-gray-400">Email: [Email Kontak]</p>
+        <p class="text-gray-400">Website: [URL Website/Portfolio]</p>
+        <p class="mt-4 text-gray-500">&copy; 2025 Desa Harmoni. Semua Hak Cipta Dilindungi.</p>
     </footer>
 
+    <!-- Modal for User Guide -->
+    <div id="guide-modal" class="fixed inset-0 bg-black bg-opacity-75 hidden flex items-center justify-center p-4 z-50">
+        <div class="bg-white p-8 rounded-lg max-w-2xl w-full text-gray-800 relative">
+            <h2 class="text-3xl font-bold mb-4 text-center">Buku Petunjuk</h2>
+            <div class="space-y-4">
+                <div>
+                    <h3 class="font-bold text-lg">Tujuan Permainan</h3>
+                    <p>Tujuan utama Anda adalah untuk berinteraksi dengan warga desa, memahami masalah sosial yang ada, dan berpartisipasi dalam kegiatan desa seperti rapat dan gotong royong untuk membangun "Desa Harmoni".</p>
+                </div>
+                <div>
+                    <h3 class="font-bold text-lg">Kontrol Dasar</h3>
+                    <ul class="list-disc list-inside ml-4">
+                        <li><strong>Gerakan:</strong> Gunakan tombol W, A, S, D untuk bergerak maju, kiri, mundur, dan kanan.</li>
+                        <li><strong>Lihat Sekitar:</strong> Gerakkan mouse Anda untuk mengubah arah pandangan.</li>
+                        <li><strong>Interaksi:</strong> Dekati karakter (NPC) atau objek dan klik kiri untuk berinteraksi.</li>
+                    </ul>
+                </div>
+            </div>
+            <button id="close-guide-btn" class="absolute top-4 right-4 bg-red-600 hover:bg-red-700 text-white font-bold py-1 px-3 rounded-full text-lg">&times;</button>
+        </div>
+    </div>
+
     <script>
-        
+        const openBtn = document.getElementById('open-guide-btn');
+        const closeBtn = document.getElementById('close-guide-btn');
+        const modal = document.getElementById('guide-modal');
+
+        openBtn.addEventListener('click', () => {
+            modal.classList.remove('hidden');
+        });
+
+        closeBtn.addEventListener('click', () => {
+            modal.classList.add('hidden');
+        });
+
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.classList.add('hidden');
+            }
+        });
     </script>
+
 </body>
 </html>
