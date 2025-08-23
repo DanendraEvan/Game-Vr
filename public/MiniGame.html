@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>MazeGame</title>
+    <meta name="description" content="MazeGame - Fun Trivia Maze Game built on A-frame & Three.js">
+    <!--Libraries & external scripts Import-->
+    <script src="libs/aframe.js"> Math.seedrandom('seed123');// tambahkan di awal
+    </script>
+    <script src="libs/aframe-extras.js"></script>
+    <script src="libs/aframe-text-component.min.js"></script>
+    <script src="libs/lz-string.min.js"></script>
+    <script src="libs/aframe-bmfont-text-component.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/seedrandom/3.0.5/seedrandom.min.js"></script>
+    <script src="common.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/aframe-glow@1.0.1/dist/aframe-glow-component.js"></script>
+
+  </head>
+
+  <body>
+    <a-scene fog="type: linear; color: #AAB; near: 0; far:10;" physics id="scene">
+      <a-assets>
+        <img src="assets/door.png" id="door">
+        <img src="assets/wall.jpg" id="asset_wall">
+        <img src="assets/roof.jpg" id="asset_roof">
+        <img src="assets/ground.jpg" id="asset_ground">
+        <img src="assets/instruction.jpg" id="asset_instruction">
+        <img src="assets/reload.png" id="asset_reload">
+        <img src="assets\kertas.png" id="asset_paper">
+      </a-assets>
+
+      <a-entity sound="src: url(assets/audio/backgroundnoise.mp3); autoplay: true; loop:true; distanceModel:linear">
+      </a-entity>
+
+      <a-entity static-body
+                sound="src: url(assets/audio/bat.mp3); on: collide; volume:0.05;"  
+                velocity="0 0 0" 
+                rotation="0 0 0" 
+                position="0 1.6 -2" 
+                id="camera" 
+                camera="" 
+                kinematic-body 
+                universal-controls
+                update-coordinates>
+                
+                <a-entity cursor="fuse: true; fuseTimeout: 500"
+                  position="0 0 -1"
+                  geometry="primitive: ring; radiusInner: 0.02; radiusOuter: 0.03"
+                  material="color:#20639B; shader: flat">
+                </a-entity>
+                
+                <a-entity text="text: Time;fnt:assets/SourceCodePro.fnt;size:.09;height:0.001" material="color:#ff3232" position="-0.1 -0.7 -1" id="board"></a-entity>
+                
+                <a-entity text="text: ;size:0.1;height:0.001" material="color:#f4ff61" position="-0.3 0 -1" id="winner"></a-entity>
+                
+                <a-entity text="text: X:0 Y:0 Z:0; size:0.07; height:0.001" 
+                         material="color:#00ff00" 
+                         position="0.3 -0.7 -1" 
+                         id="coordinates-hud">
+                </a-entity>
+                
+      </a-entity>
+      
+
+                       
+    </a-scene>
+
+    <script>
+      // Component untuk update koordinat HUD
+      AFRAME.registerComponent('update-coordinates', {
+        tick: function () {
+          var position = this.el.getAttribute('position');
+          var hud = document.getElementById('coordinates-hud');
+          
+          if (hud) {
+            var textAttr = hud.getAttribute('text');
+            textAttr.text = `X:${position.x.toFixed(1)} Y:${position.y.toFixed(1)} Z:${position.z.toFixed(1)}`;
+            hud.setAttribute('text', textAttr);
+          }
+        }
+      });
+
+      // Reload Game Component
+      AFRAME.registerComponent('on-click', {
+        init: function () {
+          this.el.addEventListener('click', function (evt) {
+            location.reload();
+          });
+        }
+      });
+
+      // Instructions Glow Component
+      AFRAME.registerComponent('on-gaze', {
+        init: function () {
+          this.el.addEventListener('mouseenter', function (evt) {
+            var glow = document.getElementById("instruction");
+            glow.setAttribute('glow','side: front; scale: 2; color: #e8cd00; c: 0.1; p: 3.5;');
+          });
+          this.el.addEventListener('mouseleave', function (evt) {
+            var glow = document.getElementById("instruction");
+            glow.setAttribute('glow','enabled:false');
+          });
+        }
+      });
+
+      /* Maze formation */
+      var maze;
+
+      // Player body collision with the Door & Winner Text display
+      var cam = document.getElementById('camera');
+cam.addEventListener('collide', function (e) {
+  if (e.detail.body.el && e.detail.body.el.getAttribute('id') === 'price') {
+    var winner = document.getElementById('winner');
+    var attr_text = winner.getAttribute('text');
+
+    // cek jumlah kertas yang sudah dikumpulkan (variabel global dari common.js)
+    var remaining = Math.max(0, 3 - (typeof collectedPapers !== 'undefined' ? collectedPapers : 0));
+
+    if (typeof collectedPapers !== 'undefined' && collectedPapers >= 3) {
+      clearInterval(counter); // stop timer hanya jika menang
+      attr_text.text = "Win! Tunggu Pindah tempat";
+      winner.setAttribute('text', attr_text);
+
+
+      // opsional: “buka” pintu biar bisa lewat
+      e.detail.body.el.setAttribute('visible', 'false');
+      e.detail.body.el.setAttribute('static-body', 'shape: none');
+      setTimeout(function(){
+    window.location.href = "desa.html"; // ganti dengan halaman tujuanmu
+  }, 5000); 
+    } else {
+      // belum cukup kertas
+      attr_text.text = "Haha! You lose Refresh lagi ya. Kertas sisa: " + remaining;
+      winner.setAttribute('text', attr_text);
+      // pintu tetap jadi penghalang (tidak dihapus), biar pemain lanjut cari kertas
+    }
+  }
+});
+
+
+      var seconds = 0;
+      var counter;
+      
+      // Creating a maze array
+      function init(width,height){
+        clearInterval(counter);
+        maze = new Array(parseInt(height));
+        for (var i = 0; i < maze.length; i++){
+          maze[i] = [].repeat(0, width);
+        }
+
+        // Randomized path generation 
+        buildPath(maze,[0,0]);
+        if(typeof QueryString.maze == 'undefined'){
+          window.location.hash += '&maze='+LZString.compressToBase64(JSON.stringify(maze));
+        }else{
+          maze = JSON.parse(LZString.decompressFromBase64(QueryString.maze))
+        }
+        paintMaze(maze);
+
+        // Timer Function
+var seconds = 1000;
+counter = setInterval(function(){
+  var board = document.getElementById('board');
+  var attr_text = board.getAttribute('text');
+  attr_text.text = seconds--;
+  board.setAttribute('text',attr_text);
+
+  if (seconds < 0) {
+    clearInterval(counter);
+    alert("Waktu habis! refresh web kalau mau ulangi");
+    // location.reload(); // kalau mau restart otomatis
+  }
+}, 1000);}
+
+      // Maze Width & Height
+      var width = QueryString.width;
+      var height = QueryString.height;
+      if(typeof width == 'undefined'){
+        width = 18;
+      }
+      if(typeof height == 'undefined'){
+        height = 14;
+      }
+      init(width,height);
+      
+
+
+    </script>
+  </body>
+</html>
