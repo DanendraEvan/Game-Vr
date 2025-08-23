@@ -92,64 +92,211 @@
       </a-assets>
 
       <a-entity id="scene">
+        <!-- Enhanced Environment with Sky -->
+        <a-sky color="#87CEEB" opacity="0.8"></a-sky>
         <a-entity environment="preset:none;shadow:true"></a-entity>
-        <a-entity light="type:ambient;intensity:0.5"></a-entity>
-        <a-entity gltf-model="#loby-model" position="0 0 -10" scale="2 2 2" shadow="receive: true"></a-entity>
-        <a-mirror id="mirror" position="1 1.8 -13" scale="30 15 30" layers="0,3">
-          <a-box color="black" position="0 0 -0.02" scale="1.02 1.02 0.01"></a-box>
-        </a-mirror>
-
-        <a-link
-        id="portal-desa"
-        href="MiniGame.html"
-        title="Desa Harmoni"
-        image="#thumbForest"
-        position="2 1.5 3"
-      >
-        <a-box obb-collider visible="false"></a-box>
-      </a-link>
-      
-
-      <a-entity
-        id="rig"
-        cursor-teleport="cameraRig: #rig; cameraHead: #player; collisionEntities: .environmentGround; ignoreEntities: .clickable,[link]"
-        simple-navmesh-constraint="navmesh:.environmentGround,.environmentDressing;fall:10;height:0;exclude:.navmesh-hole;"
-        movement-controls="fly:false;controls: gamepad, trackpad, keyboard, nipple;"
-        spawn-in-circle="radius:1"
-        restrict-cube="minX: -300; maxX: 100; minZ: -10; maxZ: 300"
-        networked="template:#avatar-template;attachTemplateToLocal:false"
-        player-info
-      >
-        <a-entity id="player" class="camera" camera position="0 1.6 0" look-controls>
-          <a-box obb-collider visible="false" height="0.4" depth="0.4" width="0.4"></a-box>
-        </a-entity>
-      </a-entity>
-
-      <a-box position="0 0 0" width="20" height="0.1" depth="20" color="##E7B07CFF" opacity="0.2"></a-box>
-
-      <a-entity id="dialog-box" position="0 1.6 -4" dialog-auto-hide visible="true">
-        <!-- Background dialog -->
-        <a-plane width="2.5" height="1.5" color="#222" opacity="0.8"></a-plane>
         
-        <!-- Teks dialog -->
-        <a-text 
-          id="dialog-text" 
-          value="Selamat datang di Metaverse!\n\nTugasmu: kumpulkan data obyektif. Temui petani, kepala desa, pemilik pabrik, cari fakta di perpustakaan" 
-          color="#FFF" 
-          width="2.2" 
-          align="center" 
-          position="0 0.3 0.01">
-        </a-text>
-    
-        <!-- Tombol Next -->
-        <a-plane id="next-btn"
-                class="clickable"
-                position="0 -0.5 0.01"
-                width="0.8"
-                height="0.3"
-                color="#4CAF50">
-          <a-text value="Next" color="#FFF" align="center" width="2" position="0 0 0.01"></a-text>
-        </a-plane>
+        <!-- Enhanced Lighting -->
+        <a-entity light="type:ambient;intensity:0.4"></a-entity>
+        <a-entity light="type:directional;intensity:0.6;castShadow:true" position="5 10 2"></a-entity>
+        <a-entity light="type:point;intensity:0.3;color:#FFE4B5" position="0 3 -5"></a-entity>
+        
+        <a-entity gltf-model="#loby-model" position="0 0 -10" scale="2 2 2" shadow="receive: true"></a-entity>
+        
+        <a-mirror id="mirror" position="1 1.8 -100" scale="30 15 30" layers="0,3">
+          <a-box position="0 0 -0.02" scale="1.02 1.02 0.01"></a-box>
+        </a-mirror>
+        <a-plane position="0 5 10" width="40" height="20" color="black" opacity="1" rotation="0 90 90"></a-plane>
+
+        <!-- Enhanced Portal with Glow Effect -->
+        <a-link
+          id="portal-desa"
+          href="MiniGame.html"
+          title="Desa Harmoni"
+          image="#thumbForest"
+          position="2 1.5 -90"
+          animation="property: scale; to: 1.1 1.1 1.1; dir: alternate; dur: 2000; loop: true"
+        >
+          <a-box obb-collider visible="false"></a-box>
+          <!-- Portal Glow Effect -->
+          <a-ring color="#00FF00" opacity="0.3" radius-inner="1.2" radius-outer="1.5" position="0 0 -0.1"
+                  animation="property: rotation; to: 0 0 360; dur: 8000; loop: true"></a-ring>
+        </a-link>
+
+        <!-- Information Boards -->
+        <a-entity id="info-board-1" position="-4 2 -5">
+          <a-plane width="3" height="2" color="#2C3E50" opacity="0.9"></a-plane>
+          <a-text value="MISI INVESTIGASI\n\n• Temui 3 Petani\n• Wawancarai Kepala Desa\n• Kunjungi Pabrik\n• Baca Dokumen di Perpustakaan"
+                  color="#ECF0F1" width="4" align="center" position="0 0 0.01"></a-text>
+        </a-entity>
+
+        <a-entity id="info-board-2" position="4 2 -5">
+          <a-plane width="3" height="2" color="#8E44AD" opacity="0.9"></a-plane>
+          <a-text value="TIPS INVESTIGASI\n\n• Bandingkan cerita berbeda\n• Cari bukti fisik\n• Catat inkonsistensi\n• Jangan mudah percaya"
+                  color="#ECF0F1" width="4" align="center" position="0 0 0.01"></a-text>
+        </a-entity>
+
+
+
+        <!-- New Elements between Z -40 to -80 -->
+        <!-- Research Station -->
+        <a-entity id="research-station" position="-6 1.5 -50">
+          <a-box width="2" height="1.5" depth="1" color="#34495E" opacity="0.8"></a-box>
+          <a-text value="STASIUN RISET\n\nAnalisis Data\nKorelasi Fakta"
+                  color="#ECF0F1" width="4" align="center" position="0 0 0.6"></a-text>
+          <a-cylinder height="0.1" radius="1.2" color="#3498DB" position="0 0.8 0"></a-cylinder>
+        </a-entity>
+
+        <!-- Evidence Archive -->
+        <a-entity id="evidence-archive" position="6 1.5 -55">
+          <a-box width="1.5" height="2" depth="1.5" color="#8E44AD" opacity="0.8"></a-box>
+          <a-text value="ARSIP BUKTI\n\nDokumen Penting\nFoto & Rekaman"
+                  color="#ECF0F1" width="3.5" align="center" position="0 0 0.8"></a-text>
+          <a-sphere radius="0.1" color="#F39C12" position="0 1.2 0"
+                    animation="property: rotation; to: 0 360 0; dur: 4000; loop: true"></a-sphere>
+        </a-entity>
+
+        <!-- Timeline Display -->
+        <a-entity id="timeline-display" position="0 2.5 -60">
+          <a-plane width="8" height="2" color="#2C3E50" opacity="0.9"></a-plane>
+          <a-text value="TIMELINE INVESTIGASI\n\n2020 → Pembangunan Pabrik   |   2021 → Keluhan Pertama   |   2022 → Penelitian Independen   |   2023 → Kasus Terbuka"
+                  color="#ECF0F1" width="6" align="center" position="0 0 0.01"></a-text>
+          <!-- Timeline markers -->
+          <a-sphere radius="0.05" color="#E74C3C" position="-3 -0.5 0.02"></a-sphere>
+          <a-sphere radius="0.05" color="#F39C12" position="-1 -0.5 0.02"></a-sphere>
+          <a-sphere radius="0.05" color="#3498DB" position="1 -0.5 0.02"></a-sphere>
+          <a-sphere radius="0.05" color="#27AE60" position="3 -0.5 0.02"></a-sphere>
+        </a-entity>
+
+        <!-- Character Profiles -->
+        <a-entity id="character-profiles" position="-4 1.8 -65">
+          <a-plane width="3" height="2.5" color="#95A5A6" opacity="0.9"></a-plane>
+          <a-text value="PROFIL KARAKTER\n\n👨‍🌾 Pak Budi - Petani Senior\n👩‍💼 Bu Sari - Kepala Desa\n👨‍🔬 Dr. Andi - Peneliti\n👨‍💼 Pak Joko - Direktur Pabrik"
+                  color="#2C3E50" width="2.8" align="center" position="0 0 0.01"></a-text>
+        </a-entity>
+
+        <!-- Data Visualization Area -->
+        <a-entity id="data-viz" position="4 1.5 -70">
+          <a-cylinder height="3" radius="1.5" color="#16A085" opacity="0.7"></a-cylinder>
+          <a-text value="DATA CENTER\n\nVisualisasi\nStatistik\nTren"
+                  color="#ECF0F1" width="4" align="center" position="0 0 1.6"></a-text>
+          <!-- Floating data elements -->
+          <a-box width="0.2" height="0.2" depth="0.2" color="#F1C40F" position="0.5 1 0.5"
+                 animation="property: position; to: 0.5 2 0.5; dir: alternate; dur: 2000; loop: true"></a-box>
+          <a-box width="0.2" height="0.2" depth="0.2" color="#E74C3C" position="-0.5 0.5 -0.5"
+                 animation="property: position; to: -0.5 1.5 -0.5; dir: alternate; dur: 2500; loop: true"></a-box>
+          <a-box width="0.2" height="0.2" depth="0.2" color="#3498DB" position="0 1.5 -0.8"
+                 animation="property: position; to: 0 2.5 -0.8; dir: alternate; dur: 1800; loop: true"></a-box>
+        </a-entity>
+
+        <!-- Investigation Tools -->
+        <a-entity id="investigation-tools" position="-2 1 -75">
+          <a-box width="1" height="0.8" depth="1" color="#D35400" opacity="0.8"></a-box>
+          <a-text value="TOOLS\n\n🔍 Magnifier\n📋 Notebook\n📱 Recorder"
+                  color="#ECF0F1" width="3" align="center" position="0 0 0.6"></a-text>
+        </a-entity>
+
+        <!-- Warning Signs -->
+        <a-entity id="warning-signs" position="2 1.2 -78">
+          <a-cone height="1.5" radius-bottom="0.8" color="#E74C3C" opacity="0.8"></a-cone>
+          <a-text value="⚠️\nHATI-HATI\nInformasi Bias"
+                  color="#FFF" width="4" align="center" position="0 0.5 0"></a-text>
+        </a-entity>
+
+        <!-- Atmospheric Particles in the middle area -->
+        <a-sphere radius="0.05" color="#FFD700" opacity="0.6" position="1 3.5 -45"
+                  animation="property: position; to: 3 4.5 -47; dur: 8000; loop: true"></a-sphere>
+        <a-sphere radius="0.06" color="#00CED1" opacity="0.5" position="-3 2.8 -52"
+                  animation="property: position; to: -1 3.8 -54; dur: 6000; loop: true"></a-sphere>
+        <a-sphere radius="0.04" color="#FF69B4" opacity="0.7" position="4 3.2 -68"
+                  animation="property: position; to: 2 4.2 -66; dur: 7000; loop: true"></a-sphere>
+        <a-sphere radius="0.07" color="#98FB98" opacity="0.6" position="-1 2.5 -72"
+                  animation="property: position; to: 1 3.5 -74; dur: 5500; loop: true"></a-sphere>
+
+        <!-- Ambient Sound Emitter -->
+        <a-entity id="ambient-sound" position="0 0 0"
+                  sound="src: url(https://cdn.aframe.io/basic-guide/audio/backgroundnoise.wav); autoplay: true; loop: true; volume: 0.1"></a-entity>
+
+        <a-entity
+          id="rig"
+          cursor-teleport="cameraRig: #rig; cameraHead: #player; collisionEntities: .environmentGround; ignoreEntities: .clickable,[link]"
+          simple-navmesh-constraint="navmesh:.environmentGround,.environmentDressing;fall:10;height:0;exclude:.navmesh-hole;"
+          movement-controls="fly:false;controls: gamepad, trackpad, keyboard, nipple;"
+          spawn-in-circle="radius:1"
+          restrict-cube="minX: -10; maxX: 10; minZ: -95; maxZ: 10"
+          networked="template:#avatar-template;attachTemplateToLocal:false"
+          player-info
+        >
+          <a-entity id="player" class="camera" camera position="0 1.6 0" look-controls>
+            <a-box obb-collider visible="false" height="0.4" depth="0.4" width="0.4"></a-box>
+          </a-entity>
+        </a-entity>
+
+        <a-box position="0 0 0" width="20" height="0.1" depth="20" color="##E7B07CFF" opacity="0.2"></a-box>
+
+        <!-- Enhanced Dialog System - Now always visible -->
+        <a-entity id="all-dialogs" position="0 1.5 -4">
+          <!-- Dialog 1 -->
+          <a-entity position="0 1 -1">
+            <a-plane width="2.8" height="1.5" color="#222" opacity="0.9"></a-plane>
+            <a-text 
+              value="Selamat datang di Metaverse!\n\nTugasmu: kumpulkan data obyektif. Temui petani, kepala desa, pemilik pabrik, cari fakta di perpustakaan" 
+              color="#FFF" 
+              width="2.4" 
+              align="center" 
+              position="0 0 0.01">
+            </a-text>
+          </a-entity>
+
+          <!-- Dialog 2 -->
+          <a-entity position="0 1 -2">
+            <a-plane width="2.8" height="1.2" color="#2C3E50" opacity="0.9"></a-plane>
+            <a-text 
+              value="Jangan langsung percaya satu cerita\nDalam studi kasus ini, kebenaran tersembunyi di banyak kepala dan dokumen" 
+              color="#ECF0F1" 
+              width="2.4" 
+              align="center" 
+              position="0 0 0.01">
+            </a-text>
+          </a-entity>
+
+          <!-- Dialog 3 -->
+          <a-entity position="0 1 -5">
+            <a-plane width="2.8" height="1.2" color="#8E44AD" opacity="0.9"></a-plane>
+            <a-text 
+              value="Ingat! Setiap karakter memiliki perspektif berbeda\nBandingkan informasi yang kamu dapat" 
+              color="#ECF0F1" 
+              width="2.4" 
+              align="center" 
+              position="0 0 0.01">
+            </a-text>
+          </a-entity>
+
+          <!-- Dialog 4 -->
+          <a-entity position="0 1 -10">
+            <a-plane width="2.8" height="1.2" color="#E67E22" opacity="0.9"></a-plane>
+            <a-text 
+              value="Gunakan papan informasi untuk melihat misi\nPerhatikan setiap detail yang kamu temukan" 
+              color="#FFF" 
+              width="2.4" 
+              align="center" 
+              position="0 0 0.01">
+            </a-text>
+          </a-entity>
+
+          <!-- Dialog 5 -->
+          <a-entity position="0 1 -20">
+            <a-plane width="2.8" height="1.2" color="#27AE60" opacity="0.9"></a-plane>
+            <a-text 
+              value="Masuk ke portal di belakangmu untuk memulai\nSelamat menyelidiki!" 
+              color="#FFF" 
+              width="2.4" 
+              align="center" 
+              position="0 0 0.01">
+            </a-text>
+          </a-entity>
+        </a-entity>
+        
       </a-entity>
       
     </a-scene>
@@ -186,58 +333,27 @@
         }
       });
 
+      // Enhanced dialog system - removed interactive elements
       const dialogSteps = [
         "Selamat datang di Metaverse!\n\nTugasmu: kumpulkan data obyektif. Temui petani, kepala desa, pemilik pabrik, cari fakta di perpustakaan",
         "Jangan langsung percaya satu cerita\nDalam studi kasus ini, kebenaran tersembunyi di banyak kepala dan dokumen",
-        "Masuk ke portal di belakangmu untuk memulai"
+        "Ingat! Setiap karakter memiliki perspektif berbeda\nBandingkan informasi yang kamu dapat",
+        "Gunakan papan informasi untuk melihat misi\nPerhatikan setiap detail yang kamu temukan",
+        "Masuk ke portal di belakangmu untuk memulai\nSelamat menyelidiki!"
       ];
-      
-      let currentStep = 0;
 
-      const dialogText = document.querySelector("#dialog-text");
-      const nextBtn = document.querySelector("#next-btn");
-      const dialogBox = document.querySelector("#dialog-box");
+      // All dialogs are now visible by default, no interaction needed
 
-      // Fix: Use A-Frame's event system for VR/AR and desktop
-      nextBtn.addEventListener("click", () => {
-        currentStep++;
-        if (currentStep < dialogSteps.length) {
-          dialogText.setAttribute("value", dialogSteps[currentStep]);
-        } else {
-          dialogBox.setAttribute("visible", "false");
-        }
-      });
-
-      // Also support triggerdown (VR controller)
-      nextBtn.addEventListener("triggerdown", () => {
-        currentStep++;
-        if (currentStep < dialogSteps.length) {
-          dialogText.setAttribute("value", dialogSteps[currentStep]);
-        } else {
-          dialogBox.setAttribute("visible", "false");
-        }
-      });
-
-      // Fix: Use correct player rig id
-      AFRAME.registerComponent("dialog-auto-hide", {
-        tick: function () {
-          // Try #rig, fallback to #cameraRig for compatibility
-          const player = document.querySelector("#rig") || document.querySelector("#cameraRig");
-          if (!player) return;
-          const dialog = this.el;
-          const posPlayer = player.object3D.position;
-          const posDialog = dialog.object3D.position;
-
-          const dist = posPlayer.distanceTo(posDialog);
-          if (dist > 5) { // kalau jarak > 5 meter
-            dialog.parentNode.removeChild(dialog);
-          }
-        }
-      });
+      // Portal interaction
       const portal = document.querySelector("#portal-desa");
-  portal.addEventListener("obbcollisionstarted", () => {
-    window.location.href = "MiniGame.html"; // langsung redirect / refresh
-  });
+      portal.addEventListener("obbcollisionstarted", () => {
+        window.location.href = "MiniGame.html";
+      });
+
+      // Add subtle environmental sounds and interactions
+      setTimeout(() => {
+        console.log("Enhanced VR Lobby loaded successfully!");
+      }, 2000);
     </script>
   </body>
 </html>
