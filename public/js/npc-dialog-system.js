@@ -6,45 +6,60 @@ AFRAME.registerComponent('npc-dialog-3d', {
   },
   
   init: function () {
-    this.dialogStack = []; // Stack untuk tracking menu navigasi
-    this.currentPanel = null; // Reference ke panel yang sedang aktif
-    this.currentChoices = []; // Store current choices for scrolling
-    this.scrollOffset = 0; // Current scroll position
-    this.maxVisibleChoices = 4; // Maximum choices visible at once
-    
-    this.el.addEventListener('click', (evt) => {
-      evt.stopPropagation();
-      evt.preventDefault();
-      this.dialogStack = []; // reset stack
-      this.scrollOffset = 0; // reset scroll
-      this.showDialog(this.data.npcId);
-    });
-    
-    // Add hover effects
-    this.el.addEventListener('mouseenter', this.onHover.bind(this));
-    this.el.addEventListener('mouseleave', this.onLeave.bind(this));
+  this.dialogStack = []; // Stack untuk tracking menu navigasi
+  this.currentPanel = null; // Reference ke panel yang sedang aktif
+  this.currentChoices = []; // Store current choices for scrolling
+  this.scrollOffset = 0; // Current scroll position
+  this.maxVisibleChoices = 4; // Maximum choices visible at once
 
-     this.defaultScale = this.el.getAttribute('scale');
-  },
-  
-   onHover: function () {
-    const s = this.defaultScale;
-    this.el.setAttribute('animation__hover', {
-      property: 'scale',
-      to: `${s.x * 1.1} ${s.y * 1.1} ${s.z * 1.1}`,
-      dur: 200
-    });
-  },
+  this.isPaused = false; // flag untuk status animasi
+  this.defaultScale = this.el.object3D.scale.clone(); // simpan scale awal
 
-  onLeave: function () {
-    const s = this.defaultScale;
-    this.el.setAttribute('animation__hover', {
-      property: 'scale',
-      to: `${s.x} ${s.y} ${s.z}`,
-      dur: 200
-    });
-  },
+  this.el.addEventListener('click', (evt) => {
+    evt.stopPropagation();
+    evt.preventDefault();
 
+    // Pause animasi saat diklik
+    if (this.el.getAttribute('animation-mixer')) {
+      if (!this.isPaused) {
+        this.el.setAttribute('animation-mixer', 'timeScale: 0'); // freeze
+        this.isPaused = true;
+
+        // Resume otomatis setelah 45 detik
+        setTimeout(() => {
+          this.el.setAttribute('animation-mixer', 'timeScale: 1');
+          this.isPaused = false;
+        }, 45000);
+      }
+    }
+
+    this.dialogStack = [];
+    this.scrollOffset = 0;
+    this.showDialog(this.data.npcId);
+  });
+
+  // Add hover effects
+  this.el.addEventListener('mouseenter', this.onHover.bind(this));
+  this.el.addEventListener('mouseleave', this.onLeave.bind(this));
+},
+
+onHover: function () {
+  const s = this.defaultScale;
+  this.el.setAttribute('animation__hover', {
+    property: 'scale',
+    to: `${s.x * 1.1} ${s.y * 1.1} ${s.z * 1.1}`,
+    dur: 200
+  });
+},
+
+onLeave: function () {
+  const s = this.defaultScale;
+  this.el.setAttribute('animation__hover', {
+    property: 'scale',
+    to: `${s.x} ${s.y} ${s.z}`,
+    dur: 200
+  });
+},
   
   showDialog: function (dialogId) {
     const scene = this.el.sceneEl;
