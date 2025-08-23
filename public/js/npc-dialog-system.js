@@ -23,25 +23,28 @@ AFRAME.registerComponent('npc-dialog-3d', {
     // Add hover effects
     this.el.addEventListener('mouseenter', this.onHover.bind(this));
     this.el.addEventListener('mouseleave', this.onLeave.bind(this));
+
+     this.defaultScale = this.el.getAttribute('scale');
   },
   
-  onHover: function () {
-    // Efek hover - ubah cursor atau highlight
+   onHover: function () {
+    const s = this.defaultScale;
     this.el.setAttribute('animation__hover', {
       property: 'scale',
-      to: '1.1 1.1 1.1',
+      to: `${s.x * 1.1} ${s.y * 1.1} ${s.z * 1.1}`,
       dur: 200
     });
   },
-  
+
   onLeave: function () {
-    // Kembalikan ke ukuran normal
+    const s = this.defaultScale;
     this.el.setAttribute('animation__hover', {
       property: 'scale',
-      to: '1 1 1',
+      to: `${s.x} ${s.y} ${s.z}`,
       dur: 200
     });
   },
+
   
   showDialog: function (dialogId) {
     const scene = this.el.sceneEl;

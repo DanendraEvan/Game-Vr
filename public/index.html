@@ -25,7 +25,9 @@
     <!-- Navigation -->
     <nav class="fixed top-0 left-0 right-0 bg-black bg-opacity-50 p-4 z-20 flex justify-center items-center gap-8 backdrop-blur-sm">
         <button id="open-guide-btn" class="text-white hover:text-blue-300 transition-colors duration-300 font-semibold">Buku Petunjuk</button>
+        <a href="#flipbook" class="text-white hover:text-blue-300 transition-colors duration-300 font-semibold">Buku Panduan Interaktif</a>
         <a href="#documents" class="text-white hover:text-blue-300 transition-colors duration-300 font-semibold">Dokumen Proyek</a>
+        <a href="#developer" class="text-white hover:text-blue-300 transition-colors duration-300 font-semibold">Tentang Pengembang</a>
     </nav>
 
     <!-- Hero Section -->
@@ -35,48 +37,59 @@
         <a href="index1.html" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-10 rounded-lg text-2xl transition-transform transform hover:scale-105">Mainkan</a>
     </div>
 
+    <!-- Interactive Flipbook Section -->
+    <section id="flipbook" class="py-20 bg-gray-900 bg-opacity-80 backdrop-blur-sm">
+        <div class="container mx-auto px-4 text-center">
+            <h2 class="text-4xl font-bold text-white text-center mb-12">Buku Panduan Interaktif</h2>
+            <p class="text-lg text-gray-300 mb-8 max-w-3xl mx-auto">Lihat buku panduan lengkap kami dalam format flipbook yang menarik untuk informasi lebih detail mengenai proyek "Desa Harmoni".</p>
+            <div class="w-full max-w-4xl mx-auto h-[60vh] rounded-lg overflow-hidden shadow-2xl">
+                <iframe style="width:100%;height:100%;" src="https://heyzine.com/flip-book/d125af3485.html" allowfullscreen></iframe>
+            </div>
+        </div>
+    </section>
+
     <!-- Documents Section -->
-    <section id="documents" class="py-20 bg-gray-900 bg-opacity-80 backdrop-blur-sm">
+    <section id="documents" class="py-20 bg-gray-800 bg-opacity-90">
         <div class="container mx-auto px-4">
             <h2 class="text-4xl font-bold text-white text-center mb-12">Dokumen Proyek</h2>
             <div class="max-w-4xl mx-auto space-y-4">
                 <!-- Document Items -->
-                <div class="bg-gray-800 bg-opacity-70 p-4 rounded-lg flex flex-col sm:flex-row justify-between items-center gap-3 transition-all duration-300 hover:bg-opacity-90">
+                <div class="bg-gray-700 bg-opacity-70 p-4 rounded-lg flex flex-col sm:flex-row justify-between items-center gap-3 transition-all duration-300 hover:bg-gray-600">
                     <span class="font-semibold text-white text-left">📄 Angket Penelitian Desa Harmoni</span>
                     <div class="flex-shrink-0">
                         <a href="assets/documents/ANGKET PENELITIAN DESA HARMONI.pdf" target="_blank" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-md text-sm transition">Preview</a>
                         <a href="assets/documents/ANGKET PENELITIAN DESA HARMONI.pdf" download class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-md text-sm transition ml-2">Download</a>
                     </div>
                 </div>
-                <div class="bg-gray-800 bg-opacity-70 p-4 rounded-lg flex flex-col sm:flex-row justify-between items-center gap-3 transition-all duration-300 hover:bg-opacity-90">
+                <div class="bg-gray-700 bg-opacity-70 p-4 rounded-lg flex flex-col sm:flex-row justify-between items-center gap-3 transition-all duration-300 hover:bg-gray-600">
                     <span class="font-semibold text-white text-left">📄 Interview Guide</span>
                     <div class="flex-shrink-0">
                         <a href="assets/documents/INTERVIEW GUIDE WAWANCARA DESA HARMONI.pdf" target="_blank" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-md text-sm transition">Preview</a>
                         <a href="assets/documents/INTERVIEW GUIDE WAWANCARA DESA HARMONI.pdf" download class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-md text-sm transition ml-2">Download</a>
                     </div>
                 </div>
-                <div class="bg-gray-800 bg-opacity-70 p-4 rounded-lg flex flex-col sm:flex-row justify-between items-center gap-3 transition-all duration-300 hover:bg-opacity-90">
+                <div class="bg-gray-700 bg-opacity-70 p-4 rounded-lg flex flex-col sm:flex-row justify-between items-center gap-3 transition-all duration-300 hover:bg-gray-600">
                     <span class="font-semibold text-white text-left">📄 Studi Dokumentasi</span>
                     <div class="flex-shrink-0">
                         <a href="assets/documents/STUDI DOKUMENTASI.pdf" target="_blank" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-md text-sm transition">Preview</a>
                         <a href="assets/documents/STUDI DOKUMENTASI.pdf" download class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-md text-sm transition ml-2">Download</a>
                     </div>
                 </div>
-                <div class="bg-gray-800 bg-opacity-70 p-4 rounded-lg flex flex-col sm:flex-row justify-between items-center gap-3 transition-all duration-300 hover:bg-opacity-90">
+                <div class="bg-gray-700 bg-opacity-70 p-4 rounded-lg flex flex-col sm:flex-row justify-between items-center gap-3 transition-all duration-300 hover:bg-gray-600">
                     <span class="font-semibold text-white text-left">📄 Lembar Observasi</span>
                     <div class="flex-shrink-0">
                         <a href="assets/documents/LEMBAR OBSERVASI DESA HARMONI.pdf" target="_blank" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-md text-sm transition">Preview</a>
                         <a href="assets/documents/LEMBAR OBSERVASI DESA HARMONI.pdf" download class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-md text-sm transition ml-2">Download</a>
                     </div>
                 </div>
-                <div class="bg-gray-800 bg-opacity-70 p-4 rounded-lg flex flex-col sm:flex-row justify-between items-center gap-3 transition-all duration-300 hover:bg-opacity-90">
+                <div class="bg-gray-700 bg-opacity-70 p-4 rounded-lg flex flex-col sm:flex-row justify-between items-center gap-3 transition-all duration-300 hover:bg-gray-600">
                     <span class="font-semibold text-white text-left">📄 Hasil Angket</span>
                     <div class="flex-shrink-0">
                         <a href="assets/documents/Hasil_Angket_Desa_Harmoni_dengan_Karakter.pdf" target="_blank" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-md text-sm transition">Preview</a>
                         <a href="assets/documents/Hasil_Angket_Desa_Harmoni_dengan_Karakter.pdf" download class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-md text-sm transition ml-2">Download</a>
                     </div>
                 </div>
-                <div class="bg-gray-800 bg-opacity-70 p-4 rounded-lg flex flex-col sm:flex-row justify-between items-center gap-3 transition-all duration-300 hover:bg-opacity-90">
+                <div class="bg-gray-700 bg-opacity-70 p-4 rounded-lg flex flex-col sm:flex-row justify-between items-center gap-3 transition-all duration-300 hover:bg-gray-600">
                     <span class="font-semibold text-white text-left">📄 Buku Model Experiental Social Learning</span>
                     <div class="flex-shrink-0">
                         <a href="assets/documents/BUKU MODEL EXPERIENTAL SOCIAL LEARNING.pdf" target="_blank" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-md text-sm transition">Preview</a>
@@ -87,13 +100,36 @@
         </div>
     </section>
 
+    <!-- Developer Section -->
+    <section id="developer" class="py-20 bg-gray-900 bg-opacity-80 backdrop-blur-sm">
+        <div class="container mx-auto px-4">
+            <h2 class="text-4xl font-bold text-white text-center mb-12">Tentang Pengembang</h2>
+            <div class="flex flex-col md:flex-row items-center justify-center gap-12">
+                <!-- Developer Photo -->
+                <div class="flex-shrink-0">
+                    <div class="w-48 h-48 rounded-full bg-gray-700 border-4 border-blue-500 flex items-center justify-center">
+                        <!-- Ganti tag img di bawah dengan foto Anda -->
+                        <img src="path/to/your/photo.jpg" alt="Foto Pengembang" class="w-full h-full rounded-full object-cover hidden">
+                        <span class="text-gray-400">Foto Anda</span>
+                    </div>
+                </div>
+                <!-- Developer Info -->
+                <div class="text-white text-center md:text-left max-w-lg">
+                    <h3 class="text-3xl font-bold">Tim Desa Harmoni</h3>
+                    <p class="text-blue-300 text-lg mb-4">Mahasiswa & Pengembang Game Edukasi</p>
+                    <p class="text-gray-300 mb-4">
+                        Kami adalah tim yang bersemangat dalam menciptakan pengalaman belajar yang imersif dan bermakna. Proyek "Desa Harmoni" adalah wujud dedikasi kami untuk menggabungkan teknologi VR dengan pendidikan sosial.
+                    </p>
+                    <p class="text-gray-400"><strong class="font-semibold text-white">Email:</strong> contact@desaharmoni.dev</p>
+                    <p class="text-gray-400"><strong class="font-semibold text-white">Website:</strong> <a href="#" class="hover:text-blue-400">www.desaharmoni.dev</a></p>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- Footer -->
-    <footer class="bg-gray-900 text-center p-6">
-        <p class="font-bold text-white">Info Pengembang</p>
-        <p class="text-gray-400">Nama Pengembang: [Nama Anda/Tim Anda]</p>
-        <p class="text-gray-400">Email: [Email Kontak]</p>
-        <p class="text-gray-400">Website: [URL Website/Portfolio]</p>
-        <p class="mt-4 text-gray-500">&copy; 2025 Desa Harmoni. Semua Hak Cipta Dilindungi.</p>
+    <footer class="bg-black text-center p-4">
+        <p class="text-gray-500">&copy; 2025 Desa Harmoni. Semua Hak Cipta Dilindungi.</p>
     </footer>
 
     <!-- Modal for User Guide -->
