@@ -244,7 +244,7 @@ function paintMaze(maze){
      if (collectedPapers >= 3) {
        alert("Semua catatan sudah terkumpul! Sekarang cari pintu untuk keluar!");
      } else {
-       alert("Kamu menemukan catatan! Total: " + collectedPapers + " | Kertas sisa: " + remaining);
+       alert("Kamu menemukan Coin! Total: " + collectedPapers + " | Coin tersisa: " + remaining);
      }
    });
    

@@ -156,7 +156,7 @@
       </a-entity>
 
       <!-- NPC Pengamat pertanian lokal -->
-      <a-entity id="pengamat petani lokal" class="clickable" gltf-model="models/pengamat1.glb" position="111.2989 0.3 -91.79971" scale="0.02 0.02 0.02" npc-dialog-3d="npcId: agri_observer" rotation="0 -158.22057625199145 0" animation-mixer="clip: *; loop: repeat">
+      <a-entity id="pengamat petani lokal" class="clickable" gltf-model="models/pengamat1.glb" position="111.2989 0.3 -91.79971" scale="0.02 0.02 0.02" npc-dialog-3d="npcId: pengamat_pertanian" rotation="0 -158.22057625199145 0" animation-mixer="clip: *; loop: repeat">
         <a-cylinder radius="1.2" height="0.45" material="opacity: 0; transparent: true" position="3.97959 0.5 -1.44845"></a-cylinder>
       </a-entity>
 
@@ -166,26 +166,31 @@
       </a-entity>
 
       <!-- NPC Petani -->
-  <a-entity id="petani" class="clickable" gltf-model="models/petani1.glb" position="89.30027 1.20883 -120.20951" scale="0.02 0.02 0.02" npc-dialog-3d="npcId: farmer" rotation="0 -3.465248744951219 0" animation-mixer="" animation__hover="dur: 200; property: scale; to: 0.02 0.02 0.02">
+  <a-entity id="petani" class="clickable" gltf-model="models/petani1.glb" position="89.30027 1.20883 -120.20951" scale="0.02 0.02 0.02" npc-dialog-3d="npcId: petani_senior" rotation="0 -3.465248744951219 0" animation-mixer="" animation__hover="dur: 200; property: scale; to: 0.02 0.02 0.02">
         <a-cylinder radius="1.2" height="0.45" material="opacity: 0; transparent: true" position="3.97959 0 -1.44845"></a-cylinder>
       </a-entity>
 
 
       <!-- NPC Aktivis pengairan -->
-      <a-entity id="aktivis pengairan" class="clickable" gltf-model="models/aktvs.glb" position="176.07534 0.75294 -116.53111" npc-dialog-3d="npcId: water_activist" rotation="0 -3.465248744951219 0" animation-mixer="" animation__hover="dur: 200; property: scale; to: 1 1 1" scale="1.29 1.66 1.3">
+      <a-entity id="aktivis pengairan" class="clickable" gltf-model="models/air.glb" position="176.07534 0.17009 -116.53111" scale="0.02 0.02 0.02" npc-dialog-3d="npcId: aktivis_perairan" rotation="0 -3.465248744951219 0" animation-mixer="" animation__hover="dur: 200; property: scale; to: 0.02 0.02 0.02">
         <a-cylinder radius="1.2" height="0.45" material="opacity: 0; transparent: true" position="3.97959 0.5 -1.44845"></a-cylinder>
       </a-entity>
 
       <!-- NPC Ketua Tani -->
-      <a-entity id="ketua tani" class="clickable" gltf-model="models/ketuatani1.glb" position="191.94696 -0.22281 -105.50623" scale="0.02 0.02 0.02" npc-dialog-3d="npcId: farmer_leader" rotation="0 -92.64956730383464 0" animation-mixer="" animation__hover="dur: 200; property: scale; to: 0.02 0.02 0.02">
+      <a-entity id="ketua tani" class="clickable" gltf-model="models/ketuatani1.glb" position="191.94696 -0.22281 -105.50623" scale="0.02 0.02 0.02" npc-dialog-3d="npcId: ketua_tani" rotation="0 -92.64956730383464 0" animation-mixer="" animation__hover="dur: 200; property: scale; to: 0.02 0.02 0.02">
         <a-cylinder radius="1.2" height="0.45" material="opacity: 0; transparent: true" position="3.97959 0.5 -1.44845"></a-cylinder>
       </a-entity>
 
       <!-- NPC Kepala Desa -->
-      <a-entity id="kepala desa" class="clickable" gltf-model="models/kepala1.glb" position="11.00104 -0.20485 -107.69743" npc-dialog-3d="npcId: village_head" scale="0.02 0.02 0.02" rotation="0 -3.465248744951219 0" animation-mixer="" animation__hover="dur: 200; property: scale; to: 0.02 0.02 0.02">
+      <a-entity id="kepala desa" class="clickable" gltf-model="models/kepala1.glb" position="11.00104 -0.20485 -107.69743" npc-dialog-3d="npcId: kepala_desa" scale="0.02 0.02 0.02" rotation="0 -3.465248744951219 0" animation-mixer="" animation__hover="dur: 200; property: scale; to: 0.02 0.02 0.02">
         <a-cylinder radius="1.2" height="0.45" material="opacity: 0; transparent: true" position="3.97959 0.5 -1.44845"></a-cylinder>
       </a-entity>
-  </a-entity>
+     /a-entity>
+
+      <a-entity id="info-board-sawah" position="103.82024 9.71802 -125.74902" scale="4.53 3.81 2.94" rotation="0 -17.535373319978845 0">
+        <a-plane width="3" height="2" color="#2C3E50" opacity="0.9" scale="1.32 0.6 1"></a-plane>
+        <a-text value="Tanaman di Desa Harmoni layu dan Sungai disekitar tercemar" color="#ECF0F1" width="4" align="center" position="0 0 0.01"></a-text>
+      </a-entity>
 
   <!-- Rig (player) -->
   <a-entity
