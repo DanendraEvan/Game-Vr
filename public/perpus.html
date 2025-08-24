@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <title>VR Dialog Gambar dengan Player</title>
+  <script src="https://aframe.io/releases/1.7.1/aframe.min.js"></script>
+  
+  <!-- Pakai hanya satu versi A-Frame -->
+  <script src="https://aframe.io/releases/1.7.1/aframe.min.js"></script>
+
+  <!-- Lib pendukung -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.8.1/socket.io.min.js"></script>
+  <script src="/easyrtc/easyrtc.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/networked-aframe@0.14.0/dist/networked-aframe.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-extras@7.5.4/dist/aframe-extras.min.js"></script>
+  <script
+    src="https://cdn.jsdelivr.net/npm/aframe-environment-component@1.5.0/dist/aframe-environment-component.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fern-solutions/aframe-mirror@1.1.1/dist/mirror.umd.min.js"></script>
+  <script
+    src="https://cdn.jsdelivr.net/gh/c-frame/aframe-cursor-teleport@1.6.0/dist/aframe-cursor-teleport-component.min.js"></script>
+  <script
+    src="https://cdn.jsdelivr.net/gh/AdaRoseCannon/aframe-xr-boilerplate@bca4792/simple-navmesh-constraint.js"></script>
+  <script src="/dist/components.js"></script>
+  <script
+    src="https://cdn.jsdelivr.net/gh/editvr/aframe-dialog-popup-component/dist/aframe-dialog-popup-component.min.js"></script>
+  <script defer src="/dist/ui.js"></script>
+  <style>
+    body { margin: 0; }
+    #hud {
+      position: fixed;
+      top: 10px;
+      left: 10px;
+      background: rgba(0,0,0,0.6);
+      color: #fff;
+      padding: 5px 10px;
+      border-radius: 4px;
+      font-family: monospace;
+      font-size: 14px;
+      z-index: 999;
+      white-space: pre-line;
+    }
+  </style>
+</head>
+<body>
+  <div id="hud">Koordinat: X: 0.00 Y: 0.00 Z: 0.00</div>
+
+  <a-scene networked-scene="connectOnLoad: false; room: pabrik; debug: true; adapter: wseasyrtc;"
+           shadow="type: pcfsoft"
+           gltf-model="meshoptDecoderPath:https://unpkg.com/meshoptimizer@0.19.0/meshopt_decoder.js"
+           raycaster="far: 10; objects: .clickable"
+           cursor="rayOrigin: mouse"
+           vr-detector
+           hud-coords>
+
+    <!-- Asset -->
+    <a-assets>
+      <audio id="bgm" src="Pabrik.mp3" preload="auto"></audio>
+
+      <!-- Tambahkan gambar untuk portal dan dialog -->
+      <img id="thumbDesa" src="https://cdn.aframe.io/link-traversal/thumbs/forest.png">
+      <img id="gambarStudiDokumen1" src="assets/studDokumen1.png">
+      <img id="gambarStudiDokumen2" src="assets/studDokumen2.png">
+      <img id="gambarStudiDokumen3" src="assets/studDokumen3.png">
+      <template id="avatar-template">
+        <a-entity player-info>
+          <a-entity class="model">
+            <a-text class="nametag" align="center" value="?" position="0 2.1 0" scale=".5 .5 .5"></a-text>
+          </a-entity>
+          <a-entity class="camera" position="0 1.6 0"></a-entity>
+        </a-entity>
+      </template>
+
+      <a-asset-item id="perpus-model" src="models/perpus.glb"></a-asset-item>
+      <a-asset-item id="signArrow" src="models/little_post_fbx.glb"></a-asset-item>
+      <a-asset-item id="village-model" src="models/Untitled.glb"></a-asset-item>
+    </a-assets>
+
+    <!-- Musik latar -->
+    <a-entity sound="src: #bgm; autoplay: true; loop: true; volume: 1"></a-entity>
+
+    <!-- Langit + Model -->
+    <a-entity gltf-model="models/sky_dome_demo.glb" scale="18 18 18" position="0 0 0" rotation="0 0 0"></a-entity>
+    <a-sky color="#87CEEB"></a-sky>
+
+    <!-- Lighting -->
+    <a-entity light="type: directional; color: #FFF; intensity: 0.8" position="-1 2 1"></a-entity>
+    <a-entity light="type: hemisphere; color: #FFF; groundColor: #808080; intensity: 0.5"></a-entity>
+
+    <!-- Pabrik -->
+    <a-entity gltf-model="#perpus-model" position="0 0 -10" scale="2 2 2" shadow="receive: true"></a-entity>
+
+    <!-- Portal balik ke desa -->
+    <a-link change-room="on: obbcollisionstarted; room: desa; url: desa.html"
+            link="on: ignore"
+            href="desa.html"
+            position="-5 1.6 -20"
+            title="Kembali ke Desa"
+            image="#thumbDesa">
+      <a-box position="0 0 0" obb-collider visible="false"></a-box>
+    </a-link>
+
+    <!-- Info text -->
+    <a-entity id="info-dialog-onload" position="1.40 4 -7">
+      <a-plane width="15" height="1.2" color="#1e293b" opacity="0.92" material="shader: flat"></a-plane>
+      <a-text value="Selamat datang di Perpus, Click block yang ada dan baca Studi Dokumennya"
+              align="center" color="#fff" position="0 0 0.05"
+              text="width: 12; wrapCount: 60; font: dejavu; weight: bold"></a-text>
+    </a-entity>
+
+    <!-- Rig (player) -->
+    <a-entity id="rig" position="0 1.6 0"
+      movement-controls="fly:false; controls: gamepad, trackpad, keyboard, nipple;"
+      spawn-in-circle="radius:1"
+      networked="template:#avatar-template; attachTemplateToLocal:false"
+      restrict-movement="radius: 10"
+      player-info>
+
+      <a-entity id="player" class="camera" camera
+        position="0 0 0"
+        rotation="0 120 0"
+        look-controls>
+        <a-box obb-collider visible="false"
+          height="0.4"
+          depth="0.4"
+          width="0.4"></a-box>
+        <a-entity cursor="rayOrigin: mouse"
+            raycaster="objects: .clickable; far: 10"></a-entity>
+      </a-entity>
+    </a-entity>
+
+    <!-- Block yang bisa diklik (3 buah) -->
+    <a-box id="trigger-block1" position="-32 1 -0.8"
+           depth="1" height="1" width="1"
+           color="#4CAF50" class="clickable"
+           image-dialog-trigger="src: #gambarStudiDokumen1"></a-box>
+
+    <a-box id="trigger-block2" position="-15 1 0"
+           depth="1" height="1" width="1"
+           color="#2196F3" class="clickable"
+           image-dialog-trigger="src: #gambarStudiDokumen2"></a-box>
+
+    <a-box id="trigger-block3" position="15 1 0.44"
+           depth="1" height="1" width="1"
+           color="#FF9800" class="clickable"
+           image-dialog-trigger="src: #gambarStudiDokumen3"></a-box>
+
+    <!-- Script -->
+    <script>
+      AFRAME.registerComponent('hud-coords', {
+        tick: function () {
+          const player = document.querySelector('#player');
+          const hud = document.getElementById('hud');
+          if (player && hud) {
+            const pos = player.object3D.getWorldPosition(new THREE.Vector3());
+            hud.innerText = `Koordinat:\nX: ${pos.x.toFixed(2)}\nY: ${pos.y.toFixed(2)}\nZ: ${pos.z.toFixed(2)}`;
+          }
+        }
+      });
+
+      AFRAME.registerComponent('vr-detector', {
+        init: function () {
+          this.el.addEventListener('enter-vr', () => gameState.vrMode = true);
+          this.el.addEventListener('exit-vr', () => gameState.vrMode = false);
+        }
+      });
+
+      let gameState = { currentDialog: null, dialogHistory: [], vrMode: false };
+
+      // Komponen: klik block => munculkan panel dialog berisi gambar tertentu
+      AFRAME.registerComponent('image-dialog-trigger', {
+        schema: { src: { type: 'selector' } },
+
+        init: function () {
+          this.el.addEventListener('click', () => {
+            // hapus dialog lama kalau ada
+            const oldPanel = document.querySelector('#dialog-panel');
+            if (oldPanel && oldPanel.parentNode) {
+              oldPanel.parentNode.removeChild(oldPanel);
+            }
+
+            // Buat panel baru
+            const blockPos = this.el.getAttribute('position');
+
+              // Buat panel baru tepat di atas block
+              const panel = document.createElement('a-entity');
+              panel.setAttribute('id', 'dialog-panel');
+              panel.setAttribute('position', {
+                x: blockPos.x + 3,
+                y: blockPos.y +1,   // biar muncul 2 satuan di atas block
+                z: blockPos.z
+              });
+              panel.setAttribute('rotation','0 180 0');
+
+            const dialogArea = document.createElement('a-plane');
+            dialogArea.setAttribute('geometry', { primitive: 'plane', width: 3.8, height: 2.2 });
+            dialogArea.setAttribute('material', { color: '#e0e0e0', opacity: 1 });
+            dialogArea.setAttribute('position', '0 0 0.02');
+
+            const dialogImage = document.createElement('a-image');
+            dialogImage.setAttribute('width', '3.6');
+            dialogImage.setAttribute('height', '2.0');
+
+            if (this.data.src) {
+              dialogImage.setAttribute('src', this.data.src.getAttribute('src'));
+            }
+
+            dialogArea.appendChild(dialogImage);
+            panel.appendChild(dialogArea);
+
+            // Tombol tutup
+            const closeBtn = document.createElement('a-plane');
+            closeBtn.setAttribute('geometry', { primitive: 'plane', width: 0.8, height: 0.3 });
+            closeBtn.setAttribute('material', { color: '#e91e63', opacity: 0.9 });
+            closeBtn.setAttribute('position', '0 -1.5 0.05');
+            closeBtn.setAttribute('class', 'clickable');   
+
+            const closeText = document.createElement('a-text');
+              closeText.setAttribute('value', 'Tutup');
+              closeText.setAttribute('align', 'center');
+              closeText.setAttribute('color', '#fff');
+              closeText.setAttribute('position', '0 0 0.02');
+              closeText.setAttribute('material', 'transparent:true; opacity:1'); // biar tidak blok klik
+              closeBtn.appendChild(closeText);
+              closeBtn.addEventListener('click', () => {
+                if (panel.parentNode) {
+                  panel.parentNode.removeChild(panel);
+                }
+              });
+            panel.appendChild(closeBtn);
+
+            // masukkan panel ke scene
+            this.el.sceneEl.appendChild(panel);
+          });
+        }
+      });
+    </script>
+  </a-scene>
+</body>
+</html>

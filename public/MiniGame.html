@@ -15,6 +15,12 @@
     <script src="common.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/aframe-glow@1.0.1/dist/aframe-glow-component.js"></script>
 
+    <style>
+      .a-enter-vr {
+    display: none !important;
+  }
+    </style>
+
   </head>
 
   <body>
@@ -65,6 +71,9 @@
     </a-scene>
 
     <script>
+        window.addEventListener("load", () => {
+    alert("📜Cari dan baca intruksinya");
+  });
       // Component untuk update koordinat HUD
       AFRAME.registerComponent('update-coordinates', {
         tick: function () {
@@ -129,7 +138,7 @@ cam.addEventListener('collide', function (e) {
   }, 5000); 
     } else {
       // belum cukup kertas
-      attr_text.text = "Haha! You lose Refresh lagi ya. Kertas sisa: " + remaining;
+      attr_text.text = "Lihat Intruksi, Refresh lagi ya";
       winner.setAttribute('text', attr_text);
       // pintu tetap jadi penghalang (tidak dihapus), biar pemain lanjut cari kertas
     }
