@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Selamat Datang di Desa Harmoni</title>
+    <title>Selamat Datang di Sosio Metaverse</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         html {
@@ -20,33 +20,97 @@
         }
     </style>
 </head>
+<div id="alert-modal" class="fixed inset-0 bg-black bg-opacity-70 hidden flex items-center justify-center z-50">
+    <div class="bg-white rounded-lg shadow-xl max-w-sm w-full p-6 text-center">
+      <h3 class="text-xl font-bold text-red-600 mb-4">⚠️ Akses Ditolak</h3>
+      <p class="text-gray-700 mb-6">
+        Anda harus menyelesaikan <span class="font-semibold text-green-600">Pretest</span> terlebih dahulu sebelum memainkan game!
+      </p>
+      <button id="close-alert" class="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded-lg">
+        OK
+      </button>
+    </div>
+  </div>
 <body class="font-sans bg-gray-900">
 
     <!-- Navigation -->
-    <nav class="fixed top-0 left-0 right-0 bg-black bg-opacity-50 p-4 z-20 flex justify-center items-center gap-8 backdrop-blur-sm">
-        <button id="open-guide-btn" class="text-white hover:text-blue-300 transition-colors duration-300 font-semibold">Buku Petunjuk</button>
-        <a href="#flipbook" class="text-white hover:text-blue-300 transition-colors duration-300 font-semibold">Buku Panduan Interaktif</a>
-        <a href="#documents" class="text-white hover:text-blue-300 transition-colors duration-300 font-semibold">Dokumen Proyek</a>
-        <a href="#developer" class="text-white hover:text-blue-300 transition-colors duration-300 font-semibold">Tentang Pengembang</a>
+    <nav class="fixed top-0 left-0 right-0 bg-black bg-opacity-50 p-4 z-20 flex items-center justify-between backdrop-blur-sm">
+        <!-- Bagian kiri (kosong / bisa isi logo nanti) -->
+        <div class="w-1/4">
+            <a href="#">
+                <img src="assets/Logo PNG.png" alt="Logo Desa Harmoni" 
+                     class="h-10 md:h-12 w-auto object-contain">
+            </a>    
+        </div>
+        
+        <!-- Bagian tengah (menu utama) -->
+        <div class="flex justify-center gap-8">
+            <button id="open-guide-btn" class="text-white hover:text-blue-300 transition-colors duration-300 font-semibold">Buku Petunjuk</button>
+            <a href="#flipbook" class="text-white hover:text-blue-300 transition-colors duration-300 font-semibold">Buku Panduan Interaktif</a>
+            <a href="#documents" class="text-white hover:text-blue-300 transition-colors duration-300 font-semibold">Dokumen Proyek</a>
+            <a href="#developer" class="text-white hover:text-blue-300 transition-colors duration-300 font-semibold">Tentang Pengembang</a>
+        </div>
+    
+        <!-- Bagian kanan (tombol Pretest & Posttest) -->
+        <div class="flex gap-3 w-1/4 justify-end">
+            <a id="pretest-btn" href="pretest.html" class="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-lg">Pretest</a>
+            <a href="posttest.html" class="bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 px-4 rounded-lg">Posttest</a>
+        </div>
     </nav>
+    
 
     <!-- Hero Section -->
     <div class="overlay min-h-screen flex flex-col items-center justify-center text-white p-4 text-center">
-        <h1 class="text-5xl md:text-7xl font-bold mb-4" style="font-family: 'Orbitron', sans-serif;">Desa Harmoni</h1>
-        <p class="text-lg md:text-xl mb-8 max-w-2xl">Sebuah pengalaman virtual reality untuk pembelajaran sosial. Jelajahi, berinteraksi, dan berpartisipasi dalam kehidupan desa.</p>
-        <a href="index1.html" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-10 rounded-lg text-2xl transition-transform transform hover:scale-105">Mainkan</a>
-    </div>
+        <h1 class="text-5xl md:text-8xl font-bold mb-4" style="font-family: 'Orbitron', sans-serif;">Sosio <span class="text-blue-300">Metaverse</span></h1>
+        <p class="text-lg md:text-xl mb-8 max-w-2xl">Sebuah pengalaman virtual untuk pembelajaran sosial. Jelajahi, berinteraksi, dan berpartisipasi dalam kehidupan desa. <br><br>
+            <a href="#cerita" class="text-blue-400 hover:text-blue-500 underline">Baca Cerita &rarr;</a>
+        </p>
 
-    <!-- Interactive Flipbook Section -->
-    <section id="flipbook" class="py-20 bg-gray-900 bg-opacity-80 backdrop-blur-sm">
-        <div class="container mx-auto px-4 text-center">
-            <h2 class="text-4xl font-bold text-white text-center mb-12">Buku Panduan Interaktif</h2>
-            <p class="text-lg text-gray-300 mb-8 max-w-3xl mx-auto">Lihat buku panduan lengkap kami dalam format flipbook yang menarik untuk informasi lebih detail mengenai proyek "Desa Harmoni".</p>
-            <div class="w-full max-w-4xl mx-auto h-[60vh] rounded-lg overflow-hidden shadow-2xl">
-                <iframe style="width:100%;height:100%;" src="https://heyzine.com/flip-book/d125af3485.html" allowfullscreen></iframe>
-            </div>
+        <a id="mainkan-btn" href="index1.html" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-10 rounded-lg text-2xl transition-transform transform hover:scale-105">Mainkan</a>
+    </div>
+    
+    <!-- Cerita Section -->
+    <section id="cerita" class="py-20 bg-white  backdrop-blur-sm">
+        <div class="container mx-auto px-4">
+            <h2 class="text-4xl font-bold text-black text-center mb-12">Desa Harmoni dan Rahasia di Baliknya</h2>
+            <p class="text-lg text-black leading-relaxed text-justify max-w-6xl mx-auto">
+                Desa Harmoni adalah jantung pertanian wilayah ini. Dari desa inilah beras, sayuran, dan aneka bahan pokok dikirim ke pasar-pasar di seluruh kabupaten. Setiap pagi, jalan desa selalu ramai dengan truk penuh hasil panen, dan kehidupan warga berjalan damai.
+                Namun, tiga tahun terakhir segalanya berubah. Sebuah pabrik pengolahan pangan berdiri di tepi desa, membawa janji kesejahteraan. Lapangan pekerjaan terbuka, pendapatan warga meningkat, dan ekonomi desa tampak hidup. Tetapi, di balik itu, muncul masalah yang tak terduga.
+                Harga bahan pokok melonjak tajam. Hasil panen menurun. Air sungai yang menjadi sumber irigasi mulai tercemar. Anak-anak muda lebih memilih bekerja di pabrik ketimbang meneruskan lahan pertanian keluarga. Sawah, kebun, dan ladang mulai terbengkalai sedikit demi sedikit.
+                Warga desa kini terbelah menjadi dua kubu. Sebagian mendukung pabrik karena memberi pekerjaan, sementara yang lain menentang karena merusak lingkungan dan mengganggu keseimbangan pertanian. Kepala Desa berada di posisi sulit, mencoba menjaga harmoni, namun konflik semakin besar.
+                Sebagai tim sosiolog muda, kalian ditugaskan untuk menyelidiki akar permasalahan Desa Harmoni.
+                Melalui wawancara, observasi, penyebaran angket, dan studi dokumen, kalian harus mengumpulkan data, menganalisis penyebab masalah, dan merumuskan solusi terbaik untuk masa depan desa ini.
+            </p>
         </div>
     </section>
+    <!-- Interactive Flipbook Section -->
+    <section id="flipbook" class="py-20 bg-gray-900 bg-opacity-80 backdrop-blur-sm">
+        <div class="container mx-auto px-4">
+          <h2 class="text-4xl font-bold text-white text-center mb-12">Modul Pembelajaran</h2>
+      
+          <!-- Flexbox untuk iframe dan deskripsi -->
+          <div class="flex flex-col md:flex-row items-center gap-8">
+            
+            <!-- Iframe kiri -->
+            <div class="w-full md:w-1/2 h-[60vh] rounded-lg overflow-hidden shadow-2xl">
+              <iframe style="width:100%;height:100%;" src="https://heyzine.com/flip-book/d125af3485.html" allowfullscreen></iframe>
+            </div>
+      
+            <!-- Deskripsi kanan -->
+            <div class="w-full md:w-1/2 text-left">
+              <p class="text-lg text-gray-300 leading-relaxed text-justify">
+                Metode penelitian dalam sosiologi kelas 10 membahas cara-cara ilmiah yang digunakan untuk memahami gejala sosial di masyarakat. 
+                Materi ini menjelaskan langkah-langkah penelitian, mulai dari merumuskan masalah, menyusun hipotesis, menentukan metode dan teknik pengumpulan data 
+                (seperti observasi, wawancara, kuesioner, dan studi pustaka), hingga menganalisis serta menyimpulkan hasil penelitian. 
+                Tujuan utama mempelajari metode penelitian adalah agar siswa mampu berpikir kritis, sistematis, dan objektif dalam mengamati fenomena sosial, 
+                serta dapat membedakan antara pendapat subjektif dengan fakta ilmiah yang didukung oleh data.
+              </p>
+            </div>
+      
+          </div>
+        </div>
+      </section>
+      
 
     <!-- Documents Section -->
     <section id="documents" class="py-20 bg-gray-800 bg-opacity-90">
@@ -54,6 +118,13 @@
             <h2 class="text-4xl font-bold text-white text-center mb-12">Dokumen Proyek</h2>
             <div class="max-w-4xl mx-auto space-y-4">
                 <!-- Document Items -->
+                <div class="bg-gray-700 bg-opacity-70 p-4 rounded-lg flex flex-col sm:flex-row justify-between items-center gap-3 transition-all duration-300 hover:bg-gray-600">
+                    <span class="font-semibold text-green-500 text-left">📄 Template Laporan</span>
+                    <div class="flex-shrink-0">
+                        <a href="assets/documents/TEMPLATE LAPORAN PENELITIAN.pdf" target="_blank" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-md text-sm transition">Preview</a>
+                        <a href="assets/documents/TEMPLATE LAPORAN PENELITIAN.pdf" download class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-md text-sm transition ml-2">Download</a>
+                    </div>
+                </div>
                 <div class="bg-gray-700 bg-opacity-70 p-4 rounded-lg flex flex-col sm:flex-row justify-between items-center gap-3 transition-all duration-300 hover:bg-gray-600">
                     <span class="font-semibold text-white text-left">📄 Angket Penelitian Desa Harmoni</span>
                     <div class="flex-shrink-0">
@@ -69,26 +140,13 @@
                     </div>
                 </div>
                 <div class="bg-gray-700 bg-opacity-70 p-4 rounded-lg flex flex-col sm:flex-row justify-between items-center gap-3 transition-all duration-300 hover:bg-gray-600">
-                    <span class="font-semibold text-white text-left">📄 Studi Dokumentasi</span>
-                    <div class="flex-shrink-0">
-                        <a href="assets/documents/STUDI DOKUMENTASI.pdf" target="_blank" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-md text-sm transition">Preview</a>
-                        <a href="assets/documents/STUDI DOKUMENTASI.pdf" download class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-md text-sm transition ml-2">Download</a>
-                    </div>
-                </div>
-                <div class="bg-gray-700 bg-opacity-70 p-4 rounded-lg flex flex-col sm:flex-row justify-between items-center gap-3 transition-all duration-300 hover:bg-gray-600">
                     <span class="font-semibold text-white text-left">📄 Lembar Observasi</span>
                     <div class="flex-shrink-0">
                         <a href="assets/documents/LEMBAR OBSERVASI DESA HARMONI.pdf" target="_blank" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-md text-sm transition">Preview</a>
                         <a href="assets/documents/LEMBAR OBSERVASI DESA HARMONI.pdf" download class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-md text-sm transition ml-2">Download</a>
                     </div>
                 </div>
-                <div class="bg-gray-700 bg-opacity-70 p-4 rounded-lg flex flex-col sm:flex-row justify-between items-center gap-3 transition-all duration-300 hover:bg-gray-600">
-                    <span class="font-semibold text-white text-left">📄 Hasil Angket</span>
-                    <div class="flex-shrink-0">
-                        <a href="assets/documents/Hasil_Angket_Desa_Harmoni_dengan_Karakter.pdf" target="_blank" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-md text-sm transition">Preview</a>
-                        <a href="assets/documents/Hasil_Angket_Desa_Harmoni_dengan_Karakter.pdf" download class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-md text-sm transition ml-2">Download</a>
-                    </div>
-                </div>
+
                 <div class="bg-gray-700 bg-opacity-70 p-4 rounded-lg flex flex-col sm:flex-row justify-between items-center gap-3 transition-all duration-300 hover:bg-gray-600">
                     <span class="font-semibold text-white text-left">📄 Buku Model Experiental Social Learning</span>
                     <div class="flex-shrink-0">
@@ -166,7 +224,34 @@
         closeBtn.addEventListener('click', () => {
             modal.classList.add('hidden');
         });
+        let pretestDone = false;
+const pretestBtn = document.getElementById('pretest-btn');
+const mainkanBtn = document.getElementById('mainkan-btn');
+const alertModal = document.getElementById('alert-modal');
+const closeAlert = document.getElementById('close-alert');
 
+// Saat halaman dimuat → selalu set pretestDone = false
+window.addEventListener('load', () => {
+    pretestDone = false;
+});
+
+// Kalau user klik Pretest, tandai selesai
+pretestBtn.addEventListener('click', () => {
+    pretestDone = true;
+});
+
+// Cek kondisi sebelum klik Mainkan
+mainkanBtn.addEventListener('click', (e) => {
+    if (!pretestDone) {
+        e.preventDefault();
+        alertModal.classList.remove('hidden'); // tampilkan modal custom
+    }
+});
+
+// Tombol tutup modal
+closeAlert.addEventListener('click', () => {
+    alertModal.classList.add('hidden');
+});
         modal.addEventListener('click', (e) => {
             if (e.target === modal) {
                 modal.classList.add('hidden');
