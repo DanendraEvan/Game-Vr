@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="utf-8" />
+    <title>VR Dialog System - Misi Angket</title>
+    <meta name="description" content="Misi Angket - Game VR dengan A-Frame" />
+
+    <!-- Pakai hanya satu versi A-Frame -->
+    <script src="https://aframe.io/releases/1.7.1/aframe.min.js"></script>
+
+    <!-- Lib pendukung -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.8.1/socket.io.min.js"></script>
+    <script src="/easyrtc/easyrtc.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/networked-aframe@0.14.0/dist/networked-aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-extras@7.5.4/dist/aframe-extras.min.js"></script>
+    <script
+        src="https://cdn.jsdelivr.net/npm/aframe-environment-component@1.5.0/dist/aframe-environment-component.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@fern-solutions/aframe-mirror@1.1.1/dist/mirror.umd.min.js"></script>
+    <script
+        src="https://cdn.jsdelivr.net/gh/c-frame/aframe-cursor-teleport@1.6.0/dist/aframe-cursor-teleport-component.min.js"></script>
+    <script
+        src="https://cdn.jsdelivr.net/gh/AdaRoseCannon/aframe-xr-boilerplate@bca4792/simple-navmesh-constraint.js"></script>
+    <script src="/dist/components.js"></script>
+    <script
+        src="https://cdn.jsdelivr.net/gh/editvr/aframe-dialog-popup-component/dist/aframe-dialog-popup-component.min.js"></script>
+    <script defer src="/dist/ui.js"></script>
+
+    <style>
+        html,
+        body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: #222;
+        }
+
+        ::-webkit-scrollbar {
+            width: 0 !important
+        }
+
+        #hud {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            background: rgba(0, 0, 0, 0.6);
+            color: #fff;
+            padding: 8px 12px;
+            font-family: monospace;
+            font-size: 14px;
+            border-radius: 5px;
+            z-index: 999;
+            white-space: pre-line;
+        }
+
+        #game-ui {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.8);
+            color: #fff;
+            padding: 15px;
+            font-family: Arial, sans-serif;
+            font-size: 16px;
+            border-radius: 8px;
+            z-index: 1000;
+            min-width: 200px;
+        }
+
+        #start-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+
+        .modal-content {
+            background: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            text-align: center;
+            max-width: 400px;
+        }
+
+        .modal-content h2 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .modal-content p {
+            color: #666;
+            margin-bottom: 25px;
+            line-height: 1.5;
+        }
+
+        .btn {
+            background: #4CAF50;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 5px;
+        }
+
+        .btn:hover {
+            background: #45a049;
+        }
+
+        .btn-secondary {
+            background: #f44336;
+        }
+
+        .btn-secondary:hover {
+            background: #da190b;
+        }
+
+        #result-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+
+        .result-content {
+            background: #fff;
+            padding: 40px;
+            border-radius: 15px;
+            text-align: center;
+            max-width: 600px;
+        }
+
+        .result-image {
+            width: 100%;
+            max-width: 450px;
+            height: auto;
+            object-fit: contain;
+            border-radius: 10px;
+            margin: 20px 0;
+            cursor: zoom-in;
+        }
+
+        .btn-download {
+            background: #2196F3;
+        }
+
+        .btn-download:hover {
+            background: #0b7dda;
+        }
+
+        #zoom-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 3000;
+            cursor: zoom-out;
+        }
+
+        #zoomed-img {
+            max-width: 90%;
+            max-height: 90%;
+            object-fit: contain;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Start Modal -->
+    <div id="start-modal">
+        <div class="modal-content">
+            <h2>🎯 Misi Angket</h2>
+            <p>Sebarkan angket ke sebanyak mungkin rumah dalam waktu 60 detik!<br>
+                Target: 20 rumah untuk hasil sempurna.</p>
+            <button class="btn" onclick="startGame()">Mulai Misi</button>
+            <button class="btn btn-secondary" onclick="goBack()">Kembali</button>
+        </div>
+    </div>
+
+    <!-- Result Modal -->
+    <div id="result-modal">
+        <div class="result-content">
+            <h2 id="result-title">Hasil Misi</h2>
+            <img id="result-img" class="result-image" src="" alt="Hasil">
+            <p id="result-text"></p>
+            <button class="btn" onclick="restartGame()">Main Lagi</button>
+            <button class="btn btn-download" onclick="downloadResult()">Unduh Hasil</button>
+            <button class="btn btn-secondary" onclick="goBack()">Kembali</button>
+        </div>
+    </div>
+
+    <!-- Zoom Modal -->
+    <div id="zoom-overlay" onclick="this.style.display='none'">
+        <img id="zoomed-img" src="" alt="Hasil Zoom">
+    </div>
+
+    <!-- HUD Koordinat -->
+    <div id="hud">Koordinat: X: 0.00 Y: 0.00 Z: 0.00</div>
+
+    <!-- Game UI -->
+    <div id="game-ui" style="display: none;">
+        <div id="timer-display">⏰ Waktu: <span id="timer">60</span>s</div>
+        <div id="score-display">📊 Skor: <span id="score">0</span>/20</div>
+        <div id="progress-bar"
+            style="width: 100%; height: 10px; background: #333; border-radius: 5px; margin-top: 10px;">
+            <div id="progress-fill"
+                style="width: 0%; height: 100%; background: #4CAF50; border-radius: 5px; transition: width 0.3s;"></div>
+        </div>
+    </div>
+
+    <a-scene networked-scene="connectOnLoad: false; room: angket; debug: true; adapter: wseasyrtc;"
+        shadow="type: pcfsoft" gltf-model="meshoptDecoderPath:https://unpkg.com/meshoptimizer@0.19.0/meshopt_decoder.js"
+        raycaster="far: 15; objects: .clickable" cursor="rayOrigin: mouse" vr-detector hud-coords>
+
+        <!-- Musik Latar -->
+        <a-assets>
+            <audio id="bgm-angket" src="" preload="auto"></audio>
+
+            <!-- Models -->
+            <a-asset-item id="perumahan-model" src="models/perumahan.glb"></a-asset-item>
+            <img id="thumbPabrik" crossorigin="anonymous" src="https://cdn.aframe.io/link-traversal/thumbs/forest.png"
+                alt="Pabrik" />
+
+            <!-- Result Images -->
+            <img id="result-excellent" src="assets/hasil1.png" crossorigin="anonymous">
+            <img id="result-good" src="assets/hasil2.png" crossorigin="anonymous">
+            <img id="result-tryagain" src="assets/hasil3.png" crossorigin="anonymous">
+        </a-assets>
+
+        <a-entity sound="src: #bgm-angket; autoplay: false; loop: true; volume: 0.3" id="background-music"></a-entity>
+
+        <a-entity id="scene">
+            <!-- Sky Dome -->
+            <a-entity gltf-model="models/sky_dome_demo.glb" scale="18 18 18" position="0 0 0"
+                rotation="0 0 0"></a-entity>
+            <a-sky color="#87CEEB"></a-sky>
+
+            <!-- Lighting -->
+            <a-entity light="type: directional; color: #FFF; intensity: 0.8" position="-1 2 1"></a-entity>
+            <a-entity light="type: hemisphere; color: #FFF; groundColor: #808080; intensity: 0.5"></a-entity>
+            <a-entity light="type: point; intensity: 0.3; color: #FFF" position="0 5 0"></a-entity>
+
+            <!-- Environment -->
+            <a-entity gltf-model="#perumahan-model" position="0 0 0" scale="2 2 2" shadow="receive: true"></a-entity>
+
+            <!-- Info text -->
+            <a-entity id="info-dialog" position="0 4 0">
+                <a-plane width="18" height="1.5" color="#1e293b" opacity="0.92" material="shader: flat"></a-plane>
+                <a-text
+                    value="Misi Angket: Klik pintu-pintu rumah untuk menyebarkan angket! Target 20 rumah dalam 60 detik."
+                    align="center" color="#fff" position="0 0 0.05"
+                    text="width: 14; wrapCount: 70; font: dejavu; weight: bold"></a-text>
+            </a-entity>
+
+            <!-- Clickable Points (Survey Points) -->
+            <a-entity id="survey-points">
+                <!-- Baris 1 -->
+                <a-sphere class="clickable survey-point" position="-8.482 1.5 -8" radius="0.3" color="#ff4444"
+                    animation__hover="property: scale; to: 1.2 1.2 1.2; startEvents: mouseenter; dur: 200"
+                    animation__unhover="property: scale; to: 1 1 1; startEvents: mouseleave; dur: 200"
+                    material="emissive: #ff2222; emissiveIntensity: 0.3">
+                    <a-text value="📋" align="center" position="0 0.5 0" scale="2 2 2"></a-text>
+                </a-sphere>
+                <a-sphere class="clickable survey-point" position="-8.482 1.5 -29.280" radius="0.3" color="#ff4444"
+                    animation__hover="property: scale; to: 1.2 1.2 1.2; startEvents: mouseenter; dur: 200"
+                    animation__unhover="property: scale; to: 1 1 1; startEvents: mouseleave; dur: 200"
+                    material="emissive: #ff2222; emissiveIntensity: 0.3">
+                    <a-text value="📋" align="center" position="0 0.5 0" scale="2 2 2"></a-text>
+                </a-sphere>
+                <a-sphere class="clickable survey-point" position="-8.482 1.5 -51.024" radius="0.3" color="#ff4444"
+                    animation__hover="property: scale; to: 1.2 1.2 1.2; startEvents: mouseenter; dur: 200"
+                    animation__unhover="property: scale; to: 1 1 1; startEvents: mouseleave; dur: 200"
+                    material="emissive: #ff2222; emissiveIntensity: 0.3">
+                    <a-text value="📋" align="center" position="0 0.5 0" scale="2 2 2"></a-text>
+                </a-sphere>
+
+                
+                <!-- Baris 2 -->
+
+                <a-sphere class="clickable survey-point" position="13.795 1.5 -21.217" radius="0.3" color="#ff4444"
+                    animation__hover="property: scale; to: 1.2 1.2 1.2; startEvents: mouseenter; dur: 200"
+                    animation__unhover="property: scale; to: 1 1 1; startEvents: mouseleave; dur: 200"
+                    material="emissive: #ff2222; emissiveIntensity: 0.3">
+                    <a-text value="📋" align="center" position="0 0.5 0" scale="2 2 2"></a-text>
+                </a-sphere>
+                <a-sphere class="clickable survey-point" position="30.756 1.5 -21.217" radius="0.3" color="#ff4444"
+                    animation__hover="property: scale; to: 1.2 1.2 1.2; startEvents: mouseenter; dur: 200"
+                    animation__unhover="property: scale; to: 1 1 1; startEvents: mouseleave; dur: 200"
+                    material="emissive: #ff2222; emissiveIntensity: 0.3">
+                    <a-text value="📋" align="center" position="0 0.5 0" scale="2 2 2"></a-text>
+                </a-sphere><a-sphere class="clickable survey-point" position="47.589 1.5 -21.217" radius="0.3" color="#ff4444"
+                    animation__hover="property: scale; to: 1.2 1.2 1.2; startEvents: mouseenter; dur: 200"
+                    animation__unhover="property: scale; to: 1 1 1; startEvents: mouseleave; dur: 200"
+                    material="emissive: #ff2222; emissiveIntensity: 0.3">
+                    <a-text value="📋" align="center" position="0 0.5 0" scale="2 2 2"></a-text>
+                </a-sphere>
+
+                <!-- Baris 3 (tengah) -->
+                <a-sphere class="clickable survey-point" position="13.846 1.5 -54.406" radius="0.3" color="#ff4444"
+                    animation__hover="property: scale; to: 1.2 1.2 1.2; startEvents: mouseenter; dur: 200"
+                    animation__unhover="property: scale; to: 1 1 1; startEvents: mouseleave; dur: 200"
+                    material="emissive: #ff2222; emissiveIntensity: 0.3">
+                    <a-text value="📋" align="center" position="0 0.5 0" scale="2 2 2"></a-text>
+                </a-sphere>
+                <a-sphere class="clickable survey-point" position="30.797 1.5 -54.406" radius="0.3" color="#ff4444"
+                    animation__hover="property: scale; to: 1.2 1.2 1.2; startEvents: mouseenter; dur: 200"
+                    animation__unhover="property: scale; to: 1 1 1; startEvents: mouseleave; dur: 200"
+                    material="emissive: #ff2222; emissiveIntensity: 0.3">
+                    <a-text value="📋" align="center" position="0 0.5 0" scale="2 2 2"></a-text>
+                </a-sphere>
+                <a-sphere class="clickable survey-point" position="47.522 1.5 -54.406" radius="0.3" color="#ff4444"
+                    animation__hover="property: scale; to: 1.2 1.2 1.2; startEvents: mouseenter; dur: 200"
+                    animation__unhover="property: scale; to: 1 1 1; startEvents: mouseleave; dur: 200"
+                    material="emissive: #ff2222; emissiveIntensity: 0.3">
+                    <a-text value="📋" align="center" position="0 0.5 0" scale="2 2 2"></a-text>
+                </a-sphere>
+
+                <!-- Baris 4 -->
+                <a-sphere class="clickable survey-point" position="-29.507 1.5 -67.162" radius="0.3" color="#ff4444"
+                    animation__hover="property: scale; to: 1.2 1.2 1.2; startEvents: mouseenter; dur: 200"
+                    animation__unhover="property: scale; to: 1 1 1; startEvents: mouseleave; dur: 200"
+                    material="emissive: #ff2222; emissiveIntensity: 0.3">
+                    <a-text value="📋" align="center" position="0 0.5 0" scale="2 2 2"></a-text>
+                </a-sphere>
+                <a-sphere class="clickable survey-point" position="-46.214 1.5 -67.162" radius="0.3" color="#ff4444"
+                    animation__hover="property: scale; to: 1.2 1.2 1.2; startEvents: mouseenter; dur: 200"
+                    animation__unhover="property: scale; to: 1 1 1; startEvents: mouseleave; dur: 200"
+                    material="emissive: #ff2222; emissiveIntensity: 0.3">
+                    <a-text value="📋" align="center" position="0 0.5 0" scale="2 2 2"></a-text>
+                </a-sphere>
+                <a-sphere class="clickable survey-point" position="-63.172 1.5 -67.162" radius="0.3" color="#ff4444"
+                    animation__hover="property: scale; to: 1.2 1.2 1.2; startEvents: mouseenter; dur: 200"
+                    animation__unhover="property: scale; to: 1 1 1; startEvents: mouseleave; dur: 200"
+                    material="emissive: #ff2222; emissiveIntensity: 0.3">
+                    <a-text value="📋" align="center" position="0 0.5 0" scale="2 2 2"></a-text>
+                </a-sphere>
+
+                
+                <a-sphere class="clickable survey-point" position="11.115 1.5 -87.642" radius="0.3" color="#ff4444"
+                    animation__hover="property: scale; to: 1.2 1.2 1.2; startEvents: mouseenter; dur: 200"
+                    animation__unhover="property: scale; to: 1 1 1; startEvents: mouseleave; dur: 200"
+                    material="emissive: #ff2222; emissiveIntensity: 0.3">
+                    <a-text value="📋" align="center" position="0 0.5 0" scale="2 2 2"></a-text>
+                </a-sphere>
+
+                <!-- Baris 5 -->
+                <a-sphere class="clickable survey-point" position="-1.361 1.5 -121.689" radius="0.3" color="#ff4444"
+                    animation__hover="property: scale; to: 1.2 1.2 1.2; startEvents: mouseenter; dur: 200"
+                    animation__unhover="property: scale; to: 1 1 1; startEvents: mouseleave; dur: 200"
+                    material="emissive: #ff2222; emissiveIntensity: 0.3">
+                    <a-text value="📋" align="center" position="0 0.5 0" scale="2 2 2"></a-text>
+                </a-sphere>
+                <a-sphere class="clickable survey-point" position="15.629 1.5 -121.689" radius="0.3" color="#ff4444"
+                    animation__hover="property: scale; to: 1.2 1.2 1.2; startEvents: mouseenter; dur: 200"
+                    animation__unhover="property: scale; to: 1 1 1; startEvents: mouseleave; dur: 200"
+                    material="emissive: #ff2222; emissiveIntensity: 0.3">
+                    <a-text value="📋" align="center" position="0 0.5 0" scale="2 2 2"></a-text>
+                </a-sphere>
+                <a-sphere class="clickable survey-point" position="-18.094 1.5 -121.689" radius="0.3" color="#ff4444"
+                    animation__hover="property: scale; to: 1.2 1.2 1.2; startEvents: mouseenter; dur: 200"
+                    animation__unhover="property: scale; to: 1 1 1; startEvents: mouseleave; dur: 200"
+                    material="emissive: #ff2222; emissiveIntensity: 0.3">
+                    <a-text value="📋" align="center" position="0 0.5 0" scale="2 2 2"></a-text>
+                </a-sphere>
+
+                <a-sphere class="clickable survey-point" position="30.608 1.5 -139.373" radius="0.3" color="#ff4444"
+                    animation__hover="property: scale; to: 1.2 1.2 1.2; startEvents: mouseenter; dur: 200"
+                    animation__unhover="property: scale; to: 1 1 1; startEvents: mouseleave; dur: 200"
+                    material="emissive: #ff2222; emissiveIntensity: 0.3">
+                    <a-text value="📋" align="center" position="0 0.5 0" scale="2 2 2"></a-text>
+                </a-sphere>
+
+                <!-- Baris 6 -->
+                <a-sphere class="clickable survey-point" position="67.989 1.5 -148.761" radius="0.3" color="#ff4444"
+                    animation__hover="property: scale; to: 1.2 1.2 1.2; startEvents: mouseenter; dur: 200"
+                    animation__unhover="property: scale; to: 1 1 1; startEvents: mouseleave; dur: 200"
+                    material="emissive: #ff2222; emissiveIntensity: 0.3">
+                    <a-text value="📋" align="center" position="0 0.5 0" scale="2 2 2"></a-text>
+                </a-sphere>
+                <a-sphere class="clickable survey-point" position="84.628 1.5 -148.451" radius="0.3" color="#ff4444"
+                    animation__hover="property: scale; to: 1.2 1.2 1.2; startEvents: mouseenter; dur: 200"
+                    animation__unhover="property: scale; to: 1 1 1; startEvents: mouseleave; dur: 200"
+                    material="emissive: #ff2222; emissiveIntensity: 0.3">
+                    <a-text value="📋" align="center" position="0 0.5 0" scale="2 2 2"></a-text>
+                </a-sphere>
+                <a-sphere class="clickable survey-point" position="101.699 1.5 -148.041" radius="0.3" color="#ff4444"
+                    animation__hover="property: scale; to: 1.2 1.2 1.2; startEvents: mouseenter; dur: 200"
+                    animation__unhover="property: scale; to: 1 1 1; startEvents: mouseleave; dur: 200"
+                    material="emissive: #ff2222; emissiveIntensity: 0.3">
+                    <a-text value="📋" align="center" position="0 0.5 0" scale="2 2 2"></a-text>
+                </a-sphere>
+
+                <!-- Baris 7 -->
+                <a-sphere class="clickable survey-point" position="24.938 1.5 -162.371" radius="0.3" color="#ff4444"
+                    animation__hover="property: scale; to: 1.2 1.2 1.2; startEvents: mouseenter; dur: 200"
+                    animation__unhover="property: scale; to: 1 1 1; startEvents: mouseleave; dur: 200"
+                    material="emissive: #ff2222; emissiveIntensity: 0.3">
+                    <a-text value="📋" align="center" position="0 0.5 0" scale="2 2 2"></a-text>
+                </a-sphere>
+                <a-sphere class="clickable survey-point" position="8.048 1.5 -162.693" radius="0.3" color="#ff4444"
+                    animation__hover="property: scale; to: 1.2 1.2 1.2; startEvents: mouseenter; dur: 200"
+                    animation__unhover="property: scale; to: 1 1 1; startEvents: mouseleave; dur: 200"
+                    material="emissive: #ff2222; emissiveIntensity: 0.3">
+                    <a-text value="📋" align="center" position="0 0.5 0" scale="2 2 2"></a-text>
+                </a-sphere>
+                <a-sphere class="clickable survey-point" position="-8.864 1.5 -163.023" radius="0.3" color="#ff4444"
+                    animation__hover="property: scale; to: 1.2 1.2 1.2; startEvents: mouseenter; dur: 200"
+                    animation__unhover="property: scale; to: 1 1 1; startEvents: mouseleave; dur: 200"
+                    material="emissive: #ff2222; emissiveIntensity: 0.3">
+                    <a-text value="📋" align="center" position="0 0.5 0" scale="2 2 2"></a-text>
+                </a-sphere>
+
+                <!-- Baris 8 -->
+                <a-sphere class="clickable survey-point" position="-7.957 1.5 -196.262" radius="0.3" color="#ff4444"
+                    animation__hover="property: scale; to: 1.2 1.2 1.2; startEvents: mouseenter; dur: 200"
+                    animation__unhover="property: scale; to: 1 1 1; startEvents: mouseleave; dur: 200"
+                    material="emissive: #ff2222; emissiveIntensity: 0.3">
+                    <a-text value="📋" align="center" position="0 0.5 0" scale="2 2 2"></a-text>
+                </a-sphere>
+                <a-sphere class="clickable survey-point" position="8.658 1.5 -195.948" radius="0.3" color="#ff4444"
+                    animation__hover="property: scale; to: 1.2 1.2 1.2; startEvents: mouseenter; dur: 200"
+                    animation__unhover="property: scale; to: 1 1 1; startEvents: mouseleave; dur: 200"
+                    material="emissive: #ff2222; emissiveIntensity: 0.3">
+                    <a-text value="📋" align="center" position="0 0.5 0" scale="2 2 2"></a-text>
+                </a-sphere>
+                <a-sphere class="clickable survey-point" position="25.651 1.5 -195.647" radius="0.3" color="#ff4444"
+                    animation__hover="property: scale; to: 1.2 1.2 1.2; startEvents: mouseenter; dur: 200"
+                    animation__unhover="property: scale; to: 1 1 1; startEvents: mouseleave; dur: 200"
+                    material="emissive: #ff2222; emissiveIntensity: 0.3">
+                    <a-text value="📋" align="center" position="0 0.5 0" scale="2 2 2"></a-text>
+                </a-sphere>
+
+                <!-- Baris 8 -->
+                <a-sphere class="clickable survey-point" position="48.190 1.5 -208.372" radius="0.3" color="#ff4444"
+                    animation__hover="property: scale; to: 1.2 1.2 1.2; startEvents: mouseenter; dur: 200"
+                    animation__unhover="property: scale; to: 1 1 1; startEvents: mouseleave; dur: 200"
+                    material="emissive: #ff2222; emissiveIntensity: 0.3">
+                    <a-text value="📋" align="center" position="0 0.5 0" scale="2 2 2"></a-text>
+                </a-sphere>
+                <a-sphere class="clickable survey-point" position="47.723 1.5 -187.055" radius="0.3" color="#ff4444"
+                    animation__hover="property: scale; to: 1.2 1.2 1.2; startEvents: mouseenter; dur: 200"
+                    animation__unhover="property: scale; to: 1 1 1; startEvents: mouseleave; dur: 200"
+                    material="emissive: #ff2222; emissiveIntensity: 0.3">
+                    <a-text value="📋" align="center" position="0 0.5 0" scale="2 2 2"></a-text>
+                </a-sphere>
+                <a-sphere class="clickable survey-point" position="47.292 1.5 -165.246" radius="0.3" color="#ff4444"
+                    animation__hover="property: scale; to: 1.2 1.2 1.2; startEvents: mouseenter; dur: 200"
+                    animation__unhover="property: scale; to: 1 1 1; startEvents: mouseleave; dur: 200"
+                    material="emissive: #ff2222; emissiveIntensity: 0.3">
+                    <a-text value="📋" align="center" position="0 0.5 0" scale="2 2 2"></a-text>
+                </a-sphere>
+            </a-entity>
+
+            <!-- Particle Effects untuk Feedback -->
+            <a-entity id="particle-system"
+                particle-system="preset: snow; particleCount: 50; color: #4CAF50,#8BC34A; size: 0.5; maxAge: 2"
+                position="0 3 0" visible="false"></a-entity>
+
+        </a-entity>
+
+        <!-- Rig (player) -->
+        <a-entity id="rig" position="-4 1.6 15"
+            movement-controls="fly:false; controls: gamepad, trackpad, keyboard, nipple;" spawn-in-circle="radius:1"
+            restrict-cube="minX: -100; maxX: 360; minZ: -200; maxZ: 200"
+            networked="template:#avatar-template; attachTemplateToLocal:false" player-info>
+            <a-entity id="player" class="camera" camera position="1 1 7" look-controls>
+                <a-box obb-collider visible="false" height="0.4" depth="0.4" width="0.4"></a-box>
+                <a-entity cursor="rayOrigin: mouse" raycaster="objects: .clickable; far: 10"></a-entity>
+            </a-entity>
+        </a-entity>
+    </a-scene>
+
+    <script>
+        // **Game State Management**
+        let gameState = {
+            currentDialog: null,
+            dialogHistory: [],
+            vrMode: false,
+            gameActive: false,
+            score: 0,
+            timeLeft: 60,
+            timer: null,
+            totalPoints: 20,
+            clickedPoints: new Set()
+        };
+
+        // **Component Registration**
+        AFRAME.registerComponent('hud-coords', {
+            tick: function () {
+                const player = document.querySelector('#player');
+                const hud = document.getElementById('hud');
+                if (player && hud) {
+                    const pos = player.object3D.getWorldPosition(new THREE.Vector3());
+                    hud.innerText = `Koordinat:
+X: ${pos.x.toFixed(2)}
+Y: ${pos.y.toFixed(2)}
+Z: ${pos.z.toFixed(2)}`;
+                }
+            }
+        });
+
+        AFRAME.registerComponent('vr-detector', {
+            init: function () {
+                this.el.addEventListener('enter-vr', () => gameState.vrMode = true);
+                this.el.addEventListener('exit-vr', () => gameState.vrMode = false);
+            }
+        });
+
+        // **Game Functions**
+        function startGame() {
+            // Hide modal
+            document.getElementById('start-modal').style.display = 'none';
+
+            // Show game UI
+            document.getElementById('game-ui').style.display = 'block';
+
+            // Start background music
+            const bgMusic = document.getElementById('background-music');
+            if (bgMusic) {
+                bgMusic.components.sound.playSound();
+            }
+
+            // Reset game state
+            gameState.gameActive = true;
+            gameState.score = 0;
+            gameState.timeLeft = 60;
+            gameState.clickedPoints.clear();
+
+            // Reset all survey points
+            const surveyPoints = document.querySelectorAll('.survey-point');
+            surveyPoints.forEach(point => {
+                point.setAttribute('visible', 'true');
+                point.setAttribute('color', '#ff4444');
+                point.removeAttribute('animation__click');
+            });
+
+            // Update UI
+            updateUI();
+
+            // Add click listeners
+            addClickListeners();
+
+            // Start timer
+            startTimer();
+
+            // Show particle effect
+            showParticleEffect();
+        }
+
+        function addClickListeners() {
+            const surveyPoints = document.querySelectorAll('.survey-point');
+            surveyPoints.forEach((point, index) => {
+                point.addEventListener('click', function (evt) {
+                    if (gameState.gameActive && !gameState.clickedPoints.has(index)) {
+                        handlePointClick(point, index);
+                    }
+                });
+            });
+        }
+
+        function handlePointClick(point, index) {
+            // Mark as clicked
+            gameState.clickedPoints.add(index);
+            gameState.score++;
+
+            // Visual feedback
+            point.setAttribute('color', '#4CAF50');
+            point.setAttribute('animation__click', {
+                property: 'scale',
+                to: '0.1 0.1 0.1',
+                dur: 500,
+                easing: 'easeInQuad'
+            });
+
+            // Audio feedback
+            playClickSound();
+
+            // Hide after animation
+            setTimeout(() => {
+                point.setAttribute('visible', 'false');
+            }, 500);
+
+            // Update UI
+            updateUI();
+
+            // Check win condition
+            if (gameState.score >= gameState.totalPoints) {
+                endGame();
+            }
+        }
+
+        function startTimer() {
+            gameState.timer = setInterval(() => {
+                gameState.timeLeft--;
+                updateUI();
+
+                if (gameState.timeLeft <= 0) {
+                    endGame();
+                }
+            }, 1000);
+        }
+
+        function updateUI() {
+            document.getElementById('timer').textContent = gameState.timeLeft;
+            document.getElementById('score').textContent = gameState.score;
+
+            // Update progress bar
+            const progress = (gameState.score / gameState.totalPoints) * 100;
+            document.getElementById('progress-fill').style.width = progress + '%';
+
+            // Change timer color when time is running out
+            const timerDisplay = document.getElementById('timer-display');
+            if (gameState.timeLeft <= 10) {
+                timerDisplay.style.color = '#ff4444';
+            } else if (gameState.timeLeft <= 20) {
+                timerDisplay.style.color = '#ff9800';
+            } else {
+                timerDisplay.style.color = '#fff';
+            }
+        }
+
+        function endGame() {
+            gameState.gameActive = false;
+
+            // Clear timer
+            if (gameState.timer) {
+                clearInterval(gameState.timer);
+                gameState.timer = null;
+            }
+
+            // Hide game UI
+            document.getElementById('game-ui').style.display = 'none';
+
+            // Stop background music
+            const bgMusic = document.getElementById('background-music');
+            if (bgMusic) {
+                bgMusic.components.sound.stopSound();
+            }
+
+            // Show results
+            showResults();
+        }
+
+        function showResults() {
+            const resultModal = document.getElementById('result-modal');
+            const resultTitle = document.getElementById('result-title');
+            const resultImg = document.getElementById('result-img');
+            const resultText = document.getElementById('result-text');
+
+            let title, imageSrc, text;
+
+            if (gameState.score >= 20) {
+                title = 'HEBAT!';
+                imageSrc = document.getElementById('result-excellent').src;
+                text = `Sempurna! Anda berhasil menyebarkan angket ke semua ${gameState.score} rumah! Misi berhasil cek hasilnya!`;
+            } else if (gameState.score >= 15) {
+                title = 'KERJA BAGUS!';
+                imageSrc = document.getElementById('result-good').src;
+                text = `Bagus! Anda berhasil menyebarkan angket ke ${gameState.score} dari ${gameState.totalPoints} rumah. Cek hasilnya!`;
+            } else if (gameState.score >= 10) {
+                title = 'USAHA YANG BAGUS!';
+                imageSrc = document.getElementById('result-good').src;
+                text = `Tidak buruk! Anda berhasil menyebarkan angket ke ${gameState.score} dari ${gameState.totalPoints} rumah. Cek hasilnya!`;
+            } else {
+                title = 'LUMAYAN!';
+                imageSrc = document.getElementById('result-tryagain').src;
+                text = `Anda berhasil menyebarkan angket ke ${gameState.score} dari ${gameState.totalPoints} rumah. Cek hasilnya!`;
+            }
+
+            resultTitle.textContent = title;
+            resultImg.src = imageSrc;
+            resultText.textContent = text;
+
+            resultModal.style.display = 'flex';
+        }
+
+        function restartGame() {
+            document.getElementById('result-modal').style.display = 'none';
+            document.getElementById('start-modal').style.display = 'flex';
+        }
+
+        function goBack() {
+            window.location.href = 'index1.html';
+        }
+
+        function downloadResult() {
+            const resultImg = document.getElementById('result-img');
+            const link = document.createElement('a');
+            link.href = resultImg.src;
+            const filename = resultImg.src.split('/').pop() || 'hasil-misi.png';
+            link.download = filename;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        function playClickSound() {
+            // Create a simple click sound using Web Audio API
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+
+            oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
+            oscillator.frequency.exponentialRampToValueAtTime(400, audioContext.currentTime + 0.1);
+
+            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + 0.1);
+        }
+
+        function showParticleEffect() {
+            const particles = document.getElementById('particle-system');
+            if (particles) {
+                particles.setAttribute('visible', 'true');
+                setTimeout(() => {
+                    particles.setAttribute('visible', 'false');
+                }, 3000);
+            }
+        }
+
+        // **Event Listeners**
+        document.addEventListener('DOMContentLoaded', function () {
+            // Initialize the game when page loads
+            console.log('Misi Angket loaded successfully!');
+
+            // Add keyboard shortcuts
+            document.addEventListener('keydown', function (event) {
+                if (event.key === 'Escape' && gameState.gameActive) {
+                    if (confirm('Apakah Anda yakin ingin mengakhiri misi?')) {
+                        endGame();
+                    }
+                }
+
+                if (event.key === 'r' || event.key === 'R') {
+                    if (!gameState.gameActive) {
+                        restartGame();
+                    }
+                }
+            });
+
+            // Add zoom functionality
+            const resultImg = document.getElementById('result-img');
+            const zoomOverlay = document.getElementById('zoom-overlay');
+            const zoomedImg = document.getElementById('zoomed-img');
+
+            resultImg.addEventListener('click', function () {
+                zoomedImg.src = this.src;
+                zoomOverlay.style.display = 'flex';
+            });
+        });
+
+        // **Template for networked avatars**
+        AFRAME.registerComponent('player-info', {
+            init: function () {
+                this.head = this.el.querySelector('.camera');
+                this.nametag = this.el.querySelector('.nametag');
+
+                if (this.nametag) {
+                    this.nametag.setAttribute('value', 'Player');
+                }
+            }
+        });
+
+        // **Utility Functions**
+        function formatTime(seconds) {
+            const mins = Math.floor(seconds / 60);
+            const secs = seconds % 60;
+            return `${mins}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        // **Performance Optimization**
+        AFRAME.registerComponent('restrict-movement', {
+            schema: {
+                radius: { type: 'number', default: 25 }
+            },
+            tick: function () {
+                const position = this.el.object3D.position;
+                const distance = Math.sqrt(position.x * position.x + position.z * position.z);
+
+                if (distance > this.data.radius) {
+                    const angle = Math.atan2(position.z, position.x);
+                    position.x = Math.cos(angle) * this.data.radius;
+                    position.z = Math.sin(angle) * this.data.radius;
+                }
+            }
+        });
+
+        console.log('🎯 Misi Angket System Initialized');
+    </script>
+</body>
+
+</html>
