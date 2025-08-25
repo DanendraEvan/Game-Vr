@@ -47,7 +47,7 @@
                 id="camera" 
                 camera="" 
                 kinematic-body 
-                movement-controls="fly:false; controls: gamepad, trackpad, keyboard, nipple;"
+                universal-controls
                 update-coordinates>
                 
                 <a-entity cursor="fuse: true; fuseTimeout: 500"
@@ -136,7 +136,7 @@ cam.addEventListener('collide', function (e) {
       e.detail.body.el.setAttribute('visible', 'false');
       e.detail.body.el.setAttribute('static-body', 'shape: none');
       setTimeout(function(){
-    window.location.href = "desa.html"; // ganti dengan halaman tujuanmu
+    window.location.href = "index1.html"; // ganti dengan halaman tujuanmu
   }, 5000); 
     } else {
       // belum cukup kertas
