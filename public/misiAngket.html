@@ -229,13 +229,17 @@
         </div>
     </div>
 
-    <a-scene networked-scene="connectOnLoad: false; room: angket; debug: true; adapter: wseasyrtc;"
-        shadow="type: pcfsoft" gltf-model="meshoptDecoderPath:https://unpkg.com/meshoptimizer@0.19.0/meshopt_decoder.js"
-        raycaster="far: 15; objects: .clickable" cursor="rayOrigin: mouse" vr-detector hud-coords>
+   <a-scene 
+    shadow="type: pcfsoft" 
+    gltf-model="meshoptDecoderPath:https://unpkg.com/meshoptimizer@0.19.0/meshopt_decoder.js"
+    raycaster="far: 15; objects: .clickable" 
+    cursor="rayOrigin: mouse" 
+    vr-detector 
+    hud-coords>
 
         <!-- Musik Latar -->
         <a-assets>
-            <audio id="bgm-angket" src="" preload="auto"></audio>
+            <audio id="bgm-angket" src="time_outro.mp3" preload="auto"></audio>
 
             <!-- Models -->
             <a-asset-item id="perumahan-model" src="models/perumahan.glb"></a-asset-item>
@@ -248,7 +252,7 @@
             <img id="result-tryagain" src="assets/hasil3.png" crossorigin="anonymous">
         </a-assets>
 
-        <a-entity sound="src: #bgm-angket; autoplay: false; loop: true; volume: 0.3" id="background-music"></a-entity>
+        <a-entity sound="src: #bgm-angket; autoplay: true; loop: true; volume: 3; positional: false" id="background-music" ></a-entity>
 
         <a-entity id="scene">
             <!-- Sky Dome -->
@@ -536,10 +540,10 @@ Z: ${pos.z.toFixed(2)}`;
             document.getElementById('game-ui').style.display = 'block';
 
             // Start background music
-            const bgMusic = document.getElementById('background-music');
-            if (bgMusic) {
-                bgMusic.components.sound.playSound();
-            }
+            // const bgMusic = document.getElementById('background-music');
+            // if (bgMusic) {
+            //     bgMusic.components.sound.playSound();
+            // }
 
             // Reset game state
             gameState.gameActive = true;
@@ -653,10 +657,10 @@ Z: ${pos.z.toFixed(2)}`;
             document.getElementById('game-ui').style.display = 'none';
 
             // Stop background music
-            const bgMusic = document.getElementById('background-music');
-            if (bgMusic) {
-                bgMusic.components.sound.stopSound();
-            }
+            // const bgMusic = document.getElementById('background-music');
+            // if (bgMusic) {
+            //     bgMusic.components.sound.stopSound();
+            // }
 
             // Show results
             showResults();
