@@ -95,7 +95,7 @@
           href="index1.html"
           title="loby Harmoni"
           image="#thumbForest"
-          position="-5 1.5 -20"
+          position="-5 2 -20"
           animation="property: scale; to: 1.1 1.1 1.1; dir: alternate; dur: 2000; loop: true"
         >
           <a-box obb-collider visible="false"></a-box>
@@ -111,7 +111,7 @@
     </script>
 
     <!-- Info text -->
-    <a-entity id="info-dialog-onload" position="1.40 4 -7">
+    <a-entity id="info-dialog-onload" position="1.40 4 -14">
       <a-plane width="15" height="1.2" color="#1e293b" opacity="0.92" material="shader: flat"></a-plane>
       <a-text value="Selamat datang di Perpus, Click block yang ada dan baca Studi Dokumennya"
               align="center" color="#fff" position="0 0 0.05"
@@ -120,22 +120,12 @@
 
     <!-- Rig (player) -->
     <a-entity id="rig" position="0 1.6 0"
-      movement-controls="fly:false; controls: gamepad, trackpad, keyboard, nipple;"
-      spawn-in-circle="radius:1"
-      networked="template:#avatar-template; attachTemplateToLocal:false"
-      restrict-movement="radius: 10"
-      player-info>
-
-      <a-entity id="player" class="camera" camera
-        position="0 0 0"
-        rotation="0 120 0"
-        look-controls>
-        <a-box obb-collider visible="false"
-          height="0.4"
-          depth="0.4"
-          width="0.4"></a-box>
-        <a-entity cursor="rayOrigin: mouse"
-            raycaster="objects: .clickable; far: 10"></a-entity>
+      movement-controls="fly:false; controls: gamepad, trackpad, keyboard, nipple;" spawn-in-circle="radius:1"
+      restrict-cube="minX: -100; maxX: 360; minZ: -200; maxZ: 200"
+      networked="template:#avatar-template; attachTemplateToLocal:false" player-info>
+      <a-entity id="player" class="camera" camera position="1 1 7" look-controls>
+        <a-box obb-collider visible="false" height="0.4" depth="0.4" width="0.4"></a-box>
+        <a-entity cursor="rayOrigin: mouse" raycaster="objects: .clickable; far: 10"></a-entity>
       </a-entity>
     </a-entity>
 
