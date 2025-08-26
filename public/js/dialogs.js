@@ -141,7 +141,7 @@ const NPC_DIALOGS = {
 
   // 5. NPC AKTIVIS PERAIRAN (Kualitas Air & Lingkungan)
   aktivis_perairan: {
-    speaker: "AKTIVIS PERAIRAN\nMas Kumar",
+    speaker: "AKTIVIS PERAIRAN\nMb Clara",
     text: "Kami mengukur kualitas air sungai. Hasilnya: kandungan limbah naik 60% sejak pabrik beroperasi.\nPabrik membantah, warga marah. Situasi makin panas.",
     choices: [
       {
@@ -159,17 +159,17 @@ const NPC_DIALOGS = {
     ]
   },
   aktivis_perairan_A: {
-    speaker: "AKTIVIS PERAIRAN\nMas Kumar",
+    speaker: "AKTIVIS PERAIRAN\nMb Clara",
     text: "Kami punya sampel air dan foto, tapi untuk bukti legal perlu audit resmi.",
     impact: "Buka akses arsip audit."
   },
   aktivis_perairan_B: {
-    speaker: "AKTIVIS PERAIRAN\nMas Kumar",
+    speaker: "AKTIVIS PERAIRAN\nMb Clara",
     text: "Tanaman layu, panen turun, dan tanah keras.\nData lengkapnya ada di laporan kami.",
     impact: "Buka laporan lingkungan."
   },
   aktivis_perairan_C: {
-    speaker: "AKTIVIS PERAIRAN\nMas Kumar",
+    speaker: "AKTIVIS PERAIRAN\nMb Clara",
     text: "Audit independen belum dilakukan. Kalian bisa mendorong forum mediasi.",
     impact: "Akses forum mediasi."
   },

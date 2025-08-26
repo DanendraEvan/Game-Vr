@@ -1,37 +1,55 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
   <meta charset="utf-8" />
   <title>VR Dialog System - Desa Harmoni</title>
   <meta name="description" content="VR Dialog System dengan A-Frame" />
 
   <!-- Pakai hanya satu versi A-Frame -->
-  <script src="https://aframe.io/releases/1.7.1/aframe.min.js"></script>
+  <script src="https://aframe.io/releases/1.7.0/aframe.min.js"></script>
 
   <!-- Lib pendukung -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.8.1/socket.io.min.js"></script>
   <script src="/easyrtc/easyrtc.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/networked-aframe@0.14.0/dist/networked-aframe.min.js"></script>
   <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-extras@7.5.4/dist/aframe-extras.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/aframe-environment-component@1.5.0/dist/aframe-environment-component.min.js"></script>
+  <script
+    src="https://cdn.jsdelivr.net/npm/aframe-environment-component@1.5.0/dist/aframe-environment-component.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@fern-solutions/aframe-mirror@1.1.1/dist/mirror.umd.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-cursor-teleport@1.6.0/dist/aframe-cursor-teleport-component.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/gh/AdaRoseCannon/aframe-xr-boilerplate@bca4792/simple-navmesh-constraint.js"></script>
+  <script
+    src="https://cdn.jsdelivr.net/gh/c-frame/aframe-cursor-teleport@1.6.0/dist/aframe-cursor-teleport-component.min.js"></script>
+  <script
+    src="https://cdn.jsdelivr.net/gh/AdaRoseCannon/aframe-xr-boilerplate@bca4792/simple-navmesh-constraint.js"></script>
   <script src="/dist/components.js"></script>
-  <script src="https://cdn.jsdelivr.net/gh/editvr/aframe-dialog-popup-component/dist/aframe-dialog-popup-component.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/gh/ideaspacevr/aframe-gradient-sky@master/dist/aframe-gradientsky.min.js"></script>
+  <script
+    src="https://cdn.jsdelivr.net/gh/editvr/aframe-dialog-popup-component/dist/aframe-dialog-popup-component.min.js"></script>
+  <script
+    src="https://cdn.jsdelivr.net/gh/ideaspacevr/aframe-gradient-sky@master/dist/aframe-gradientsky.min.js"></script>
 
   <script defer src="/dist/ui.js"></script>
 
   <style>
-    html, body { height: 100%; margin: 0; padding: 0; }
-    body { background: #222; }
-    ::-webkit-scrollbar { width: 0 !important }
+    html,
+    body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: #222;
+    }
+
+    ::-webkit-scrollbar {
+      width: 0 !important
+    }
+
     #hud {
       position: fixed;
       top: 10px;
       left: 10px;
-      background: rgba(0,0,0,0.6);
+      background: rgba(0, 0, 0, 0.6);
       color: #fff;
       padding: 8px 12px;
       font-family: monospace;
@@ -42,200 +60,257 @@
     }
   </style>
   <!-- Dialog System Scripts -->
-<script src="js/dialogs.js"></script>
-<script src="js/npc-dialog-system.js"></script>
+  <script src="js/dialogs.js"></script>
+  <script src="js/npc-dialog-system.js"></script>
 </head>
+
 <body>
 
-<div id="hud">Koordinat: X: 0.00 Y: 0.00 Z: 0.00</div>
+  <div id="hud">Koordinat: X: 0.00 Y: 0.00 Z: 0.00</div>
 
-<a-scene
-  networked-scene="connectOnLoad: false; room: desa; debug: true; adapter: wseasyrtc;"
-  shadow="type: pcfsoft"
-  gltf-model="meshoptDecoderPath:https://unpkg.com/meshoptimizer@0.19.0/meshopt_decoder.js"
-  raycaster="far: 10; objects: .clickable"
-  cursor="rayOrigin: mouse"
-  vr-detector
-  hud-coords
->
+  <a-scene networked-scene="connectOnLoad: false; room: desa; debug: true; adapter: wseasyrtc;" shadow="type: pcfsoft"
+    gltf-model="meshoptDecoderPath:https://unpkg.com/meshoptimizer@0.19.0/meshopt_decoder.js"
+    raycaster="far: 10; objects: .clickable, [link]" cursor="rayOrigin: mouse" vr-detector hud-coords>
 
-<!-- Musik Latar -->
-<a-entity id="backSound" sound="src: MusicDesa.mp3; autoplay: true; loop: true; volume: 1; positional: false"></a-entity>
-<a-entity id="backSound" sound="src: DesaAyam.mp3; autoplay: true; loop: true; volume: 1"></a-entity>
-<a-entity id="backSound" position="113 3 -110" sound="src: musikSawah.mp3; autoplay: true; loop: true; volume: 4; positional: true"></a-entity>
-<a-entity id="backSound" position="230 3 -105" sound="src: musikSawah.mp3; autoplay: true; loop: true; volume: 4; positional: true"></a-entity>
+    <!-- Musik Latar -->
+    <a-entity id="backSound"
+      sound="src: MusicDesa.mp3; autoplay: true; loop: true; volume: 1; positional: false"></a-entity>
+    <a-entity id="backSound" sound="src: DesaAyam.mp3; autoplay: true; loop: true; volume: 1"></a-entity>
+    <a-entity id="backSound" position="113 3 -110"
+      sound="src: musikSawah.mp3; autoplay: true; loop: true; volume: 4; positional: true"></a-entity>
+    <a-entity id="backSound" position="230 3 -105"
+      sound="src: musikSawah.mp3; autoplay: true; loop: true; volume: 4; positional: true"></a-entity>
 
 
-<a-entity gltf-model="models/sky_dome_demo.glb" scale="12 12 12" position="0 0 0" rotation="0 0 0"></a-entity>
+    <a-entity gltf-model="models/sky_dome_demo.glb" scale="12 12 12" position="0 0 0" rotation="0 0 0"></a-entity>
 
-<!-- Musik global (didengar di seluruh scene, non-positional) -->
-<a-entity id="musikGlobal" 
-          sound="src: url(MusicDesa.mp3); autoplay: true; loop: true; volume: 1; positional: false">
-</a-entity>
-
-<a-entity id="musikAyam" 
-          sound="src: url(DesaAyam.mp3); autoplay: true; loop: true; volume: 2; positional: false">
-</a-entity>
-
-<!-- Musik lokal (positional, hanya terdengar dekat posisinya) -->
-<a-entity id="musikSawah1" 
-          position="113 3 -110" 
-          sound="src: url(musikSawah.mp3); autoplay: true; loop: true; volume: 4; positional: true">
-</a-entity>
-
-<a-entity id="musikSawah2" 
-          position="230 3 -105" 
-          sound="src: url(musikSawah.mp3); autoplay: true; loop: true; volume: 4; positional: true">
-</a-entity>
-
-  <a-assets>
-    <template id="avatar-template">
-      <a-entity player-info>
-        <a-entity class="model">
-          <a-text class="nametag" align="center" value="?" position="0 2.1 0" scale=".5 .5 .5"></a-text>
-        </a-entity>
-        <a-entity class="camera" position="0 1.6 0"></a-entity>
-      </a-entity>
-    </template>
-    <img id="thumbJapan" crossorigin="anonymous" src="https://cdn.aframe.io/link-traversal/thumbs/japan.png" alt="Japan" />
-    <img id="thumbForest" crossorigin="anonymous" src="https://cdn.aframe.io/link-traversal/thumbs/forest.png" alt="Forest" />
-    <a-asset-item id="village-model" src="models/Untitled.glb"></a-asset-item>
-    <a-asset-item id="pabrik-model" src="models/pabrik.glb"></a-asset-item>
-    <a-asset-item id="signArrow" src="models/little_post_fbx.glb"></a-asset-item>
-  </a-assets>
-
-  <a-entity id="scene">
-    <a-sky color="#87CEEB"></a-sky>
-
-    <!-- Lighting -->
-    <a-entity light="type: directional; color: #FFF; intensity: 0.8" position="-1 2 1"></a-entity>
-    <a-entity light="type: hemisphere; color: #FFF; groundColor: #808080; intensity: 0.5"></a-entity>
-
-    <!-- Desa -->
-    <a-entity gltf-model="#village-model" position="0 0 -10" scale="2 2 2" shadow="receive: true"></a-entity>
-    <a-entity gltf-model="#signArrow" position="-10.56202 -0.31295 -23" scale="0.015 0.02 -0.02" rotation="0 -90 0" shadow=""></a-entity>
-    <a-entity gltf-model="#signArrow" position="7.29307 -0.31295 -23" scale="0.015 0.02 0.02" rotation="0 -90 0" shadow=""></a-entity>
-    <a-entity gltf-model="#signArrow" position="-10.56202 -0.31295 -58.62655" scale="0.015 0.02 -0.02" rotation="0 -90 0" shadow=""></a-entity>
-    <a-entity gltf-model="#signArrow" position="7.29307 -0.31295 -58.62655" scale="0.015 0.02 0.02" rotation="0 -90 0" shadow=""></a-entity>
-    <a-entity gltf-model="#signArrow" position="-10.56202 -0.31295 -107.81141" scale="0.015 0.02 -0.02" rotation="-0.5683741327697767 180 0" shadow=""></a-entity>
-    <a-entity gltf-model="#signArrow" position="36.95782 -0.31295 -91.80302" scale="0.015 0.02 0.02" rotation="-0.54837 180 0" shadow=""></a-entity>
-    <a-entity gltf-model="#signArrow" position="85.29338 -0.31295 -91.80302" scale="0.015 0.02 0.02" rotation="-0.54837 180 0" shadow=""></a-entity>
-    <a-entity gltf-model="#signArrow" position="129.04488 -0.31295 -91.80302" scale="0.015 0.02 0.02" rotation="-0.54837 180 0" shadow=""></a-entity>
-    <a-entity gltf-model="#signArrow" position="171.07064 -0.31295 -91.80302" scale="0.015 0.02 0.02" rotation="-0.54837 180 0" shadow=""></a-entity>
-    <a-entity gltf-model="#signArrow" position="201.5843 -0.31295 -91.80302" scale="0.015 0.02 0.02" rotation="-0.5483206099401978 -87.98168014690383 0" shadow=""></a-entity>
-    <!-- Info text -->
-    <a-entity id="info-dialog" position="-5 4 9">
-      <a-plane width="17" height="1.2" color="#1e293b" opacity="0.92" material="shader: flat"></a-plane>
-      <a-text 
-        value="Selamat datang di Desa Harmoni! Klik pada NPC untuk berbicara dengan mereka."
-        align="center"
-        color="#fff"
-        position="0 0 0.05"
-        text="width: 12; wrapCount: 60; font: dejavu; weight: bold"></a-text>
+    <!-- Musik global (didengar di seluruh scene, non-positional) -->
+    <a-entity id="musikGlobal"
+      sound="src: url(MusicDesa.mp3); autoplay: true; loop: true; volume: 1; positional: false">
     </a-entity>
 
-<!-- NPC Koordinator -->
-      <a-entity id="koordinator" class="clickable" gltf-model="models/koor.glb" position="0 0 -5.37487" scale="0.02 0.02 0.02"
-        npc-dialog-3d="npcId: koordinator" rotation="0 -3.465248744951219 0" animation-mixer="clip: *; loop: repeat">
+    <a-entity id="musikAyam" sound="src: url(DesaAyam.mp3); autoplay: true; loop: true; volume: 2; positional: false">
+    </a-entity>
+
+    <!-- Musik lokal (positional, hanya terdengar dekat posisinya) -->
+    <a-entity id="musikSawah1" position="113 3 -110"
+      sound="src: url(musikSawah.mp3); autoplay: true; loop: true; volume: 4; positional: true">
+    </a-entity>
+
+    <a-entity id="musikSawah2" position="230 3 -105"
+      sound="src: url(musikSawah.mp3); autoplay: true; loop: true; volume: 4; positional: true">
+    </a-entity>
+
+    <a-assets>
+      <template id="avatar-template">
+        <a-entity player-info>
+          <a-entity class="model">
+            <a-text class="nametag" align="center" value="?" position="0 2.1 0" scale=".5 .5 .5"></a-text>
+          </a-entity>
+          <a-entity class="camera" position="0 1.6 0"></a-entity>
+        </a-entity>
+      </template>
+      <img id="thumbJapan" crossorigin="anonymous" src="https://cdn.aframe.io/link-traversal/thumbs/japan.png"
+        alt="Japan" />
+      <img id="thumbForest" crossorigin="anonymous" src="https://cdn.aframe.io/link-traversal/thumbs/forest.png"
+        alt="Forest" />
+      <a-asset-item id="village-model" src="models/Untitled.glb"></a-asset-item>
+      <a-asset-item id="pabrik-model" src="models/pabrik.glb"></a-asset-item>
+      <a-asset-item id="signArrow" src="models/little_post_fbx.glb"></a-asset-item>
+    </a-assets>
+
+    <a-entity id="scene">
+      <a-sky color="#87CEEB"></a-sky>
+
+      <!-- Lighting -->
+      <a-entity light="type: directional; color: #FFF; intensity: 0.8" position="-1 2 1"></a-entity>
+      <a-entity light="type: hemisphere; color: #FFF; groundColor: #808080; intensity: 0.5"></a-entity>
+
+      <!-- Desa -->
+      <a-entity gltf-model="#village-model" position="0 0 -10" scale="2 2 2" shadow="receive: true"></a-entity>
+      <a-entity gltf-model="#signArrow" position="-10.56202 -0.31295 -23" scale="0.015 0.02 -0.02" rotation="0 -90 0"
+        shadow=""></a-entity>
+      <a-entity gltf-model="#signArrow" position="7.29307 -0.31295 -23" scale="0.015 0.02 0.02" rotation="0 -90 0"
+        shadow=""></a-entity>
+      <a-entity gltf-model="#signArrow" position="-10.56202 -0.31295 -58.62655" scale="0.015 0.02 -0.02"
+        rotation="0 -90 0" shadow=""></a-entity>
+      <a-entity gltf-model="#signArrow" position="7.29307 -0.31295 -58.62655" scale="0.015 0.02 0.02" rotation="0 -90 0"
+        shadow=""></a-entity>
+      <a-entity gltf-model="#signArrow" position="-10.56202 -0.31295 -107.81141" scale="0.015 0.02 -0.02"
+        rotation="-0.5683741327697767 180 0" shadow=""></a-entity>
+      <a-entity gltf-model="#signArrow" position="36.95782 -0.31295 -91.80302" scale="0.015 0.02 0.02"
+        rotation="-0.54837 180 0" shadow=""></a-entity>
+      <a-entity gltf-model="#signArrow" position="85.29338 -0.31295 -91.80302" scale="0.015 0.02 0.02"
+        rotation="-0.54837 180 0" shadow=""></a-entity>
+      <a-entity gltf-model="#signArrow" position="129.04488 -0.31295 -91.80302" scale="0.015 0.02 0.02"
+        rotation="-0.54837 180 0" shadow=""></a-entity>
+      <a-entity gltf-model="#signArrow" position="171.07064 -0.31295 -91.80302" scale="0.015 0.02 0.02"
+        rotation="-0.54837 180 0" shadow=""></a-entity>
+      <a-entity gltf-model="#signArrow" position="201.5843 -0.31295 -91.80302" scale="0.015 0.02 0.02"
+        rotation="-0.5483206099401978 -87.98168014690383 0" shadow=""></a-entity>
+      <!-- Info text -->
+      <a-entity id="info-dialog" position="-5 4 9">
+        <a-plane width="17" height="1.2" color="#1e293b" opacity="0.92" material="shader: flat"></a-plane>
+        <a-text value="Selamat datang di Desa Harmoni! Klik pada NPC untuk berbicara dengan mereka." align="center"
+          color="#fff" position="0 0 0.05" text="width: 12; wrapCount: 60; font: dejavu; weight: bold"></a-text>
+      </a-entity>
+
+      <!-- Portal ke Loby -->
+      <a-link
+          id="portal-loby"
+          href="index1.html"
+          title="Loby"
+          image="#thumbForest"
+          position="201.216 1.5 -96.975"
+          rotation="0 90 0"
+          animation="property: scale; to: 1.1 1.1 1.1; dir: alternate; dur: 2000; loop: true"
+        >
+          <a-box obb-collider visible="false"></a-box>
+          <!-- Portal Glow Effect -->
+          <a-ring color="#00FF00" opacity="0.3" radius-inner="1.2" radius-outer="1.5" position="0 0 -0.1"
+                  animation="property: rotation; to: 0 0 360; dur: 8000; loop: true"></a-ring>
+        </a-link>
+
+      <!-- NPC Koordinator -->
+      <a-entity id="koordinator" class="clickable" gltf-model="models/koor.glb" position="0 0 -5.37487"
+        scale="0.02 0.02 0.02" npc-dialog-3d="npcId: koordinator" rotation="0 -3.465248744951219 0"
+        animation-mixer="clip: *; loop: repeat">
         <a-cylinder radius="1.2" height="0.45" material="opacity: 0; transparent: true"
           position="3.97959 0 -1.44845"></a-cylinder>
-        
+
       </a-entity>
 
       <!-- NPC Pengamat pertanian lokal -->
-      <a-entity id="pengamat petani lokal" class="clickable" gltf-model="models/pengamat1.glb" position="111.2989 0.3 -91.79971" scale="0.02 0.02 0.02" npc-dialog-3d="npcId: pengamat_pertanian" rotation="0 -158.22057625199145 0" animation-mixer="clip: *; loop: repeat">
-        <a-cylinder radius="1.2" height="0.45" material="opacity: 0; transparent: true" position="3.97959 0.5 -1.44845"></a-cylinder>
+      <a-entity id="pengamat petani lokal" class="clickable" gltf-model="models/priaLooking.glb"
+        position="111.2989 -0.320 -95.43856" scale="0.02 0.02 0.02" npc-dialog-3d="npcId: pengamat_pertanian"
+        rotation="0 -158.22057625199145 0" animation-mixer=""
+        animation__hover="dur: 200; property: scale; to: 0.02 0.02 0.02">
+        <a-cylinder radius="1.2" height="0.45" material="opacity: 0; transparent: true"
+          position="3.97959 0.5 -1.44845"></a-cylinder>
       </a-entity>
 
       <!-- NPC Anak Petani -->
-      <a-entity id="anak petani" class="clickable" gltf-model="models/Boy.glb" position="80.8602 0.52 -126.55562" npc-dialog-3d="npcId: " rotation="0 -3.465248744951219 0" animation__hover="dur: 200; property: scale; to: 1 1 1">
-        <a-cylinder radius="1.2" height="0.45" material="opacity: 0; transparent: true" position="3.97959 0.5 -1.44845"></a-cylinder>
+      <a-entity id="anak petani" class="clickable" gltf-model="models/Boy.glb" position="80.8602 0.52 -126.55562"
+        npc-dialog-3d="npcId: " rotation="0 -3.465248744951219 0"
+        animation__hover="dur: 200; property: scale; to: 1 1 1">
+        <a-cylinder radius="1.2" height="0.45" material="opacity: 0; transparent: true"
+          position="3.97959 0.5 -1.44845"></a-cylinder>
       </a-entity>
 
       <!-- NPC Petani -->
-  <a-entity id="petani" class="clickable" gltf-model="models/petani1.glb" position="89.30027 1.20883 -120.20951" scale="0.02 0.02 0.02" npc-dialog-3d="npcId: petani_senior" rotation="0 -3.465248744951219 0" animation-mixer="" animation__hover="dur: 200; property: scale; to: 0.02 0.02 0.02">
-        <a-cylinder radius="1.2" height="0.45" material="opacity: 0; transparent: true" position="3.97959 0 -1.44845"></a-cylinder>
+      <a-entity id="petani" class="clickable" gltf-model="models/petani1.glb" position="89.30027 1.20883 -120.20951"
+        scale="0.02 0.02 0.02" npc-dialog-3d="npcId: petani_senior" rotation="0 -3.465248744951219 0" animation-mixer=""
+        animation__hover="dur: 200; property: scale; to: 0.02 0.02 0.02">
+        <a-cylinder radius="1.2" height="0.45" material="opacity: 0; transparent: true"
+          position="3.97959 0 -1.44845"></a-cylinder>
       </a-entity>
 
 
       <!-- NPC Aktivis pengairan -->
-      <a-entity id="aktivis pengairan" class="clickable" gltf-model="models/perairan.glb" position="175.76197 -0.29336 -121.59823" scale="0.009 0.007 0.010000000000000002" npc-dialog-3d="npcId: aktivis_perairan" rotation="0 -3.465 0" animation-mixer="" animation__hover="dur: 200; property: scale; to: 0.02 0.008 0.001">
-        <a-cylinder radius="1.2" height="0.45" material="opacity: 0; transparent: true" position="3.97959 0.5 -1.44845"></a-cylinder></a-entity>
-        
+      <a-entity id="aktivis pengairan" class="clickable" gltf-model="models/cwee.glb"
+        position="126.71692 -0.29336 -121.59823" scale="2 2 2" npc-dialog-3d="npcId: aktivis_perairan"
+        rotation="0 -3.465 0" animation-mixer="" animation__hover="dur: 200; property: scale; to: 2 2 2">
+        <a-cylinder radius="1.2" height="0.45" material="opacity: 0; transparent: true"
+          position="3.97959 0.5 -1.44845"></a-cylinder></a-entity>
+
       <!-- NPC Ketua Tani -->
-      <a-entity id="ketua tani" class="clickable" gltf-model="models/ketuatani1.glb" position="191.94696 -0.22281 -105.50623" scale="0.02 0.02 0.02" npc-dialog-3d="npcId: ketua_tani" rotation="0 -92.64956730383464 0" animation-mixer="" animation__hover="dur: 200; property: scale; to: 0.02 0.02 0.02">
-        <a-cylinder radius="1.2" height="0.45" material="opacity: 0; transparent: true" position="3.97959 0.5 -1.44845"></a-cylinder>
+      <a-entity id="ketua tani" class="clickable" gltf-model="models/ketuatani1.glb"
+        position="191.94696 -0.22281 -105.50623" scale="0.02 0.02 0.02" npc-dialog-3d="npcId: ketua_tani"
+        rotation="0 -92.64956730383464 0" animation-mixer=""
+        animation__hover="dur: 200; property: scale; to: 0.02 0.02 0.02">
+        <a-cylinder radius="1.2" height="0.45" material="opacity: 0; transparent: true"
+          position="3.97959 0.5 -1.44845"></a-cylinder>
       </a-entity>
 
       <!-- NPC Kepala Desa -->
-      <a-entity id="kepala desa" class="clickable" gltf-model="models/kepala1.glb" position="11.00104 -0.20485 -107.69743" npc-dialog-3d="npcId: kepala_desa" scale="0.02 0.02 0.02" rotation="0 -3.465248744951219 0" animation-mixer="" animation__hover="dur: 200; property: scale; to: 0.02 0.02 0.02">
-        <a-cylinder radius="1.2" height="0.45" material="opacity: 0; transparent: true" position="3.97959 0.5 -1.44845"></a-cylinder>
+      <a-entity id="kepala desa" class="clickable" gltf-model="models/kepala1.glb"
+        position="11.00104 -0.20485 -107.69743" npc-dialog-3d="npcId: kepala_desa" scale="0.02 0.02 0.02"
+        rotation="0 -3.465248744951219 0" animation-mixer=""
+        animation__hover="dur: 200; property: scale; to: 0.02 0.02 0.02">
+        <a-cylinder radius="1.2" height="0.45" material="opacity: 0; transparent: true"
+          position="3.97959 0.5 -1.44845"></a-cylinder>
       </a-entity>
 
       <!-- NPC Pemilik Pabrik -->
-      <a-entity id="pemilik pabrik" class="clickable" gltf-model="models/cw.glb" position="184 -0.31587 -86.98749" npc-dialog-3d="npcId: bu_anita" scale="0.02 0.02 0.02" rotation="0 180 0" animation-mixer="" animation__hover="dur: 200; property: scale; to: 0.02 0.02 0.02">
-        <a-cylinder radius="1.2" height="0.45" material="opacity: 0; transparent: true" position="3.97959 0.5 -1.44845"></a-cylinder>
+      <a-entity id="pemilik pabrik" class="clickable" gltf-model="models/cw.glb" position="184 -0.31587 -86.98749"
+        npc-dialog-3d="npcId: bu_anita" scale="0.02 0.02 0.02" rotation="0 180 0" animation-mixer=""
+        animation__hover="dur: 200; property: scale; to: 0.02 0.02 0.02">
+        <a-cylinder radius="1.2" height="0.45" material="opacity: 0; transparent: true"
+          position="3.97959 0.5 -1.44845"></a-cylinder>
       </a-entity>
     </a-entity>
 
-      <a-entity id="info-board-sawah" position="103.82024 9.71802 -125.74902" scale="4.53 3.81 2.94" rotation="0 -17.535373319978845 0">
-        <a-plane width="3" height="2" color="#2C3E50" opacity="0.9" scale="1.32 0.6 1"></a-plane>
-        <a-text value="Tanaman di Desa Harmoni layu dan Sungai disekitar tercemar" color="#ECF0F1" width="4" align="center" position="0 0 0.01"></a-text>
-      </a-entity>
-
-  <!-- Rig (player) -->
-  <a-entity
-    id="rig"
-    position="-4 1.6 15"
-    movement-controls="fly:false; controls: gamepad, trackpad, keyboard, nipple;"
-    spawn-in-circle="radius:1"
-    restrict-cube="minX: -100; maxX: 360; minZ: -200; maxZ: 200"
-    networked="template:#avatar-template; attachTemplateToLocal:false"
-    player-info
-  >
-    <a-entity id="player" class="camera" camera position="1 1 7" look-controls>
-      <a-box obb-collider visible="false" height="0.4" depth="0.4" width="0.4"></a-box>
-      <a-entity cursor="rayOrigin: mouse" raycaster="objects: .clickable; far: 10"></a-entity>
+    <a-entity id="info-board-sawah" position="103.82024 9.71802 -125.74902" scale="4.53 3.81 2.94"
+      rotation="0 -17.535373319978845 0">
+      <a-plane width="3" height="2" color="#2C3E50" opacity="0.9" scale="1.32 0.6 1"></a-plane>
+      <a-text value="Tanaman di Desa Harmoni layu dan Sungai disekitar tercemar" color="#ECF0F1" width="4"
+        align="center" position="0 0 0.01"></a-text>
     </a-entity>
-  </a-entity>
-</a-scene>
 
-<script>
-AFRAME.registerComponent('hud-coords', {
-  tick: function () {
-    const player = document.querySelector('#player');
-    const hud = document.getElementById('hud');
-    if (player && hud) {
-      const pos = player.object3D.getWorldPosition(new THREE.Vector3());
-      hud.innerText = `Koordinat:\nX: ${pos.x.toFixed(2)}\nY: ${pos.y.toFixed(2)}\nZ: ${pos.z.toFixed(2)}`;
-    }
-  }
-});
+    <a-entity position="201.216 3.7 -96.975" rotation="0 -90 0">
+            <a-plane width="5" height="2" color="#2980B9" opacity="0.9"></a-plane>
+            <a-text value="Klik untuk kembali ke Loby" color="#F1C40F" width="5" align="center" position="0 0 0.01">
+            </a-text>
+          </a-entity>
 
-AFRAME.registerComponent('vr-detector', {
-  init: function () {
-    this.el.addEventListener('enter-vr', () => gameState.vrMode = true);
-    this.el.addEventListener('exit-vr', () => gameState.vrMode = false);
-  }
-});
+    <!-- Rig (player) -->
+    <a-entity id="rig" position="-4 1.6 15"
+      movement-controls="fly:false; controls: gamepad, trackpad, keyboard, nipple;" spawn-in-circle="radius:1"
+      restrict-cube="minX: -100; maxX: 360; minZ: -200; maxZ: 200"
+      networked="template:#avatar-template; attachTemplateToLocal:false" player-info>
+      <a-entity id="player" class="camera" camera position="1 1 7" look-controls>
+        <a-box obb-collider visible="false" height="0.4" depth="0.4" width="0.4"></a-box>
+        <a-entity cursor="rayOrigin: mouse" raycaster="objects: .clickable; far: 10"></a-entity>
+      </a-entity>
+    </a-entity>
+  </a-scene>
 
-AFRAME.registerComponent('restrict-cube', {
-  schema: {
-    minX: { type: 'number', default: -10 },
-    maxX: { type: 'number', default: 10 },
-    minZ: { type: 'number', default: -10 },
-    maxZ: { type: 'number', default: 10 }
-  },
-  tick: function () {
-    let pos = this.el.object3D.position;
-    if (pos.x < this.data.minX) pos.x = this.data.minX;
-    if (pos.x > this.data.maxX) pos.x = this.data.maxX;
-    if (pos.z < this.data.minZ) pos.z = this.data.minZ;
-    if (pos.z > this.data.maxZ) pos.z = this.data.maxZ;
-  }
-});
+  <script>
+      // Kode loader dinonaktifkan karena elemen #loader dan #progressbar tidak ada di file ini.
+      
+    AFRAME.registerComponent('hud-coords', {
+      tick: function () {
+        const player = document.querySelector('#player');
+        const hud = document.getElementById('hud');
+        if (player && hud) {
+          const pos = player.object3D.getWorldPosition(new THREE.Vector3());
+          hud.innerText = `Koordinat:\nX: ${pos.x.toFixed(2)}
+Y: ${pos.y.toFixed(2)}
+Z: ${pos.z.toFixed(2)}`;
+        }
+      }
+    });
 
-let gameState = { currentDialog: null, dialogHistory: [], vrMode: false };
-</script>
+    AFRAME.registerComponent('vr-detector', {
+      init: function () {
+        this.el.addEventListener('enter-vr', () => gameState.vrMode = true);
+        this.el.addEventListener('exit-vr', () => gameState.vrMode = false);
+      }
+    });
+
+    AFRAME.registerComponent('restrict-cube', {
+      schema: {
+        minX: { type: 'number', default: -10 },
+        maxX: { type: 'number', default: 10 },
+        minZ: { type: 'number', default: -10 },
+        maxZ: { type: 'number', default: 10 }
+      },
+      tick: function () {
+        let pos = this.el.object3D.position;
+        if (pos.x < this.data.minX) pos.x = this.data.minX;
+        if (pos.x > this.data.maxX) pos.x = this.data.maxX;
+        if (pos.z < this.data.minZ) pos.z = this.data.minZ;
+        if (pos.z > this.data.maxZ) pos.z = this.data.maxZ;
+      }
+    });
+
+    let gameState = { currentDialog: null, dialogHistory: [], vrMode: false };
+
+    const portal = document.querySelector("#portal-loby");
+    portal.addEventListener("obbcollisionstarted", () => {
+      window.location.href = "index1.html";
+    });
+  </script>
 </body>
+
 </html>
