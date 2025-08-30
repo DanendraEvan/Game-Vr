@@ -2,7 +2,7 @@ const NPC_DIALOGS = {
   // 1. NPC KOORDINATOR (Briefing Awal Penelitian)
   koordinator: {
     speaker: "KOORDINATOR DESA\nPak Peno",
-    text: "Selamat datang, tim sosiolog muda. Desa Sukamaju sedang menghadapi krisis: harga sayur melonjak, pabrik baru memicu konflik, dan warga terpecah pendapatnya.\nTugas kalian: mengumpulkan data, mewawancarai warga, lalu membuat laporan dengan rekomendasi solusi.",
+    text: "Selamat datang, tim sosiolog muda. Desa Harmoni sedang menghadapi krisis: harga sayur melonjak, pabrik baru memicu konflik, dan warga terpecah pendapatnya.\nTugas kalian: mengumpulkan data, mewawancarai warga, lalu membuat laporan dengan rekomendasi solusi.",
     choices: [
       {
         text: "Kami ingin fokus meneliti dampak pabrik terhadap desa.",
