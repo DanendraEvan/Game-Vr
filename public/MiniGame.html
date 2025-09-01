@@ -34,7 +34,7 @@
         <img src="assets/ground.jpg" id="asset_ground">
         <img src="assets/intruksi.png" id="asset_instruction">
         <img src="assets/reload.png" id="asset_reload">
-        <img src="assets/coin.png" id="asset_paper">
+        <img src="assets/Coin.png" id="asset_paper">
       </a-assets>
 
    
@@ -43,11 +43,12 @@
                 
                 velocity="0 0 0" 
                 rotation="0 0 0" 
-                position="0 1.6 -2" 
+                position="-25 1.6 -16" 
                 id="camera" 
                 camera="" 
                 kinematic-body 
-                universal-controls
+               wasd-controls="acceleration: 20"
+                look-controls="pointerLockEnabled: true; touchEnabled: true; magicWindowTrackingEnabled: false"
                 update-coordinates>
                 
                 <a-entity cursor="fuse: true; fuseTimeout: 500"
@@ -71,11 +72,27 @@
 
                        
     </a-scene>
+<!-- Joystick kiri untuk gerak -->
+<div id="joystick-move" style="position: fixed; bottom: 20px; left: 20px; width: 150px; height: 150px; z-index: 999;"></div>
+<!-- Joystick kanan untuk rotasi -->
+<div id="joystick-look" style="position: fixed; bottom: 20px; right: 20px; width: 150px; height: 150px; z-index: 999;"></div>
 
     <script>
+    // === Paksa disable gyro di HP ===
+window.addEventListener("deviceorientation", function (event) {
+  event.stopImmediatePropagation();
+}, true);
+
+window.addEventListener("devicemotion", function (event) {
+  event.stopImmediatePropagation();
+}, true);
         window.addEventListener("load", () => {
     alert("📜Cari dan baca intruksinya");
   });
+  window.addEventListener("DOMContentLoaded", () => {
+  var cam = document.getElementById('camera');
+  console.log("Spawn point:", cam.getAttribute("position"));
+});
       // Component untuk update koordinat HUD
       AFRAME.registerComponent('update-coordinates', {
         tick: function () {
@@ -194,7 +211,70 @@ counter = setInterval(function(){
       }
       init(width,height);
       
+      window.addEventListener("DOMContentLoaded", () => {
+  var camera = document.getElementById('camera');
+  var speed = 0.05;      // kecepatan jalan
+  var rotateSpeed = 2.0; // kecepatan putar
 
+// === JOYSTICK KIRI (MAJU/MUNDUR relatif kamera) ===
+var joystickMove = nipplejs.create({
+  zone: document.getElementById('joystick-move'),
+  mode: 'static',
+  position: { left: '50%', top: '50%' },
+  color: 'blue',
+  size: 120
+});
+
+joystickMove.on('move', function (evt, data) {
+  if (data.vector) {
+    var pos = camera.getAttribute('position');
+    var rot = camera.getAttribute('rotation');
+    var angle = THREE.Math.degToRad(rot.y); // konversi derajat ke radian
+
+    // arah depan relatif kamera
+    var forwardX = -Math.sin(angle);
+    var forwardZ = -Math.cos(angle);
+
+    if (data.vector.y > 0.3) {
+      // joystick ke atas → maju
+      pos.x += forwardX * speed;
+      pos.z += forwardZ * speed;
+    }
+    if (data.vector.y < -0.3) {
+      // joystick ke bawah → mundur
+      pos.x -= forwardX * speed;
+      pos.z -= forwardZ * speed;
+    }
+
+    camera.setAttribute('position', pos);
+  }
+});
+
+
+  // === JOYSTICK KANAN (ROTASI) ===
+// === JOYSTICK KANAN (ROTASI kamera) ===
+var joystickLook = nipplejs.create({
+  zone: document.getElementById('joystick-look'),
+  mode: 'static',
+  position: { left: '50%', top: '50%' },
+  color: 'red',
+  size: 120
+});
+
+joystickLook.on('move', function (evt, data) {
+  var rot = camera.getAttribute('rotation');
+
+  if (data.vector.x > 0.2) {
+    rot.y -= rotateSpeed; // geser kanan
+  }
+  if (data.vector.x < -0.2) {
+    rot.y += rotateSpeed; // geser kiri
+  }
+
+  camera.setAttribute('rotation', rot);
+});
+
+});
 
     </script>
   </body>

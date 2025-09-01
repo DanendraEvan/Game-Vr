@@ -61,6 +61,10 @@
       <img id="gambarStudiDokumen1" src="assets/studDokumen1.png">
       <img id="gambarStudiDokumen2" src="assets/studDokumen2.png">
       <img id="gambarStudiDokumen3" src="assets/studDokumen3.png">
+      <img id="gambarStudiDokumen4" src="assets/studDokumen4.png">
+      <img id="gambarStudiDokumen5" src="assets/studDokumen5.png">
+      <img id="gambarStudiDokumen6" src="assets/studDokumen6.png">
+      <img id="gambarStudiDokumen7" src="assets/studDokumen7.png">
       <template id="avatar-template">
         <a-entity player-info>
           <a-entity class="model">
@@ -145,6 +149,26 @@
            color="#FF9800" class="clickable"
            image-dialog-trigger="src: #gambarStudiDokumen3"></a-box>
 
+<a-box id="trigger-block4" position="-30 1 -29"
+       depth="1" height="1" width="1"
+       color="#9C27B0" class="clickable"
+       image-dialog-trigger="src: #gambarStudiDokumen4"></a-box>
+
+<a-box id="trigger-block5" position="-23 1 -29"
+       depth="1" height="1" width="1"
+       color="#3F51B5" class="clickable"
+       image-dialog-trigger="src: #gambarStudiDokumen5"></a-box>
+
+<a-box id="trigger-block6" position="-12.6 1 -29"
+       depth="1" height="1" width="1"
+       color="#009688" class="clickable"
+       image-dialog-trigger="src: #gambarStudiDokumen6"></a-box>
+
+<a-box id="trigger-block7" position="-5 1 -29"
+       depth="1" height="1" width="1"
+       color="#795548" class="clickable"
+       image-dialog-trigger="src: #gambarStudiDokumen7"></a-box>
+
     <!-- Script -->
     <script>
       AFRAME.registerComponent('hud-coords', {
@@ -153,7 +177,9 @@
           const hud = document.getElementById('hud');
           if (player && hud) {
             const pos = player.object3D.getWorldPosition(new THREE.Vector3());
-            hud.innerText = `Koordinat:\nX: ${pos.x.toFixed(2)}\nY: ${pos.y.toFixed(2)}\nZ: ${pos.z.toFixed(2)}`;
+            hud.innerText = `Koordinat:\nX: ${pos.x.toFixed(2)}
+Y: ${pos.y.toFixed(2)}
+Z: ${pos.z.toFixed(2)}`;
           }
         }
       });
@@ -187,19 +213,25 @@
               panel.setAttribute('id', 'dialog-panel');
               panel.setAttribute('position', {
                 x: blockPos.x + 3,
-                y: blockPos.y +1,   // biar muncul 2 satuan di atas block
+                y: blockPos.y + 1,
                 z: blockPos.z
               });
-              panel.setAttribute('rotation','0 180 0');
+
+              if (blockPos.z === -29) {
+                panel.setAttribute('rotation', '0 0 0');
+              } else {
+                panel.setAttribute('rotation', '0 180 0');
+              }
 
             const dialogArea = document.createElement('a-plane');
             dialogArea.setAttribute('geometry', { primitive: 'plane', width: 3.8, height: 2.2 });
-            dialogArea.setAttribute('material', { color: '#e0e0e0', opacity: 1 });
+            dialogArea.setAttribute('material', { color: '#e0e0e0', opacity: 1, side: 'double' });
             dialogArea.setAttribute('position', '0 0 0.02');
 
             const dialogImage = document.createElement('a-image');
             dialogImage.setAttribute('width', '3.6');
             dialogImage.setAttribute('height', '2.0');
+            dialogImage.setAttribute('material', 'side: double');
 
             if (this.data.src) {
               dialogImage.setAttribute('src', this.data.src.getAttribute('src'));
