@@ -2,15 +2,17 @@
 <html lang="id">
 <head>
     <meta charset="utf-8" />
-    <title>Misi Angket (Three.js)</title>
+    <title>Sosio Metaverse - Misi Angket</title>
     <meta name="description" content="Misi Angket - Game VR dengan Three.js" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     
     <!-- Three.js Core -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <!-- Three.js Loaders -->
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/PointerLockControls.js"></script>
+    <!-- NippleJS for Virtual Joystick -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/nipplejs/0.10.1/nipplejs.min.js"></script>
 
     <style>
         html, body {
@@ -213,6 +215,7 @@
             padding: 10px 20px;
             border-radius: 5px;
             z-index: 1000;
+            text-align: center;
         }
 
         #crosshair {
@@ -254,6 +257,16 @@
             border-radius: 50%;
             top: 8px;
             left: 8px;
+        }
+
+        #joystick-zone {
+            position: fixed;
+            bottom: 80px;
+            left: 80px;
+            width: 120px;
+            height: 120px;
+            z-index: 1001;
+            display: none; /* Hidden by default */
         }
     </style>
 </head>
@@ -307,9 +320,7 @@
     </div>
 
     <!-- Instructions -->
-    <div id="instructions">
-        WASD: Gerak | Mouse: Lihat | Click: Klik Titik Angket | ESC: Keluar
-    </div>
+    <div id="instructions"></div>
 
     <!-- Crosshair -->
     <div id="crosshair">
@@ -317,6 +328,9 @@
         <div class="crosshair-line crosshair-vertical"></div>
         <div class="crosshair-line crosshair-center"></div>
     </div>
+
+    <!-- Joystick Zone -->
+    <div id="joystick-zone"></div>
 
     <!-- Canvas Container -->
     <div id="canvas-container"></div>
@@ -327,10 +341,12 @@
         let raycaster, mouse, intersects;
         let clock = new THREE.Clock();
         
+        // **Device Detection**
+        const isMobile = 'ontouchstart' in window;
+
         // **Game State Management** 
         let gameState = {
-            currentDialog: null,
-            dialogHistory: [],
+            isMobile: isMobile,
             vrMode: false,
             gameActive: false,
             score: 0,
@@ -339,7 +355,17 @@
             totalPoints: 20,
             clickedPoints: new Set(),
             surveyPoints: [],
-            loadingComplete: false
+            loadingComplete: false,
+            moveVector: new THREE.Vector3(), // For joystick
+            touchLook: { // For touch-to-look
+                active: false,
+                id: -1,
+                lastX: 0,
+                lastY: 0,
+                startX: 0,
+                startY: 0,
+                startTime: 0
+            }
         };
 
         // **Survey Point Positions** (dari kode asli)
@@ -373,6 +399,7 @@
 
             // Camera
             camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.rotation.order = 'YXZ'; // Use YXZ order for FPS-style controls to avoid roll
             camera.position.set(-4, 3.6, 15);
 
             // Renderer
@@ -383,8 +410,13 @@
             document.getElementById('canvas-container').appendChild(renderer.domElement);
 
             // Controls
-            controls = new THREE.PointerLockControls(camera, document.body);
-            scene.add(controls.getObject());
+            if (!isMobile) {
+                controls = new THREE.PointerLockControls(camera, document.body);
+                scene.add(controls.getObject());
+            } else {
+                // On mobile, we control the camera rotation manually
+                controls = { getObject: () => camera }; 
+            }
 
             // Raycaster for mouse picking
             raycaster = new THREE.Raycaster();
@@ -404,22 +436,15 @@
         }
 
         function setupLighting() {
-            // Hemisphere Light
             const hemiLight = new THREE.HemisphereLight(0xffffff, 0x808080, 0.5);
             scene.add(hemiLight);
 
-            // Directional Light
             const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
             dirLight.position.set(-1, 2, 1);
             dirLight.castShadow = true;
             dirLight.shadow.mapSize.width = 2048;
             dirLight.shadow.mapSize.height = 2048;
             scene.add(dirLight);
-
-            // Point Light
-            const pointLight = new THREE.PointLight(0xffffff, 0.3);
-            pointLight.position.set(0, 5, 0);
-            scene.add(pointLight);
         }
 
         function loadAssets() {
@@ -441,7 +466,6 @@
             
             loadingManager.onError = (url) => {
                 console.warn('Failed to load:', url);
-                // Create fallback geometry
                 createFallbackEnvironment();
                 gameState.loadingComplete = true;
                 document.getElementById('loading-screen').style.display = 'none';
@@ -450,62 +474,41 @@
                 createSurveyPoints();
             };
 
-            // Load main model with fallback
-            gltfLoader.load(
-                'models/perumahan.glb',
-                (gltf) => {
-                    const model = gltf.scene;
-                    model.scale.set(2, 2, 2);
-                    model.position.set(0, 0, 0);
-                    model.traverse((child) => {
-                        if (child.isMesh) {
-                            child.castShadow = true;
-                            child.receiveShadow = true;
-                        }
-                    });
-                    scene.add(model);
-                },
-                (progress) => {
-                    // Loading progress handled by LoadingManager
-                },
-                (error) => {
-                    console.warn('Failed to load main model, creating fallback');
-                    createFallbackEnvironment();
-                }
-            );
+            gltfLoader.load('models/perumahan.glb', (gltf) => {
+                const model = gltf.scene;
+                model.scale.set(2, 2, 2);
+                model.position.set(0, 0, 0);
+                model.traverse((child) => {
+                    if (child.isMesh) {
+                        child.castShadow = true;
+                        child.receiveShadow = true;
+                    }
+                });
+                scene.add(model);
+            }, undefined, (error) => {
+                console.warn('Failed to load main model, creating fallback');
+                createFallbackEnvironment();
+            });
 
-            // Load sky dome with fallback
-            gltfLoader.load(
-                'models/sky_dome_demo.glb',
-                (gltf) => {
-                    const skyDome = gltf.scene;
-                    skyDome.scale.set(18, 18, 18);
-                    skyDome.position.set(0, 0, 0);
-                    scene.add(skyDome);
-                },
-                undefined,
-                (error) => {
-                    console.warn('Failed to load sky dome, using color background');
-                }
-            );
+            gltfLoader.load('models/sky_dome_demo.glb', (gltf) => {
+                const skyDome = gltf.scene;
+                skyDome.scale.set(18, 18, 18);
+                skyDome.position.set(0, 0, 0);
+                scene.add(skyDome);
+            }, undefined, (error) => {
+                console.warn('Failed to load sky dome, using color background');
+            });
         }
 
         function createFallbackEnvironment() {
-            // Create simple buildings as fallback
             const buildingGeo = new THREE.BoxGeometry(4, 6, 4);
             const buildingMat = new THREE.MeshLambertMaterial({ color: 0x8B4513 });
-            
-            // Create buildings at approximate positions
             const buildingPositions = [
-                [-8, 0, -8], [-8, 0, -29], [-8, 0, -51],
-                [14, 0, -21], [31, 0, -21], [48, 0, -21],
-                [14, 0, -54], [31, 0, -54], [48, 0, -54],
-                [-30, 0, -67], [-46, 0, -67], [-63, 0, -67],
-                [11, 0, -88], [-1, 0, -122], [16, 0, -122],
-                [-18, 0, -122], [31, 0, -139], [68, 0, -149],
+                [-8, 0, -8], [-8, 0, -29], [-8, 0, -51], [14, 0, -21], [31, 0, -21], [48, 0, -21],
+                [14, 0, -54], [31, 0, -54], [48, 0, -54], [-30, 0, -67], [-46, 0, -67], [-63, 0, -67],
+                [11, 0, -88], [-1, 0, -122], [16, 0, -122], [-18, 0, -122], [31, 0, -139], [68, 0, -149],
                 [85, 0, -148], [102, 0, -148]
             ];
-
             buildingPositions.forEach(pos => {
                 const building = new THREE.Mesh(buildingGeo, buildingMat);
                 building.position.set(pos[0], pos[1] + 3, pos[2]);
@@ -513,8 +516,6 @@
                 building.receiveShadow = true;
                 scene.add(building);
             });
-
-            // Ground plane
             const groundGeo = new THREE.PlaneGeometry(400, 400);
             const groundMat = new THREE.MeshLambertMaterial({ color: 0x228B22 });
             const ground = new THREE.Mesh(groundGeo, groundMat);
@@ -524,25 +525,20 @@
         }
 
         function createInfoDialog() {
-            // Create info text
             const canvas = document.createElement('canvas');
             const context = canvas.getContext('2d');
             canvas.width = 550;
             canvas.height = 128;
-            
             context.fillStyle = '#1e293b';
             context.fillRect(0, 0, 550, 128);
-            
             context.fillStyle = 'white';
             context.font = '20px Arial';
             context.textAlign = 'center';
             context.fillText('Misi Angket: Klik titik-titik merah untuk menyebarkan angket!', 256, 40);
             context.fillText('Target 20 rumah dalam 60 detik.', 256, 70);
-            
             const texture = new THREE.CanvasTexture(canvas);
             const material = new THREE.MeshBasicMaterial({ map: texture });
             const geometry = new THREE.PlaneGeometry(18, 4.5);
-            
             const infoPanel = new THREE.Mesh(geometry, material);
             infoPanel.position.set(0, 8, 0);
             scene.add(infoPanel);
@@ -550,93 +546,42 @@
 
         function createSurveyPoints() {
             gameState.surveyPoints = [];
-            
             surveyPointPositions.forEach((pos, index) => {
-                // Create survey point sphere
                 const geometry = new THREE.SphereGeometry(0.3, 16, 16);
-                const material = new THREE.MeshLambertMaterial({ 
-                    color: 0xff4444,
-                    emissive: 0xff2222,
-                    emissiveIntensity: 0.3
-                });
-                
+                const material = new THREE.MeshLambertMaterial({ color: 0xff4444, emissive: 0xff2222, emissiveIntensity: 0.3 });
                 const sphere = new THREE.Mesh(geometry, material);
                 sphere.position.set(pos[0], pos[1], pos[2]);
-                sphere.userData = { 
-                    index: index, 
-                    isClickable: true, 
-                    type: 'survey-point',
-                    clicked: false
-                };
-                
-                // Add text sprite
-                const textSprite = createTextSprite('');
-                textSprite.position.set(0, 0.8, 0);
-                sphere.add(textSprite);
-                
+                sphere.userData = { index: index, isClickable: true, type: 'survey-point', clicked: false };
                 scene.add(sphere);
                 gameState.surveyPoints.push(sphere);
             });
         }
 
-        function createTextSprite(text) {
-            const canvas = document.createElement('canvas');
-            const context = canvas.getContext('2d');
-            canvas.width = 64;
-            canvas.height = 64;
-            
-            context.font = '32px Arial';
-            context.textAlign = 'center';
-            context.fillText(text, 32, 45);
-            
-            const texture = new THREE.CanvasTexture(canvas);
-            const material = new THREE.SpriteMaterial({ map: texture });
-            const sprite = new THREE.Sprite(material);
-            sprite.scale.set(2, 2, 1);
-            
-            return sprite;
-        }
-
         function setupEventListeners() {
-            // Window resize
             window.addEventListener('resize', onWindowResize);
             
-            // Mouse events
-            window.addEventListener('click', onMouseClick);
-            window.addEventListener('mousemove', onMouseMove);
-            
-            // Keyboard controls
-            const moveState = {
-                forward: false,
-                backward: false,
-                left: false,
-                right: false
-            };
+            const instructions = document.getElementById('instructions');
+            if (isMobile) {
+                instructions.innerHTML = "Analog Kiri: Gerak | Geser Kanan: Lihat | Ketuk Target: Klik";
+                setupTouchControls();
+            } else {
+                instructions.innerHTML = "WASD: Gerak | Mouse: Lihat | Click: Klik Titik Angket | ESC: Keluar";
+                setupDesktopControls();
+            }
+        }
+
+        function setupDesktopControls() {
+            const moveState = { forward: false, backward: false, left: false, right: false };
             
             window.addEventListener('keydown', (event) => {
                 switch(event.code) {
-                    case 'KeyW':
-                        moveState.forward = true;
-                        break;
-                    case 'KeyS':
-                        moveState.backward = true;
-                        break;
-                    case 'KeyA':
-                        moveState.left = true;
-                        break;
-                    case 'KeyD':
-                        moveState.right = true;
-                        break;
+                    case 'KeyW': moveState.forward = true; break;
+                    case 'KeyS': moveState.backward = true; break;
+                    case 'KeyA': moveState.left = true; break;
+                    case 'KeyD': moveState.right = true; break;
                     case 'Escape':
-                        if (gameState.gameActive) {
-                            if (confirm('Apakah Anda yakin ingin mengakhiri misi?')) {
-                                endGame();
-                            }
-                        }
-                        break;
-                    case 'KeyR':
-                        if (!gameState.gameActive) {
-                            restartGame();
+                        if (gameState.gameActive && controls.isLocked) {
+                            if (confirm('Apakah Anda yakin ingin mengakhiri misi?')) endGame();
                         }
                         break;
                 }
@@ -644,69 +589,143 @@
             
             window.addEventListener('keyup', (event) => {
                 switch(event.code) {
-                    case 'KeyW':
-                        moveState.forward = false;
-                        break;
-                    case 'KeyS':
-                        moveState.backward = false;
-                        break;
-                    case 'KeyA':
-                        moveState.left = false;
-                        break;
-                    case 'KeyD':
-                        moveState.right = false;
-                        break;
+                    case 'KeyW': moveState.forward = false; break;
+                    case 'KeyS': moveState.backward = false; break;
+                    case 'KeyA': moveState.left = false; break;
+                    case 'KeyD': moveState.right = false; break;
                 }
             });
-            
-            // Movement update function with ground constraint
+
+            document.addEventListener('click', () => {
+                if (gameState.gameActive && !controls.isLocked) controls.lock();
+                else if (gameState.gameActive) onMouseClick();
+            });
+
             gameState.updateMovement = () => {
                 if (!controls.isLocked) return;
-                
                 const velocity = new THREE.Vector3();
                 const direction = new THREE.Vector3();
-                
-                // Get forward direction (flatten Y to prevent flying)
                 camera.getWorldDirection(direction);
-                direction.y = 0; // Remove vertical component
+                direction.y = 0;
                 direction.normalize();
-                
-                // Calculate movement vector
                 if (moveState.forward) velocity.add(direction);
                 if (moveState.backward) velocity.sub(direction);
-                if (moveState.left) {
-                    const left = new THREE.Vector3();
-                    left.crossVectors(new THREE.Vector3(0, 1, 0), direction).normalize();
-                    velocity.add(left);
-                }
-                if (moveState.right) {
-                    const right = new THREE.Vector3();
-                    right.crossVectors(direction, new THREE.Vector3(0, 1, 0)).normalize();
-                    velocity.add(right);
-                }
+                if (moveState.left) velocity.add(new THREE.Vector3().crossVectors(camera.up, direction).normalize());
+                if (moveState.right) velocity.sub(new THREE.Vector3().crossVectors(camera.up, direction).normalize());
                 
-                // Apply movement speed
-                velocity.multiplyScalar(0.3);
-                
-                // Apply movement only to X and Z (keep Y fixed for ground constraint)
-                const currentPos = controls.getObject().position;
-                currentPos.x += velocity.x;
-                currentPos.z += velocity.z;
-                
-                // Force Y position to stay at ground level (1.6)
-                currentPos.y = 1.6;
-                
-                // Boundary restrictions
-                currentPos.x = Math.max(-100, Math.min(360, currentPos.x));
-                currentPos.z = Math.max(-200, Math.min(200, currentPos.z));
+                const player = controls.getObject();
+                player.position.x += velocity.x * 0.3;
+                player.position.z += velocity.z * 0.3;
+                player.position.y = 1.6; // Ground constraint
+                player.position.x = Math.max(-100, Math.min(360, player.position.x));
+                player.position.z = Math.max(-200, Math.min(200, player.position.z));
             };
+        }
 
-            // Click to enable controls
-            document.addEventListener('click', () => {
-                if (!controls.isLocked && gameState.loadingComplete) {
-                    controls.lock();
-                }
+        function setupTouchControls() {
+            const joystickZone = document.getElementById('joystick-zone');
+            joystickZone.style.display = 'block';
+
+            const joystick = nipplejs.create({
+                zone: joystickZone,
+                mode: 'static',
+                position: { left: '50%', top: '50%' },
+                color: 'white',
+                size: 120
+            }).on('move', (evt, data) => {
+                const angle = data.angle.radian;
+                const force = data.force;
+                // Corrected mapping: Y from joystick vector for forward/backward, X for strafe
+                gameState.moveVector.set(data.vector.x, 0, data.vector.y).multiplyScalar(force);
+            }).on('end', () => {
+                gameState.moveVector.set(0, 0, 0);
             });
+
+            const canvas = renderer.domElement;
+            canvas.addEventListener('touchstart', onTouchStart, { passive: false });
+            canvas.addEventListener('touchmove', onTouchMove, { passive: false });
+            canvas.addEventListener('touchend', onTouchEnd);
+
+            gameState.updateMovement = () => {
+                if (!gameState.gameActive) return;
+                const player = controls.getObject();
+                const forward = new THREE.Vector3();
+                player.getWorldDirection(forward);
+                forward.y = 0;
+                forward.normalize();
+
+                // Corrected right vector calculation
+                const right = new THREE.Vector3().crossVectors(forward, player.up).normalize();
+                
+                const moveDir = new THREE.Vector3();
+                // Correctly apply joystick vectors to camera-relative directions
+                const moveZ = forward.clone().multiplyScalar(gameState.moveVector.z);
+                const moveX = right.clone().multiplyScalar(gameState.moveVector.x);
+                
+                moveDir.add(moveZ).add(moveX);
+
+                player.position.add(moveDir.multiplyScalar(0.2));
+                player.position.y = 1.6; // Ground constraint
+                player.position.x = Math.max(-100, Math.min(360, player.position.x));
+                player.position.z = Math.max(-200, Math.min(200, player.position.z));
+            };
+        }
+
+        function onTouchStart(event) {
+            event.preventDefault();
+            for (let i = 0; i < event.changedTouches.length; i++) {
+                const touch = event.changedTouches[i];
+                // If touch is on the right side of the screen, and no look touch is active
+                if (touch.clientX > window.innerWidth / 2 && gameState.touchLook.id === -1) {
+                    gameState.touchLook.id = touch.identifier;
+                    gameState.touchLook.lastX = touch.clientX;
+                    gameState.touchLook.lastY = touch.clientY;
+                    gameState.touchLook.startX = touch.clientX;
+                    gameState.touchLook.startY = touch.clientY;
+                    gameState.touchLook.startTime = performance.now();
+                    gameState.touchLook.active = true;
+                }
+            }
+        }
+
+        function onTouchMove(event) {
+            event.preventDefault();
+            if (!gameState.touchLook.active) return;
+            for (let i = 0; i < event.changedTouches.length; i++) {
+                const touch = event.changedTouches[i];
+                if (touch.identifier === gameState.touchLook.id) {
+                    const deltaX = touch.clientX - gameState.touchLook.lastX;
+                    const deltaY = touch.clientY - gameState.touchLook.lastY;
+                    gameState.touchLook.lastX = touch.clientX;
+                    gameState.touchLook.lastY = touch.clientY;
+
+                    camera.rotation.y -= deltaX * 0.005;
+                    camera.rotation.x -= deltaY * 0.005;
+                    camera.rotation.x = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, camera.rotation.x));
+                }
+            }
+        }
+
+        function onTouchEnd(event) {
+            for (let i = 0; i < event.changedTouches.length; i++) {
+                const touch = event.changedTouches[i];
+                if (touch.identifier === gameState.touchLook.id) {
+                    const touchDuration = performance.now() - gameState.touchLook.startTime;
+                    const touchDistance = Math.sqrt(
+                        Math.pow(touch.clientX - gameState.touchLook.startX, 2) +
+                        Math.pow(touch.clientY - gameState.touchLook.startY, 2)
+                    );
+
+                    // Differentiate between a tap and a drag
+                    if (touchDuration < 200 && touchDistance < 10) {
+                        onMouseClick(); // It's a tap, so trigger a click
+                    }
+
+                    // Deactivate look controls
+                    gameState.touchLook.id = -1;
+                    gameState.touchLook.active = false;
+                }
+            }
         }
 
         function onWindowResize() {
@@ -715,28 +734,13 @@
             renderer.setSize(window.innerWidth, window.innerHeight);
         }
 
-        function onMouseMove(event) {
-            mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-            mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-        }
-
         function onMouseClick(event) {
             if (!gameState.gameActive) return;
-            
-            // Use center of screen for raycasting (crosshair position)
-            const centerX = 0; // Center of normalized device coordinates
-            const centerY = 0;
-            
-            // Update raycaster with center position
-            raycaster.setFromCamera(new THREE.Vector2(centerX, centerY), camera);
-            
-            // Check for intersections with survey points
+            raycaster.setFromCamera(new THREE.Vector2(0, 0), camera); // Raycast from center
             const intersects = raycaster.intersectObjects(gameState.surveyPoints);
-            
             if (intersects.length > 0) {
                 const clickedObject = intersects[0].object;
                 const index = clickedObject.userData.index;
-                
                 if (clickedObject.userData.isClickable && !gameState.clickedPoints.has(index)) {
                     handlePointClick(clickedObject, index);
                 }
@@ -744,39 +748,27 @@
         }
 
         function handlePointClick(point, index) {
-            // Mark as clicked
             gameState.clickedPoints.add(index);
             gameState.score++;
             point.userData.clicked = true;
-
-            // Visual feedback
             point.material.color.setHex(0x4CAF50);
             point.material.emissive.setHex(0x2E7D32);
             
-            // Animation
             const startScale = point.scale.clone();
             const targetScale = new THREE.Vector3(1.2, 1.2, 1.2);
             let animationTime = 0;
-            
             const animateClick = () => {
                 animationTime += 0.1;
                 if (animationTime < 1) {
                     point.scale.lerpVectors(startScale, targetScale, Math.sin(animationTime * Math.PI));
                     requestAnimationFrame(animateClick);
                 } else {
-                    // Hide point
                     point.visible = false;
                 }
             };
             animateClick();
-
-            // Audio feedback
             playClickSound();
-
-            // Update UI
             updateUI();
-
-            // Check win condition
             if (gameState.score >= gameState.totalPoints) {
                 endGame();
             }
@@ -785,75 +777,51 @@
         function updateUI() {
             document.getElementById('timer').textContent = gameState.timeLeft;
             document.getElementById('score').textContent = gameState.score;
-
-            // Update progress bar
             const progress = (gameState.score / gameState.totalPoints) * 100;
             document.getElementById('progress-fill').style.width = progress + '%';
-
-            // Change timer color when time is running out
             const timerDisplay = document.getElementById('timer-display');
-            if (gameState.timeLeft <= 10) {
-                timerDisplay.style.color = '#ff4444';
-            } else if (gameState.timeLeft <= 20) {
-                timerDisplay.style.color = '#ff9800';
-            } else {
-                timerDisplay.style.color = '#fff';
-            }
+            if (gameState.timeLeft <= 10) timerDisplay.style.color = '#ff4444';
+            else if (gameState.timeLeft <= 20) timerDisplay.style.color = '#ff9800';
+            else timerDisplay.style.color = '#fff';
         }
 
         function updateHUD() {
-            const pos = camera.position;
-            document.getElementById('hud').innerText = 
-                `Koordinat:\nX: ${pos.x.toFixed(2)}\nY: ${pos.y.toFixed(2)}\nZ: ${pos.z.toFixed(2)}`;
+            const pos = controls.getObject().position;
+            document.getElementById('hud').innerText = `Koordinat:
+X: ${pos.x.toFixed(2)}
+Y: ${pos.y.toFixed(2)}
+Z: ${pos.z.toFixed(2)}`;
         }
 
         function animate() {
             requestAnimationFrame(animate);
-            
-            // Update movement
             if (gameState.updateMovement) {
                 gameState.updateMovement();
             }
-            
-            // Update HUD
             updateHUD();
             
-            // Hover effect for survey points (using crosshair)
             if (gameState.gameActive) {
-                // Use center of screen for hover detection (crosshair position)
                 raycaster.setFromCamera(new THREE.Vector2(0, 0), camera);
                 const intersects = raycaster.intersectObjects(gameState.surveyPoints);
-                
+                let hovered = false;
                 gameState.surveyPoints.forEach(point => {
                     if (!point.userData.clicked && point.visible) {
                         const isHovered = intersects.some(intersect => intersect.object === point);
+                        if (isHovered) hovered = true;
                         const targetScale = isHovered ? 1.2 : 1.0;
                         point.scale.lerp(new THREE.Vector3(targetScale, targetScale, targetScale), 0.1);
-                        
-                        // Change crosshair color when hovering over clickable object
-                        const crosshair = document.getElementById('crosshair');
-                        if (isHovered) {
-                            crosshair.style.transform = 'translate(-50%, -50%) scale(1.2)';
-                            crosshair.querySelector('.crosshair-center').style.background = 'rgba(0, 255, 0, 0.9)';
-                        } else {
-                            crosshair.style.transform = 'translate(-50%, -50%) scale(1)';
-                            crosshair.querySelector('.crosshair-center').style.background = 'rgba(255, 0, 0, 0.7)';
-                        }
                     }
                 });
-                
-                // Reset crosshair if no objects are hovered
-                if (intersects.length === 0) {
-                    const crosshair = document.getElementById('crosshair');
-                    crosshair.style.transform = 'translate(-50%, -50%) scale(1)';
-                    crosshair.querySelector('.crosshair-center').style.background = 'rgba(255, 0, 0, 0.7)';
+                const crosshairCenter = document.querySelector('.crosshair-center');
+                if (hovered) {
+                    crosshairCenter.style.background = 'rgba(0, 255, 0, 0.9)';
+                } else {
+                    crosshairCenter.style.background = 'rgba(255, 0, 0, 0.7)';
                 }
             }
-            
             renderer.render(scene, camera);
         }
 
-        // **Game Functions** (identical to original)
         function startGame() {
             document.getElementById('start-modal').style.display = 'none';
             document.getElementById('game-ui').style.display = 'block';
@@ -864,7 +832,6 @@
             gameState.timeLeft = 60;
             gameState.clickedPoints.clear();
 
-            // Reset all survey points
             gameState.surveyPoints.forEach(point => {
                 point.visible = true;
                 point.material.color.setHex(0xff4444);
@@ -876,8 +843,11 @@
             updateUI();
             startTimer();
             
-            // Enable controls and ensure ground position
-            controls.lock();
+            if (isMobile) {
+                 document.getElementById('joystick-zone').style.display = 'block';
+            } else {
+                controls.lock();
+            }
             controls.getObject().position.y = 1.6;
         }
 
@@ -885,7 +855,6 @@
             gameState.timer = setInterval(() => {
                 gameState.timeLeft--;
                 updateUI();
-
                 if (gameState.timeLeft <= 0) {
                     endGame();
                 }
@@ -894,7 +863,6 @@
 
         function endGame() {
             gameState.gameActive = false;
-
             if (gameState.timer) {
                 clearInterval(gameState.timer);
                 gameState.timer = null;
@@ -902,7 +870,11 @@
 
             document.getElementById('game-ui').style.display = 'none';
             document.getElementById('crosshair').style.display = 'none';
-            controls.unlock();
+            if (isMobile) {
+                document.getElementById('joystick-zone').style.display = 'none';
+            } else {
+                controls.unlock();
+            }
             showResults();
         }
 
@@ -911,7 +883,6 @@
             const resultTitle = document.getElementById('result-title');
             const resultImg = document.getElementById('result-img');
             const resultText = document.getElementById('result-text');
-
             let title, imageSrc, text;
 
             if (gameState.score >= 20) {
@@ -935,7 +906,6 @@
             resultTitle.textContent = title;
             resultImg.src = imageSrc;
             resultText.textContent = text;
-
             resultModal.style.display = 'flex';
         }
 
@@ -964,296 +934,31 @@
                 const audioContext = new (window.AudioContext || window.webkitAudioContext)();
                 const oscillator = audioContext.createOscillator();
                 const gainNode = audioContext.createGain();
-
                 oscillator.connect(gainNode);
                 gainNode.connect(audioContext.destination);
-
                 oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
                 oscillator.frequency.exponentialRampToValueAtTime(400, audioContext.currentTime + 0.1);
-
                 gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
                 gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
-
                 oscillator.start(audioContext.currentTime);
                 oscillator.stop(audioContext.currentTime + 0.1);
             } catch (error) {
                 console.warn('Audio not supported');
             }
         }
-
-        // **Background Music Support**
-        let audioElement;
         
-        function playBackgroundMusic() {
-            if (!audioElement) {
-                audioElement = new Audio('time_outro.mp3');
-                audioElement.loop = true;
-                audioElement.volume = 0.3;
-            }
-            audioElement.play().catch(e => console.warn('Audio autoplay prevented'));
-        }
-
-        function stopBackgroundMusic() {
-            if (audioElement) {
-                audioElement.pause();
-                audioElement.currentTime = 0;
-            }
-        }
-
-        // **Particle Effect System**
-        function createParticleSystem() {
-            const particleCount = 100;
-            const particles = new THREE.BufferGeometry();
-            const positions = new Float32Array(particleCount * 3);
-            const colors = new Float32Array(particleCount * 3);
-            
-            for (let i = 0; i < particleCount; i++) {
-                positions[i * 3] = (Math.random() - 0.5) * 20;
-                positions[i * 3 + 1] = Math.random() * 10 + 5;
-                positions[i * 3 + 2] = (Math.random() - 0.5) * 20;
-                
-                colors[i * 3] = Math.random();
-                colors[i * 3 + 1] = 1.0;
-                colors[i * 3 + 2] = Math.random();
-            }
-            
-            particles.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-            particles.setAttribute('color', new THREE.BufferAttribute(colors, 3));
-            
-            const particleMaterial = new THREE.PointsMaterial({
-                size: 0.1,
-                vertexColors: true,
-                transparent: true,
-                opacity: 0.8
-            });
-            
-            const particleSystem = new THREE.Points(particles, particleMaterial);
-            particleSystem.visible = false;
-            scene.add(particleSystem);
-            
-            return particleSystem;
-        }
-
-        function showParticleEffect() {
-            if (gameState.particleSystem) {
-                gameState.particleSystem.visible = true;
-                setTimeout(() => {
-                    if (gameState.particleSystem) {
-                        gameState.particleSystem.visible = false;
-                    }
-                }, 3000);
-            }
-        }
-
-        // **VR Support Detection**
-        function checkVRSupport() {
-            if (navigator.xr) {
-                navigator.xr.isSessionSupported('immersive-vr').then((supported) => {
-                    if (supported) {
-                        addVRButton();
-                    }
-                }).catch(() => {
-                    console.log('VR not supported');
-                });
-            }
-        }
-
-        function addVRButton() {
-            const vrButton = document.createElement('button');
-            vrButton.textContent = 'Enter VR';
-            vrButton.className = 'btn';
-            vrButton.style.position = 'fixed';
-            vrButton.style.bottom = '20px';
-            vrButton.style.right = '20px';
-            vrButton.style.zIndex = '1000';
-            
-            vrButton.onclick = () => {
-                if (navigator.xr) {
-                    navigator.xr.requestSession('immersive-vr').then((session) => {
-                        renderer.xr.setSession(session);
-                        gameState.vrMode = true;
-                    });
-                }
-            };
-            
-            document.body.appendChild(vrButton);
-        }
-
-        // **Enhanced Collision Detection**
-        function createBoundingBoxes() {
-            // Add invisible collision boxes around buildings
-            const collisionBoxes = [];
-            
-            surveyPointPositions.forEach(pos => {
-                const geometry = new THREE.BoxGeometry(6, 8, 6);
-                const material = new THREE.MeshBasicMaterial({ 
-                    transparent: true, 
-                    opacity: 0,
-                    visible: false 
-                });
-                const box = new THREE.Mesh(geometry, material);
-                box.position.set(pos[0], pos[1] + 2, pos[2]);
-                box.userData.type = 'collision';
-                scene.add(box);
-                collisionBoxes.push(box);
-            });
-            
-            return collisionBoxes;
-        }
-
-        // **Mobile Controls Support**
-        function setupMobileControls() {
-            if ('ontouchstart' in window) {
-                const mobileControls = document.createElement('div');
-                mobileControls.innerHTML = `
-                    <div style="position: fixed; bottom: 20px; left: 20px; z-index: 1000;">
-                        <div style="display: grid; grid-template-columns: repeat(3, 50px); gap: 5px;">
-                            <button class="mobile-btn" data-action="forward">↑</button>
-                            <button class="mobile-btn" data-action="left">←</button>
-                            <button class="mobile-btn" data-action="right">→</button>
-                            <button class="mobile-btn" data-action="backward" style="grid-column: 2;">↓</button>
-                        </div>
-                    </div>
-                `;
-                
-                document.body.appendChild(mobileControls);
-                
-                // Add mobile button styles
-                const style = document.createElement('style');
-                style.textContent = `
-                    .mobile-btn {
-                        width: 50px;
-                        height: 50px;
-                        background: rgba(255,255,255,0.8);
-                        border: 2px solid #333;
-                        border-radius: 10px;
-                        font-size: 20px;
-                        cursor: pointer;
-                        user-select: none;
-                        touch-action: manipulation;
-                    }
-                    .mobile-btn:active {
-                        background: rgba(255,255,255,1);
-                        transform: scale(0.95);
-                    }
-                `;
-                document.head.appendChild(style);
-                
-                // Handle mobile touch controls
-                document.querySelectorAll('.mobile-btn').forEach(btn => {
-                    const action = btn.dataset.action;
-                    
-                    btn.addEventListener('touchstart', (e) => {
-                        e.preventDefault();
-                        switch(action) {
-                            case 'forward':
-                                simulateKeyEvent('KeyW', 'keydown');
-                                break;
-                            case 'backward':
-                                simulateKeyEvent('KeyS', 'keydown');
-                                break;
-                            case 'left':
-                                simulateKeyEvent('KeyA', 'keydown');
-                                break;
-                            case 'right':
-                                simulateKeyEvent('KeyD', 'keydown');
-                                break;
-                        }
-                    });
-                    
-                    btn.addEventListener('touchend', (e) => {
-                        e.preventDefault();
-                        switch(action) {
-                            case 'forward':
-                                simulateKeyEvent('KeyW', 'keyup');
-                                break;
-                            case 'backward':
-                                simulateKeyEvent('KeyS', 'keyup');
-                                break;
-                            case 'left':
-                                simulateKeyEvent('KeyA', 'keyup');
-                                break;
-                            case 'right':
-                                simulateKeyEvent('KeyD', 'keyup');
-                                break;
-                        }
-                    });
-                });
-            }
-        }
-
-        function simulateKeyEvent(code, type) {
-            const event = new KeyboardEvent(type, { code: code });
-            window.dispatchEvent(event);
-        }
-
-        // **Performance Monitoring**
-        function setupPerformanceMonitoring() {
-            const stats = {
-                frameCount: 0,
-                lastTime: performance.now(),
-                fps: 0
-            };
-            
-            function updateStats() {
-                stats.frameCount++;
-                const now = performance.now();
-                const delta = now - stats.lastTime;
-                
-                if (delta >= 1000) {
-                    stats.fps = Math.round((stats.frameCount * 1000) / delta);
-                    stats.frameCount = 0;
-                    stats.lastTime = now;
-                    
-                    // Auto-adjust quality based on FPS
-                    if (stats.fps < 30) {
-                        renderer.setPixelRatio(window.devicePixelRatio * 0.5);
-                    } else if (stats.fps > 50) {
-                        renderer.setPixelRatio(window.devicePixelRatio);
-                    }
-                }
-                
-                requestAnimationFrame(updateStats);
-            }
-            updateStats();
-        }
-
-        // **Initialize Everything**
         document.addEventListener('DOMContentLoaded', function () {
             console.log('🎯 Three.js Misi Angket System Initialized');
-            
-            // Initialize Three.js
             init();
             
-            // Setup additional features
-            gameState.particleSystem = createParticleSystem();
-            checkVRSupport();
-            setupMobileControls();
-            setupPerformanceMonitoring();
-            
-            // Zoom functionality for result images
             const resultImg = document.getElementById('result-img');
             const zoomOverlay = document.getElementById('zoom-overlay');
             const zoomedImg = document.getElementById('zoomed-img');
-
             resultImg.addEventListener('click', function () {
                 zoomedImg.src = this.src;
                 zoomOverlay.style.display = 'flex';
             });
-            
-            // Background music support
-            document.addEventListener('click', () => {
-                if (gameState.gameActive) {
-                    playBackgroundMusic();
-                }
-            }, { once: true });
         });
-
-        // **Export for debugging**
-        window.gameState = gameState;
-        window.scene = scene;
-        window.camera = camera;
-        
     </script>
 </body>
 </html>
