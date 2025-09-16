@@ -897,6 +897,9 @@ Z: ${pos.z.toFixed(2)}`;
                 title = 'USAHA YANG BAGUS!';
                 imageSrc = 'assets/hasil2.png';
                 text = `Tidak buruk! Anda berhasil menyebarkan angket ke ${gameState.score} dari ${gameState.totalPoints} rumah. Cek hasilnya!`;
+            } else if (gameState.score == 0) {
+                title = 'Gagal!';
+                text = `Anda gagal menyebarkan angket, tidak ada hasil respon dari warga.`;
             } else {
                 title = 'LUMAYAN!';
                 imageSrc = 'assets/hasil3.png';

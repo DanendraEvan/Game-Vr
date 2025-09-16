@@ -54,7 +54,7 @@
         <!-- Bagian kanan (tombol Pretest & Posttest) -->
         <div class="flex gap-3 w-1/4 justify-end">
             <a id="pretest-btn" href="pretest.html" class="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-lg">Pretest</a>
-            <a href="posttest.html" class="bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 px-4 rounded-lg">Posttest</a>
+            <a href="postest.html" class="bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 px-4 rounded-lg">Posttest</a>
         </div>
     </nav>
     
@@ -224,34 +224,38 @@
         closeBtn.addEventListener('click', () => {
             modal.classList.add('hidden');
         });
-        let pretestDone = false;
-const pretestBtn = document.getElementById('pretest-btn');
-const mainkanBtn = document.getElementById('mainkan-btn');
-const alertModal = document.getElementById('alert-modal');
-const closeAlert = document.getElementById('close-alert');
+        
+        // Cek status pretest dari localStorage
+        let pretestDone = localStorage.getItem('pretestDone') === 'true';
+        const pretestBtn = document.getElementById('pretest-btn');
+        const mainkanBtn = document.getElementById('mainkan-btn');
+        const alertModal = document.getElementById('alert-modal');
+        const closeAlert = document.getElementById('close-alert');
 
-// Saat halaman dimuat → selalu set pretestDone = false
-window.addEventListener('load', () => {
-    pretestDone = false;
-});
+        // Saat halaman dimuat → cek localStorage
+        window.addEventListener('load', () => {
+            pretestDone = localStorage.getItem('pretestDone') === 'true';
+        });
 
-// Kalau user klik Pretest, tandai selesai
-pretestBtn.addEventListener('click', () => {
-    pretestDone = true;
-});
+        // Kalau user klik Pretest, tandai selesai dan simpan di localStorage
+        pretestBtn.addEventListener('click', () => {
+            localStorage.setItem('pretestDone', 'true');
+            pretestDone = true;
+        });
 
-// Cek kondisi sebelum klik Mainkan
-mainkanBtn.addEventListener('click', (e) => {
-    if (!pretestDone) {
-        e.preventDefault();
-        alertModal.classList.remove('hidden'); // tampilkan modal custom
-    }
-});
+        // Cek kondisi sebelum klik Mainkan
+        mainkanBtn.addEventListener('click', (e) => {
+            if (!pretestDone) {
+                e.preventDefault();
+                alertModal.classList.remove('hidden'); // tampilkan modal custom
+            }
+        });
 
-// Tombol tutup modal
-closeAlert.addEventListener('click', () => {
-    alertModal.classList.add('hidden');
-});
+        // Tombol tutup modal
+        closeAlert.addEventListener('click', () => {
+            alertModal.classList.add('hidden');
+        });
+        
         modal.addEventListener('click', (e) => {
             if (e.target === modal) {
                 modal.classList.add('hidden');
