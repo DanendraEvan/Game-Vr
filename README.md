@@ -1,4 +1,4 @@
-
+<<<<<<< HEAD
 # Example of using realistic animated avatars in networked-aframe
 
 - [Live demo](https://naf-valid-avatars.glitch.me)
